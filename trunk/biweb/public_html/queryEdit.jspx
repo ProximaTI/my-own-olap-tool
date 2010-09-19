@@ -1,0 +1,421 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.1"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:dvt="http://xmlns.oracle.com/dss/adf/faces"
+          xmlns:trh="http://myfaces.apache.org/trinidad/html">
+  <c:set var="biwebBundle" value="#{adfBundle['br.com.bi.biwebBundle']}"
+         scope="page"/>
+  <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+  <f:view>
+    <af:document id="d1">
+      <af:form id="f1">
+        <af:pageTemplate id="pt1" viewId="/template/bi.jspx">
+          <f:facet name="content">
+            <af:panelSplitter splitterPosition="316" styleClass="AFStretchWidth"
+                              id="ps2">
+              <f:facet name="first">
+                <af:panelStretchLayout id="psl3">
+                  <f:facet name="center">
+                    <af:panelBox text="#{biwebBundle.METADADOS}" id="pb2"
+                                 showDisclosure="false">
+                      <af:panelStretchLayout id="panelStretchLayout1">
+                        <f:facet name="center">
+                          <af:panelStretchLayout id="psl4" startWidth="5px"
+                                                 endWidth="5px"
+                                                 bottomHeight="5px">
+                            <f:facet name="center">
+                              <af:panelAccordion id="pa2"
+                                                 styleClass="AFStretchWidth"
+                                                 discloseMany="true">
+                                <af:showDetailItem text="#{biwebBundle.N_U00EDVEIS}"
+                                                   id="sdi4" disclosed="true"
+                                                   flex="5"
+                                                   stretchChildren="first">
+                                  <af:panelStretchLayout id="psl8"
+                                                         startWidth="10px"
+                                                         endWidth="10px"
+                                                         topHeight="10px"
+                                                         bottomHeight="10px">
+                                    <f:facet name="bottom">
+                                      <af:spacer width="10" height="10"
+                                                 id="s16"/>
+                                    </f:facet>
+                                    <f:facet name="center">
+                                      <af:tree id="treDi"
+                                               value="#{cubeMetadata.levelsTreeModel}"
+                                               var="node" rowSelection="single"
+                                               contentDelivery="immediate"
+                                               rowDisclosureListener="#{cubeMetadata.levelExpanded}"
+                                               partialTriggers="::soc1">
+                                        <af:dragSource actions="COPY"
+                                                       discriminant="node"/>
+                                        <f:facet name="nodeStamp">
+                                          <af:panelGroupLayout id="pgl7">
+                                            <af:image id="i1"
+                                                      source="#{cubeMetadata.nodeImage}"
+                                                      inlineStyle="margin-right:6px; vertical-align:middle; height:16px; width:16px;"/>
+                                            <af:outputText value="#{node.name}"
+                                                           id="ot2"
+                                                           inlineStyle="overflow: scroll;"/>
+                                          </af:panelGroupLayout>
+                                        </f:facet>
+                                      </af:tree>
+                                    </f:facet>
+                                    <f:facet name="start">
+                                      <af:spacer width="10" height="10"
+                                                 id="s18"/>
+                                    </f:facet>
+                                    <f:facet name="end">
+                                      <af:spacer width="10" height="10"
+                                                 id="s17"/>
+                                    </f:facet>
+                                    <f:facet name="top">
+                                      <af:spacer width="10" height="10"
+                                                 id="s19"/>
+                                    </f:facet>
+                                  </af:panelStretchLayout>
+                                </af:showDetailItem>
+                                <af:showDetailItem text="#{biwebBundle.METRICAS}"
+                                                   id="sdi5" disclosed="true"
+                                                   flex="2"
+                                                   stretchChildren="first">
+                                  <af:panelStretchLayout id="panelStretchLayout2"
+                                                         startWidth="10px"
+                                                         endWidth="10px"
+                                                         topHeight="10px"
+                                                         bottomHeight="10px">
+                                    <f:facet name="bottom">
+                                      <af:spacer width="10" height="10"
+                                                 id="spacer2"/>
+                                    </f:facet>
+                                    <f:facet name="center">
+                                      <af:tree id="tree1"
+                                               value="#{cubeMetadata.measuresTreeModel}"
+                                               var="node" rowSelection="single"
+                                               initiallyExpanded="true"
+                                               contentDelivery="immediate"
+                                               partialTriggers="::soc1">
+                                        <af:dragSource actions="COPY"
+                                                       discriminant="node"/>
+                                        <f:facet name="nodeStamp">
+                                          <af:panelGroupLayout id="panelGroupLayout3">
+                                            <af:image id="image3"
+                                                      source="#{cubeMetadata.nodeImage}"
+                                                      inlineStyle="margin-right:6px; vertical-align:middle; height:16px; width:16px;"/>
+                                            <af:outputText value="#{node.name}"
+                                                           id="outputText3"
+                                                           partialTriggers="::soc1"/>
+                                          </af:panelGroupLayout>
+                                        </f:facet>
+                                      </af:tree>
+                                    </f:facet>
+                                    <f:facet name="start">
+                                      <af:spacer width="10" height="10"
+                                                 id="spacer3"/>
+                                    </f:facet>
+                                    <f:facet name="end">
+                                      <af:spacer width="10" height="10"
+                                                 id="spacer4"/>
+                                    </f:facet>
+                                    <f:facet name="top">
+                                      <af:spacer width="10" height="10"
+                                                 id="spacer5"/>
+                                    </f:facet>
+                                  </af:panelStretchLayout>
+                                </af:showDetailItem>
+                                <af:showDetailItem text="#{biwebBundle.FILTROS}"
+                                                   id="sdi6" disclosed="true"
+                                                   flex="3"/>
+                              </af:panelAccordion>
+                            </f:facet>
+                            <f:facet name="top">
+                              <af:panelGroupLayout id="pgl2" layout="vertical"
+                                                   styleClass="AFStretchWidth">
+                                <af:separator id="s4"/>
+                                <af:spacer width="10" height="10" id="s9"/>
+                                <af:panelGroupLayout id="pgl4"
+                                                     layout="horizontal">
+                                  <af:spacer width="10" height="10" id="s3"/>
+                                  <af:selectOneChoice label="#{biwebBundle.SELECIONE_O_CUBO}"
+                                                      id="soc1"
+                                                      showRequired="true"
+                                                      value="#{cubeMetadata.selectedCube}"
+                                                      autoSubmit="true"
+                                                      required="true"
+                                                      valueChangeListener="#{cubeMetadata.cubeSelected}">
+                                    <f:selectItems value="#{cubeMetadata.cubes}"
+                                                   id="si1"/>
+                                  </af:selectOneChoice>
+                                </af:panelGroupLayout>
+                              </af:panelGroupLayout>
+                            </f:facet>
+                            <f:facet name="end">
+                              <af:spacer width="10" height="10" id="s2"/>
+                            </f:facet>
+                            <f:facet name="start">
+                              <af:spacer width="10" height="10" id="s5"/>
+                            </f:facet>
+                            <f:facet name="bottom">
+                              <af:spacer width="10" height="10" id="s6"/>
+                            </f:facet>
+                          </af:panelStretchLayout>
+                        </f:facet>
+                      </af:panelStretchLayout>
+                    </af:panelBox>
+                  </f:facet>
+                </af:panelStretchLayout>
+              </f:facet>
+              <f:facet name="second">
+                <af:panelStretchLayout id="psl1">
+                  <f:facet name="center">
+                    <af:panelBox id="pb1" showDisclosure="false"
+                                 text="#{queryEdit.title}">
+                      <af:panelStretchLayout id="psl5" topHeight="40px">
+                        <f:facet name="center">
+                          <af:panelStretchLayout id="psl7" startWidth="10px"
+                                                 endWidth="10px"
+                                                 topHeight="40px"
+                                                 bottomHeight="10px">
+                            <f:facet name="bottom">
+                              <af:spacer width="10" height="10" id="s12"/>
+                            </f:facet>
+                            <f:facet name="center">
+                              <af:panelSplitter id="ps1"
+                                                orientation="horizontal"
+                                                splitterPosition="322">
+                                <f:facet name="first">
+                                  <af:panelStretchLayout id="psl9">
+                                    <f:facet name="center">
+                                      <af:panelDashboard id="pd1" columns="1"
+                                                         rowHeight="200px">
+                                        <af:panelBox text="#{biwebBundle.LINHAS}"
+                                                     id="pb3"
+                                                     showDisclosure="false"
+                                                     ramp="highlight"
+                                                     background="light">
+                                          <af:panelStretchLayout id="psl10"
+                                                                 startWidth="10px"
+                                                                 endWidth="10px"
+                                                                 topHeight="10px"
+                                                                 bottomHeight="10px">
+                                            <f:facet name="bottom">
+                                              <af:spacer width="10" height="10"
+                                                         id="s20"/>
+                                            </f:facet>
+                                            <f:facet name="center">
+                                              <af:tree id="treRows"
+                                                       value="#{queryEdit.rowsTreeModel}"
+                                                       var="node"
+                                                       contextMenuSelect="false"
+                                                       initiallyExpanded="true"
+                                                       rowSelection="single"
+                                                       contentDelivery="immediate"
+                                                       partialTriggers="::treDi cmi1 ::treCol ::soc1"
+                                                       selectionListener="#{queryEdit.axisNodeSelectedInRows}">
+                                                <af:collectionDropTarget dropListener="#{queryEdit.droppedNodeInRows}"
+                                                                         actions="COPY"
+                                                                         modelName="node"/>
+                                                <f:facet name="nodeStamp">
+                                                  <af:panelGroupLayout id="panelGroupLayout1">
+                                                    <af:image id="image1"
+                                                              source="#{queryEdit.nodeImage}"
+                                                              inlineStyle="margin-right:6px; vertical-align:middle; height:16px; width:16px;"/>
+                                                    <af:outputText value="#{queryEdit.rowsNodeTitle}"
+                                                                   id="outputText1"
+                                                                   inlineStyle="clear:both;"/>
+                                                  </af:panelGroupLayout>
+                                                </f:facet>
+                                                <f:facet name="contextMenu">
+                                                  <af:popup id="rowsContextMenu"
+                                                            popupFetchListener="#{queryEdit.contextMenuRowsFetched}"
+                                                            contentDelivery="lazyUncached"
+                                                            eventContext="launcher">
+                                                    <af:menu id="m1">
+                                                      <af:commandMenuItem text="#{biwebBundle.REMOVER}"
+                                                                          id="cmi1"
+                                                                          actionListener="#{queryEdit.removeNodeFromRows}"
+                                                                          disabled="#{queryEdit.selectedNodeOnRowsRoot}"/>
+                                                    </af:menu>
+                                                  </af:popup>
+                                                </f:facet>
+                                              </af:tree>
+                                            </f:facet>
+                                            <f:facet name="start">
+                                              <af:spacer width="10" height="10"
+                                                         id="s22"/>
+                                            </f:facet>
+                                            <f:facet name="end">
+                                              <af:spacer width="10" height="10"
+                                                         id="s21"/>
+                                            </f:facet>
+                                            <f:facet name="top">
+                                              <af:spacer width="10" height="10"
+                                                         id="s23"/>
+                                            </f:facet>
+                                          </af:panelStretchLayout>
+                                          <f:facet name="toolbar">
+                                            <af:toolbar id="t2">
+                                              <af:commandToolbarButton id="ctb1"
+                                                                       icon="/images/null.png"
+                                                                       selected="#{!queryEdit.entity.rowsAxisNonEmpty}"
+                                                                       type="check"
+                                                                       actionListener="#{queryEdit.nonEmptySelectedOnRows}"
+                                                                       shortDesc="#{biwebBundle.MANTENHA_ESTE_BOT_U00E3O_PRESS}"/>
+                                            </af:toolbar>
+                                          </f:facet>
+                                        </af:panelBox>
+                                        <af:panelBox text="#{biwebBundle.COLUNAS}"
+                                                     id="pb4"
+                                                     showDisclosure="false"
+                                                     background="light"
+                                                     ramp="highlight">
+                                          <f:facet name="toolbar">
+                                            <af:toolbar id="toolbar1">
+                                              <af:commandToolbarButton id="commandToolbarButton1"
+                                                                       icon="/images/null.png"
+                                                                       selected="#{!queryEdit.entity.columnsAxisNonEmpty}"
+                                                                       type="check"
+                                                                       actionListener="#{queryEdit.nonEmptySelectedOnColumns}"
+                                                                       shortDesc="#{biwebBundle.MANTENHA_ESTE_BOT_U00E3O_PRESS}"/>
+                                            </af:toolbar>
+                                          </f:facet>
+                                          <af:panelStretchLayout id="panelStretchLayout3"
+                                                                 startWidth="10px"
+                                                                 endWidth="10px"
+                                                                 topHeight="10px"
+                                                                 bottomHeight="10px">
+                                            <f:facet name="bottom">
+                                              <af:spacer width="10" height="10"
+                                                         id="spacer6"/>
+                                            </f:facet>
+                                            <f:facet name="center">
+                                              <af:tree id="treCol"
+                                                       value="#{queryEdit.columnsTreeModel}"
+                                                       var="node"
+                                                       rowSelection="single"
+                                                       initiallyExpanded="true"
+                                                       contentDelivery="immediate"
+                                                       partialTriggers="::treDi commandMenuItem1 ::treRows  ::soc1"
+                                                       selectionListener="#{queryEdit.axisNodeSelectedInColumns}">
+                                                <af:collectionDropTarget dropListener="#{queryEdit.droppedNodeInColumns}"
+                                                                         actions="COPY"
+                                                                         modelName="node"/>
+                                                <f:facet name="nodeStamp">
+                                                  <af:panelGroupLayout id="panelGroupLayout2">
+                                                    <af:image id="image2"
+                                                              source="#{queryEdit.nodeImage}"
+                                                              inlineStyle="margin-right:6px; vertical-align:middle; height:16px; width:16px;"/>
+                                                    <af:outputText value="#{queryEdit.columnsNodeTitle}"
+                                                                   id="outputText2"
+                                                                   inlineStyle="clear:both;"/>
+                                                  </af:panelGroupLayout>
+                                                </f:facet>
+                                                <f:facet name="contextMenu">
+                                                  <af:popup id="popup1"
+                                                            contentDelivery="lazyUncached"
+                                                            popupFetchListener="#{queryEdit.contextMenuColumnsFetched}"
+                                                            eventContext="launcher">
+                                                    <af:menu id="menu1">
+                                                      <af:commandMenuItem text="#{biwebBundle.REMOVER}"
+                                                                          id="commandMenuItem1"
+                                                                          actionListener="#{queryEdit.removeNodeFromColumns}"
+                                                                          disabled="#{queryEdit.selectedNodeOnColumnsRoot}"/>
+                                                    </af:menu>
+                                                  </af:popup>
+                                                </f:facet>
+                                              </af:tree>
+                                            </f:facet>
+                                            <f:facet name="start">
+                                              <af:spacer width="10" height="10"
+                                                         id="spacer7"/>
+                                            </f:facet>
+                                            <f:facet name="end">
+                                              <af:spacer width="10" height="10"
+                                                         id="spacer8"/>
+                                            </f:facet>
+                                            <f:facet name="top">
+                                              <af:spacer width="10" height="10"
+                                                         id="spacer9"/>
+                                            </f:facet>
+                                          </af:panelStretchLayout>
+                                        </af:panelBox>
+                                      </af:panelDashboard>
+                                    </f:facet>
+                                  </af:panelStretchLayout>
+                                </f:facet>
+                                <f:facet name="second">
+                                  <af:panelStretchLayout id="psl6">
+                                    <f:facet name="center">
+                                      <af:inputText id="it1"
+                                                    partialTriggers="cb1"
+                                                    columns="100" rows="40"
+                                                    wrap="off" simple="true"
+                                                    value="#{queryEdit.result}"
+                                                    contentStyle="font-family:'DejaVu Sans Mono'; font-size:9px;"/>
+                                    </f:facet>
+                                    <f:facet name="top">
+                                      <af:commandButton id="cb1" visible="false"
+                                                        actionListener="#{queryEdit.refreshQueryResult}"
+                                                        binding="#{queryEdit.refreshButton}"/>
+                                    </f:facet>
+                                  </af:panelStretchLayout>
+                                </f:facet>
+                              </af:panelSplitter>
+                            </f:facet>
+                            <f:facet name="start">
+                              <af:spacer width="10" height="10" id="s14"/>
+                            </f:facet>
+                            <f:facet name="end">
+                              <af:spacer width="10" height="10" id="s13"/>
+                            </f:facet>
+                            <f:facet name="top">
+                              <af:panelGroupLayout id="pgl8"
+                                                   layout="horizontal">
+                                <af:spacer width="15" height="10" id="s24"/>
+                                <af:panelGroupLayout layout="scroll"
+                                                     xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+                                                     id="pgl6">
+                                  <af:spacer width="10" height="5" id="s15"/>
+                                  <af:inputText label="#{biwebBundle.NOME_DA_CONSULTA}"
+                                                id="it2" maximumLength="255"
+                                                value="#{queryEdit.query.name}"
+                                                required="true" columns="50"/>
+                                </af:panelGroupLayout>
+                              </af:panelGroupLayout>
+                            </f:facet>
+                          </af:panelStretchLayout>
+                        </f:facet>
+                        <f:facet name="top">
+                          <af:panelGroupLayout layout="scroll"
+                                               xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+                                               id="pgl5">
+                            <af:separator id="s11"/>
+                            <af:toolbar id="t3">
+                              <af:commandToolbarButton text="#{biwebBundle.SALVAR}"
+                                                       id="commandToolbarButton2"
+                                                       icon="/images/13Save.gif"
+                                                       action="#{queryEdit.saveQuery}"/>
+                              <af:commandToolbarButton text="#{biwebBundle.FECHAR}"
+                                                       id="ctb2"
+                                                       icon="/images/close.png"
+                                                       action="queryCad"
+                                                       immediate="true"/>
+                            </af:toolbar>
+                            <af:separator id="separator1"/>
+                          </af:panelGroupLayout>
+                        </f:facet>
+                      </af:panelStretchLayout>
+                    </af:panelBox>
+                  </f:facet>
+                </af:panelStretchLayout>
+              </f:facet>
+            </af:panelSplitter>
+          </f:facet>
+        </af:pageTemplate>
+      </af:form>
+    </af:document>
+  </f:view>
+</jsp:root>
