@@ -72,6 +72,8 @@
          <string v="TopLink"/>
          <string v="Database"/>
          <string v="XML"/>
+         <string v="Maven"/>
+         <string v="Ant"/>
       </list>
    </hash>
    <hash n="oracle.jdeveloper.compiler.OjcConfiguration">
@@ -89,6 +91,9 @@
       <value n="source" v="Default"/>
       <value n="target" v="Default"/>
       <value n="webIANAEncoding" v="UTF-8"/>
+   </hash>
+   <hash n="oracle.jdeveloper.maven.compiler.MavenRunConfiguration">
+      <url n="pomfileURL" path="pom.xml"/>
    </hash>
    <hash n="oracle.jdeveloper.model.J2eeSettings">
       <value n="j2eeWebAppName" v="biweb-biweb-webapp"/>
@@ -179,7 +184,7 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" path="../../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
+            <url n="id" path="../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
@@ -188,6 +193,18 @@
          </hash>
          <hash>
             <value n="id" v="JSF 1.2"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <url n="id" path="../../../Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Olap4j.library"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Jasper.jar"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Commons-dbcp-1.2.1.jar"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>
@@ -243,11 +260,29 @@
             </hash>
             <hash>
                <list n="classPath">
-                  <url path="../../../../../../Program Files/NetBeans 6.9.1/ide/modules/ext/mysql-connector-java-5.1.6-bin.jar" jar-entry=""/>
+                  <url protocol="jar" path="file:/Program Files/NetBeans 6.9.1/ide/modules/ext/mysql-connector-java-5.1.6-bin.jar!/"/>
                </list>
                <value n="deployedByDefault" v="true"/>
                <value n="description" v="MySQL JDBC"/>
                <value n="id" v="MySQL JDBC"/>
+            </hash>
+            <hash>
+               <list n="classPath">
+                  <url path="../../../Users/Luiz/BI/Ferramentas/Jasper Analysis Workbench/jasper/dist/jasper.jar" jar-entry=""/>
+               </list>
+               <value n="deployedByDefault" v="true"/>
+               <value n="description" v="Jasper.jar"/>
+               <value n="id" v="Jasper.jar"/>
+               <value n="locked" v="true"/>
+            </hash>
+            <hash>
+               <list n="classPath">
+                  <url path="../../../Users/Luiz/BI/Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-dbcp-1.2.1.jar" jar-entry=""/>
+               </list>
+               <value n="deployedByDefault" v="true"/>
+               <value n="description" v="Commons-dbcp-1.2.1.jar"/>
+               <value n="id" v="Commons-dbcp-1.2.1.jar"/>
+               <value n="locked" v="true"/>
             </hash>
          </list>
       </hash>
@@ -313,7 +348,7 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" path="../../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
+            <url n="id" path="../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
@@ -322,6 +357,18 @@
          </hash>
          <hash>
             <value n="id" v="JSF 1.2"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <url n="id" path="../../../Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Olap4j.library"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Jasper.jar"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Commons-dbcp-1.2.1.jar"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>

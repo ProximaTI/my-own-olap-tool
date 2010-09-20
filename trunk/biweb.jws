@@ -18,6 +18,5 @@
    </hash>
    <list n="listOfChildren">
       <hash><url n="URL" path="biweb/biweb.jpr"/></hash>
-      <hash><url n="URL" path="../../Recursos/adfdemo/adfdemo.jpr"/></hash>
    </list>
 </jws:workspace>

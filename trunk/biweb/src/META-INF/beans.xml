@@ -29,7 +29,7 @@
     <constructor-arg value="query_id_seq"/>
     <constructor-arg value="query_id"/>
   </bean>
-  <bean id="nodeDAO"
+  <bean id="nodeDAO" 
         class="br.com.bi.model.persistence.queries.dao.impl.jdbc.JdbcNodeDAO">
     <property name="dataSource" ref="dataSource"/>
     <property name="nodeIncrementer" ref="nodeIncrementer"/>
