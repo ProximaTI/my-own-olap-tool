@@ -19,7 +19,7 @@ import org.olap4j.mdx.Syntax;
 
 
 /**
- * Classe respons√°vel por traduzir uma consulta para uma instru√ß√£o MDX.
+ * Classe respons·vel por traduzir uma consulta para uma instruÁ„o MDX.
  *
  * Baseado em um analisador preditivo usando descida recursiva.
  *
@@ -36,14 +36,14 @@ public class QueryToMdxTranslator {
     }
 
     public String translate() {
-        //Truque para retornar os membros enquanto a consulta est√° sendo
-        //constru√≠da
+        //Truque para retornar os membros enquanto a consulta est· sendo
+        //construÌda
         boolean brakeNonEmpty =
             query.getRowsAxis().getChildren().size() == 0 ||
             query.getColumnsAxis().getChildren().size() == 0;
 
         // =======================================================
-        // = Transdu√ß√£o para a √°rvore sint√°tica da linguagem mdx =
+        // = TransduÁ„o para a ·rvore sint·tica da linguagem mdx =
         // =======================================================
 
         AxisNode rowsNode =
@@ -55,7 +55,7 @@ public class QueryToMdxTranslator {
                           query.isColumnsAxisNonEmpty() && !brakeNonEmpty);
 
         // ============================
-        // = Gera√ß√£o da instru√ß√£o mdx =
+        // = GeraÁ„o da instruÁ„o mdx =
         // ============================
 
         StringWriter sw = new StringWriter();
@@ -77,7 +77,7 @@ public class QueryToMdxTranslator {
         List<ParseTreeNode> elements = new ArrayList<ParseTreeNode>();
 
         if (node.getChildren().size() > 1) {
-            // constr√≥i uma tupla
+            // constrÛi um conjunto (set)
             for (Node child : node.getChildren()) {
                 elements.add(transduceNode(child));
             }
@@ -90,7 +90,7 @@ public class QueryToMdxTranslator {
                                 transduceNode(node.getChildren().get(0)));
         }
 
-        // se n√£o tiver nada no eixo, retorna uma tupla vazia
+        // se n„o tiver nada no eixo, retorna um conjunto vazio
         return new AxisNode(null, isNonEmpty, axis, null,
                             new CallNode(null, BRACES, Syntax.Braces,
                                          elements));
@@ -111,16 +111,16 @@ public class QueryToMdxTranslator {
             return buildCrossjoin(transducedNode,
                                   transduceNode(node.getChildren().get(0)));
         } else if (node.getChildren().size() > 1) {
-            // constr√≥i uma tupla
+            // constrÛi um conjunto
             List<ParseTreeNode> elements = new ArrayList<ParseTreeNode>();
 
             for (Node child : node.getChildren()) {
                 elements.add(transduceNode(child));
             }
 
-            ParseTreeNode tuple =
+            ParseTreeNode set =
                 new CallNode(null, BRACES, Syntax.Braces, elements);
-            return buildCrossjoin(transducedNode, tuple);
+            return buildCrossjoin(transducedNode, set);
         }
         return transducedNode;
     }

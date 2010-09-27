@@ -6,25 +6,15 @@ package br.com.bi.model.metadata;
 
 
 import br.com.bi.model.connection.OlapConnectionHolder;
-import br.com.bi.model.entity.queries.Query;
-import br.com.bi.model.translator.queries.QueryToMdxTranslator;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import java.sql.SQLException;
-
-import org.olap4j.CellSet;
 import org.olap4j.OlapConnection;
 import org.olap4j.OlapException;
-import org.olap4j.OlapStatement;
 import org.olap4j.metadata.Cube;
 import org.olap4j.metadata.Dimension;
 import org.olap4j.metadata.Hierarchy;
 import org.olap4j.metadata.Level;
 import org.olap4j.metadata.Measure;
 import org.olap4j.metadata.NamedList;
-import org.olap4j.query.RectangularCellSetFormatter;
 
 
 /**

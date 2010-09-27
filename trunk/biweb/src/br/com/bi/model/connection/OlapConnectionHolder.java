@@ -10,6 +10,8 @@ import java.sql.SQLException;
 
 import java.util.logging.Logger;
 
+import mondrian.rolap.sql.SqlQuery;
+
 import org.olap4j.OlapConnection;
 import org.olap4j.OlapWrapper;
 
