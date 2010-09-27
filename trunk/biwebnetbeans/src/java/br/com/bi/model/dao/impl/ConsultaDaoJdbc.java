@@ -7,13 +7,12 @@ package br.com.bi.model.dao.impl;
 import br.com.bi.model.dao.ConsultaDao;
 import br.com.bi.model.entity.query.Consulta;
 import java.util.List;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 /**
  *
  * @author Luiz
  */
-public class ConsultaDaoJdbc extends JdbcDaoSupport implements ConsultaDao {
+public class ConsultaDaoJdbc extends AbstractDaoJdbc implements ConsultaDao {
 
     public List<Consulta> getConsultas() {
         throw new UnsupportedOperationException("Not supported yet.");

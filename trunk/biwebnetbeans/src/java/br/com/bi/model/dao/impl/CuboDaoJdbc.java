@@ -7,13 +7,12 @@ package br.com.bi.model.dao.impl;
 import br.com.bi.model.dao.CuboDao;
 import br.com.bi.model.entity.cube.Cubo;
 import java.util.List;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 /**
  *
  * @author Luiz
  */
-public class CuboDaoJdbc extends JdbcDaoSupport implements CuboDao {
+public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
 
     public List<Cubo> getCubos() {
         throw new UnsupportedOperationException("Not supported yet.");

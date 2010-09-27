@@ -15,7 +15,9 @@ public class Nivel {
     private int id;
     private String nome;
     private String descricao;
+    private String esquema;
     private String tabela;
+    private String juncaoNivelSuperior;
     private List<Propriedade> propriedades;
 
     /**
@@ -86,5 +88,33 @@ public class Nivel {
      */
     public void setPropriedades(List<Propriedade> propriedades) {
         this.propriedades = propriedades;
+    }
+
+    /**
+     * @return the esquema
+     */
+    public String getEsquema() {
+        return esquema;
+    }
+
+    /**
+     * @param esquema the esquema to set
+     */
+    public void setEsquema(String esquema) {
+        this.esquema = esquema;
+    }
+
+    /**
+     * @return the juncaoNivelSuperior
+     */
+    public String getJuncaoNivelSuperior() {
+        return juncaoNivelSuperior;
+    }
+
+    /**
+     * @param juncaoNivelSuperior the juncaoNivelSuperior to set
+     */
+    public void setJuncaoNivelSuperior(String juncaoNivelSuperior) {
+        this.juncaoNivelSuperior = juncaoNivelSuperior;
     }
 }

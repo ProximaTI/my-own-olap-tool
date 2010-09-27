@@ -16,7 +16,6 @@ public class Dimensao {
     private String nome;
     private String descricao;
     private List<Nivel> niveis;
-    private List<String> juncoes;
 
     /**
      * @return the id
@@ -58,5 +57,19 @@ public class Dimensao {
      */
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    /**
+     * @return the niveis
+     */
+    public List<Nivel> getNiveis() {
+        return niveis;
+    }
+
+    /**
+     * @param niveis the niveis to set
+     */
+    public void setNiveis(List<Nivel> niveis) {
+        this.niveis = niveis;
     }
 }

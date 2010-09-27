@@ -15,6 +15,8 @@ public class Cubo {
     private int id;
     private String nome;
     private String descricao;
+    private String esquema;
+    private String tabela;
     private List<Dimensao> dimensoes;
     private List<Metrica> metricas;
     private List<Filtro> filtros;
@@ -101,5 +103,33 @@ public class Cubo {
      */
     public void setMetricas(List<Metrica> metricas) {
         this.metricas = metricas;
+    }
+
+    /**
+     * @return the esquema
+     */
+    public String getEsquema() {
+        return esquema;
+    }
+
+    /**
+     * @param esquema the esquema to set
+     */
+    public void setEsquema(String esquema) {
+        this.esquema = esquema;
+    }
+
+    /**
+     * @return the tabela
+     */
+    public String getTabela() {
+        return tabela;
+    }
+
+    /**
+     * @param tabela the tabela to set
+     */
+    public void setTabela(String tabela) {
+        this.tabela = tabela;
     }
 }
