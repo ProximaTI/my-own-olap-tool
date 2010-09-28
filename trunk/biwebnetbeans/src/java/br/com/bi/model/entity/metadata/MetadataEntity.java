@@ -2,20 +2,19 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.bi.model.entity.cube;
+package br.com.bi.model.entity.metadata;
 
-import java.util.List;
+import br.com.bi.model.entity.Entity;
 
 /**
  *
  * @author Luiz
  */
-public class Dimensao {
+public abstract class MetadataEntity extends Entity {
 
     private int id;
     private String nome;
     private String descricao;
-    private List<Nivel> niveis;
 
     /**
      * @return the id
@@ -57,19 +56,5 @@ public class Dimensao {
      */
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    /**
-     * @return the niveis
-     */
-    public List<Nivel> getNiveis() {
-        return niveis;
-    }
-
-    /**
-     * @param niveis the niveis to set
-     */
-    public void setNiveis(List<Nivel> niveis) {
-        this.niveis = niveis;
     }
 }

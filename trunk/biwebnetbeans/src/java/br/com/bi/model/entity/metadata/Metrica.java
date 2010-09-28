@@ -2,63 +2,18 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.bi.model.entity.cube;
+package br.com.bi.model.entity.metadata;
 
 /**
  *
  * @author Luiz
  */
-public class Metrica {
+public class Metrica extends MetadataEntity {
 
-    private int id;
-    private String nome;
-    private String descricao;
     private Funcao funcao;
     private String coluna;
     private String expressaoFiltro;
     private boolean metricaPadrao;
-
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
-     * @return the nome
-     */
-    public String getNome() {
-        return nome;
-    }
-
-    /**
-     * @param nome the nome to set
-     */
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    /**
-     * @return the descricao
-     */
-    public String getDescricao() {
-        return descricao;
-    }
-
-    /**
-     * @param descricao the descricao to set
-     */
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
 
     /**
      * @return the funcao
@@ -116,7 +71,34 @@ public class Metrica {
         this.metricaPadrao = metricaPadrao;
     }
 
-    enum Funcao {
+    public void setCodigoFuncao(int funcao) {
+        setFuncao(codigoToFuncao(funcao));
+    }
+
+    public int getCodigoFuncao() {
+        if (funcao == Funcao.SUM) {
+            return 1;
+        } else if (funcao == Funcao.COUNT) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
+
+    private Funcao codigoToFuncao(int funcao) {
+        switch (funcao) {
+            case 1:
+                return Funcao.SUM;
+            case 2:
+                return Funcao.COUNT;
+            case 3:
+                return Funcao.AVG;
+            default:
+                return null;
+        }
+    }
+
+    public enum Funcao {
 
         SUM, COUNT, AVG
     }
