@@ -13,12 +13,11 @@ import br.com.bi.model.entity.metadata.Nivel;
 import br.com.bi.model.entity.metadata.Propriedade;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.object.SqlUpdate;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +59,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
         parameters.put("esquema", cubo.getEsquema());
         parameters.put("tabela", cubo.getTabela());
 
-        if (cubo.isPersisted()) {
+        if (!cubo.isPersisted()) {
             SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
             insert.withTableName("cubo").usingGeneratedKeyColumns("id");
             cubo.setId(insert.executeAndReturnKey(parameters).intValue());
@@ -78,9 +77,16 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
         salvarDimensoes(cubo);
     }
 
+    /**
+     * Persiste as métricas de um cubo.
+     * @param cubo
+     */
     @Transactional
     private void salvarMetricas(Cubo cubo) {
+        List metricas = new ArrayList();
+
         for (Metrica metrica : cubo.getMetricas()) {
+
             Map<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("idcubo", cubo.getId());
@@ -91,7 +97,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
             parameters.put("expressaoFiltro", metrica.getExpressaoFiltro());
             parameters.put("metricaPadrao", metrica.isMetricaPadrao() ? 1 : 0);
 
-            if (metrica.isPersisted()) {
+            if (!metrica.isPersisted()) {
                 SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
                 insert.withTableName("metrica").usingGeneratedKeyColumns("id");
                 metrica.setId(insert.executeAndReturnKey(parameters).intValue());
@@ -104,20 +110,193 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                 parameters.put("id", metrica.getId());
                 update.updateByNamedParam(parameters);
             }
+
+            metricas.add(metrica.getId());
         }
 
-        // TODO: in operador
-        getJdbcTemplate().update("delete from metrica where not id in (?)", new Object[]{});
+        if (metricas.size() > 0) {
+            getJdbcTemplate().update("delete from metrica where not id in (:ids) and idcubo = :idcubo".
+                    replace(":ids", listToString(metricas)).replace(":idcubo", Integer.
+                    toString(cubo.getId())));
+        }
     }
 
+    /**
+     * Persiste os filtros de um cubo.
+     * @param cubo
+     */
     @Transactional
     private void salvarFiltros(Cubo cubo) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List filtros = new ArrayList();
+
+        for (Filtro filtro : cubo.getFiltros()) {
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+
+            parameters.put("idcubo", cubo.getId());
+            parameters.put("nome", filtro.getNome());
+            parameters.put("descricao", filtro.getDescricao());
+            parameters.put("expressao", filtro.getExpressao());
+
+            if (!filtro.isPersisted()) {
+                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                insert.withTableName("filtro").usingGeneratedKeyColumns("id");
+                filtro.setId(insert.executeAndReturnKey(parameters).intValue());
+            } else {
+                SqlUpdate update =
+                        new SqlUpdate(getDataSource(), "update filtro set nome = :nome, "
+                        + "descricao = :descricao, expressao = :expressao where id = :id");
+                parameters.put("id", filtro.getId());
+                update.updateByNamedParam(parameters);
+            }
+
+            filtros.add(filtro.getId());
+        }
+
+        if (filtros.size() > 0) {
+            getJdbcTemplate().update("delete from filtro where not id in (:ids) and idcubo = :idcubo".
+                    replace(":ids", listToString(filtros)).replace(":idcubo", Integer.
+                    toString(cubo.getId())));
+        }
     }
 
+    /**
+     * Persiste as dimensões de um cubo.
+     * @param cubo
+     */
     @Transactional
     private void salvarDimensoes(Cubo cubo) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List dimensoes = new ArrayList();
+
+        for (Dimensao dimensao : cubo.getDimensoes()) {
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+
+            parameters.put("idcubo", cubo.getId());
+            parameters.put("nome", dimensao.getNome());
+            parameters.put("descricao", dimensao.getDescricao());
+
+            if (!dimensao.isPersisted()) {
+                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                insert.withTableName("dimensao").usingGeneratedKeyColumns("id");
+                dimensao.setId(insert.executeAndReturnKey(parameters).intValue());
+            } else {
+                SqlUpdate update =
+                        new SqlUpdate(getDataSource(), "update dimensao set nome = :nome, "
+                        + "descricao = :descricao where id = :id");
+                parameters.put("id", dimensao.getId());
+                update.updateByNamedParam(parameters);
+            }
+
+            salvarNiveis(dimensao);
+
+            dimensoes.add(dimensao.getId());
+        }
+
+        if (dimensoes.size() > 0) {
+            getJdbcTemplate().update("delete from dimensao where not id in (:ids) and idcubo = :idcubo".
+                    replace(":ids", listToString(dimensoes)).replace(":idcubo", Integer.
+                    toString(cubo.getId())));
+        }
+    }
+
+    /**
+     * Persiste os níveis de uma dimensão.
+     * @param dimensao
+     */
+    @Transactional
+    private void salvarNiveis(Dimensao dimensao) {
+        List niveis = new ArrayList();
+
+        for (Nivel nivel : dimensao.getNiveis()) {
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+
+            parameters.put("iddimensao", dimensao.getId());
+            parameters.put("nome", nivel.getNome());
+            parameters.put("descricao", nivel.getDescricao());
+            parameters.put("esquema", nivel.getEsquema());
+            parameters.put("tabela", nivel.getTabela());
+            parameters.put("juncaoNivelSuperior", nivel.getJuncaoNivelSuperior());
+
+            if (!nivel.isPersisted()) {
+                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                insert.withTableName("nivel").usingGeneratedKeyColumns("id");
+                nivel.setId(insert.executeAndReturnKey(parameters).intValue());
+            } else {
+                SqlUpdate update =
+                        new SqlUpdate(getDataSource(), "update nivel set nome = :nome, "
+                        + "descricao = :descricao, esquema = :esquema, tabela = :tabela, "
+                        + "juncaoNivelSuperior = :juncaoNivelSuperior where id = :id");
+                parameters.put("id", nivel.getId());
+                update.updateByNamedParam(parameters);
+            }
+
+            salvarPropriedades(nivel);
+
+            niveis.add(nivel.getId());
+        }
+
+        if (niveis.size() > 0) {
+            getJdbcTemplate().update("delete from nivel where not id in (:ids) and iddimensao = :iddimensao".
+                    replace(":ids", listToString(niveis)).replace(":iddimensao", Integer.
+                    toString(dimensao.getId())));
+        }
+    }
+
+    /**
+     * Persiste as propriedades de um nível.
+     * @param nivel
+     */
+    @Transactional
+    private void salvarPropriedades(Nivel nivel) {
+        List propriedades = new ArrayList();
+
+        for (Propriedade propriedade : nivel.getPropriedades()) {
+
+            Map<String, Object> parameters = new HashMap<String, Object>();
+
+            parameters.put("idnivel", nivel.getId());
+            parameters.put("nome", propriedade.getNome());
+            parameters.put("descricao", propriedade.getDescricao());
+            parameters.put("coluna", propriedade.getColuna());
+            parameters.put("propriedadeCodigo", propriedade.isPropriedadeCodigo() ? 1 : 0);
+            parameters.put("propriedadeNome", propriedade.isPropriedadeNome() ? 1 : 0);
+
+            if (!propriedade.isPersisted()) {
+                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                insert.withTableName("propriedade").usingGeneratedKeyColumns("id");
+                propriedade.setId(insert.executeAndReturnKey(parameters).
+                        intValue());
+            } else {
+                SqlUpdate update =
+                        new SqlUpdate(getDataSource(), "update propriedade set nome = :nome, "
+                        + "descricao = :descricao, coluna = :coluna, propriedadeCodigo = :propriedadeCodigo, "
+                        + "propriedadeNome = :propriedadeNome where id = :id");
+                parameters.put("id", propriedade.getId());
+                update.updateByNamedParam(parameters);
+            }
+
+            propriedades.add(propriedade.getId());
+        }
+
+        if (propriedades.size() > 0) {
+            getJdbcTemplate().update("delete from propriedade where not id in (:ids) and idnivel = :idnivel".
+                    replace(":ids", listToString(propriedades)).replace(":idnivel", Integer.
+                    toString(nivel.getId())));
+        }
+    }
+
+    private String listToString(List<Integer> l) {
+        StringBuilder scrap = new StringBuilder();
+
+        for (Integer i : l) {
+            scrap.append(i.toString()).append(",");
+        }
+
+        scrap.delete(scrap.length() - 1, scrap.length());
+
+        return scrap.toString();
     }
 
     /**
@@ -210,7 +389,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @return
      */
     private List<Filtro> findFiltrosByCubo(int idCubo) {
-        return getJdbcTemplate().query("select * from filtro where idCubo = ?", new Object[]{
+        return getJdbcTemplate().query("select * from filtro where idcubo = ?", new Object[]{
                     idCubo}, new RowMapper<Filtro>() {
 
             public Filtro mapRow(ResultSet rs, int i) throws SQLException {

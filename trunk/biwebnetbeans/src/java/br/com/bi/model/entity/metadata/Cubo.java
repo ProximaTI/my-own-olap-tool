@@ -4,6 +4,7 @@
  */
 package br.com.bi.model.entity.metadata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,9 +15,9 @@ public class Cubo extends MetadataEntity {
 
     private String esquema;
     private String tabela;
-    private List<Dimensao> dimensoes;
-    private List<Metrica> metricas;
-    private List<Filtro> filtros;
+    private List<Dimensao> dimensoes = new ArrayList<Dimensao>();
+    private List<Metrica> metricas = new ArrayList<Metrica>();
+    private List<Filtro> filtros = new ArrayList<Filtro>();
 
     public Cubo() {
     }

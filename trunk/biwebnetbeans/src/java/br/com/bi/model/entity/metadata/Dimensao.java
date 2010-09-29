@@ -4,6 +4,7 @@
  */
 package br.com.bi.model.entity.metadata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public class Dimensao extends MetadataEntity {
 
-    private List<Nivel> niveis;
+    private List<Nivel> niveis = new ArrayList<Nivel>();
 
     /**
      * @return the niveis

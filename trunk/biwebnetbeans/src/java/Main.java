@@ -1,10 +1,13 @@
 
+import br.com.bi.model.BiFacade;
 import br.com.bi.model.entity.metadata.Cubo;
+import br.com.bi.model.entity.metadata.Dimensao;
 import br.com.bi.model.entity.metadata.Metrica;
 import br.com.bi.model.entity.metadata.Nivel;
 import br.com.bi.model.entity.metadata.Propriedade;
 import br.com.bi.model.entity.query.Consulta;
 import br.com.bi.model.entity.query.No;
+import java.util.List;
 
 /*
  * To change this template, choose Tools | Templates
@@ -33,6 +36,26 @@ public class Main {
         categoria.getPropriedades().add(new Propriedade("idcategoria", true, false));
         categoria.getPropriedades().add(new Propriedade("descricao", false, true));
 
+        Dimensao categoriaDimensao = new Dimensao();
+        categoriaDimensao.getNiveis().add(categoria);
+
+        Dimensao produtoDimensao = new Dimensao();
+        produtoDimensao.getNiveis().add(tipoProduto);
+        produtoDimensao.getNiveis().add(produto);
+
+        acessos.getDimensoes().add(produtoDimensao);
+        acessos.getDimensoes().add(categoriaDimensao);
+
+        BiFacade.getInstance().salvarCubo(acessos);
+
+        List<Cubo> cubos = BiFacade.getInstance().findAllCubos();
+
+        for (Cubo cubo : cubos) {
+            cubo = BiFacade.getInstance().findCuboById(cubo.getId());
+            BiFacade.getInstance().apagarCubo(cubo.getId());
+        }
+
+
         Consulta consulta = new Consulta(acessos);
         consulta.getColuna().getFilhos().add(new No(quantidade));
 
@@ -59,7 +82,7 @@ public class Main {
 
     private static String toSql(No no) {
         String sql = new String();
-        
+
         if (no.getEntity() != null) {
             if (no.getEntity() instanceof Nivel) {
                 Nivel nivel = (Nivel) no.getEntity();
