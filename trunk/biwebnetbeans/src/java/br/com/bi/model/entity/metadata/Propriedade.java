@@ -14,6 +14,16 @@ public class Propriedade extends MetadataEntity {
     private boolean propriedadeCodigo;
     private boolean propriedadeNome;
 
+    public Propriedade() {
+    }
+
+    public Propriedade(String coluna, boolean propriedadeCodigo,
+            boolean propriedadeNome) {
+        this.coluna = coluna;
+        this.propriedadeCodigo = propriedadeCodigo;
+        this.propriedadeNome = propriedadeNome;
+    }
+
     /**
      * @return the coluna
      */

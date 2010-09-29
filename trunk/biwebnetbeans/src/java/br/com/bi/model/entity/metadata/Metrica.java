@@ -15,6 +15,14 @@ public class Metrica extends MetadataEntity {
     private String expressaoFiltro;
     private boolean metricaPadrao;
 
+    public Metrica() {
+    }
+
+    public Metrica(Funcao funcao, String coluna) {
+        this.funcao = funcao;
+        this.coluna = coluna;
+    }
+
     /**
      * @return the funcao
      */

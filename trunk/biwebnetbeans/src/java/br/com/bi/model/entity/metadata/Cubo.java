@@ -18,6 +18,14 @@ public class Cubo extends MetadataEntity {
     private List<Metrica> metricas;
     private List<Filtro> filtros;
 
+    public Cubo() {
+    }
+
+    public Cubo(String esquema, String tabela) {
+        this.esquema = esquema;
+        this.tabela = tabela;
+    }
+
     /**
      * @return the dimensoes
      */

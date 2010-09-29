@@ -4,6 +4,7 @@
  */
 package br.com.bi.model.entity.metadata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +16,21 @@ public class Nivel extends MetadataEntity {
     private String esquema;
     private String tabela;
     private String juncaoNivelSuperior;
-    private List<Propriedade> propriedades;
+    private List<Propriedade> propriedades = new ArrayList<Propriedade>();
+
+    public Nivel() {
+    }
+
+    public Nivel(String esquema, String tabela) {
+        this.esquema = esquema;
+        this.tabela = tabela;
+    }
+
+    public Nivel(String esquema, String tabela, String juncaoNivelSuperior) {
+        this.esquema = esquema;
+        this.tabela = tabela;
+        this.juncaoNivelSuperior = juncaoNivelSuperior;
+    }
 
     /**
      * @return the tabela
@@ -71,5 +86,23 @@ public class Nivel extends MetadataEntity {
      */
     public void setJuncaoNivelSuperior(String juncaoNivelSuperior) {
         this.juncaoNivelSuperior = juncaoNivelSuperior;
+    }
+
+    public Propriedade getPropriedadeCodigo() {
+        for (Propriedade p : propriedades) {
+            if (p.isPropriedadeCodigo()) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public Propriedade getPropriedadeNome() {
+        for (Propriedade p : propriedades) {
+            if (p.isPropriedadeNome()) {
+                return p;
+            }
+        }
+        return null;
     }
 }
