@@ -65,4 +65,9 @@ public class Propriedade extends MetadataEntity {
     public void setPropriedadeNome(boolean propriedadeNome) {
         this.propriedadeNome = propriedadeNome;
     }
+
+    @Override
+    public void accept(MetadataEntityVisitor visitor) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

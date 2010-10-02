@@ -15,6 +15,7 @@ public class Consulta {
     private Cubo cubo;
     private No linha = new No();
     private No coluna = new No();
+    private String expressaoFiltro;
 
     public Consulta(Cubo cubo) {
         this.cubo = cubo;
@@ -60,5 +61,19 @@ public class Consulta {
      */
     public void setColuna(No coluna) {
         this.coluna = coluna;
+    }
+
+    /**
+     * @return the expressaoFiltro
+     */
+    public String getExpressaoFiltro() {
+        return expressaoFiltro;
+    }
+
+    /**
+     * @param expressaoFiltro the expressaoFiltro to set
+     */
+    public void setExpressaoFiltro(String expressaoFiltro) {
+        this.expressaoFiltro = expressaoFiltro;
     }
 }

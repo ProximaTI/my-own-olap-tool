@@ -25,4 +25,9 @@ public class Filtro extends MetadataEntity {
     public void setExpressao(String expressao) {
         this.expressao = expressao;
     }
+
+    @Override
+    public void accept(MetadataEntityVisitor visitor) {
+        visitor.visit(this);
+    }
 }

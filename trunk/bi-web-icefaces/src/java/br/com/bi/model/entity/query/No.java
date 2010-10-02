@@ -14,28 +14,30 @@ import java.util.List;
  */
 public class No {
 
-    private MetadataEntity entity;
+    private No pai;
+    private MetadataEntity metadataEntity;
     private List<No> filhos = new ArrayList<No>();
 
     public No() {
     }
 
-    public No(MetadataEntity entity) {
-        this.entity = entity;
+    public No(No pai, MetadataEntity entity) {
+        this.pai = pai;
+        this.metadataEntity = entity;
     }
 
     /**
      * @return the entity
      */
-    public MetadataEntity getEntity() {
-        return entity;
+    public MetadataEntity getMetadataEntity() {
+        return metadataEntity;
     }
 
     /**
      * @param entity the entity to set
      */
-    public void setEntity(MetadataEntity entity) {
-        this.entity = entity;
+    public void setMetadataEntity(MetadataEntity entity) {
+        this.metadataEntity = entity;
     }
 
     /**
@@ -50,5 +52,23 @@ public class No {
      */
     public void setFilhos(List<No> filhos) {
         this.filhos = filhos;
+    }
+
+    /**
+     * @return the pai
+     */
+    public No getPai() {
+        return pai;
+    }
+
+    /**
+     * @param pai the pai to set
+     */
+    public void setPai(No pai) {
+        this.pai = pai;
+    }
+
+    public boolean isRaiz() {
+        return this.pai == null;
     }
 }

@@ -57,4 +57,6 @@ public abstract class MetadataEntity extends Entity {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    public abstract void accept(MetadataEntityVisitor visitor);
 }

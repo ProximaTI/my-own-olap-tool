@@ -7,7 +7,6 @@ import br.com.bi.model.entity.metadata.Nivel;
 import br.com.bi.model.entity.metadata.Propriedade;
 import br.com.bi.model.entity.query.Consulta;
 import br.com.bi.model.entity.query.No;
-import java.util.List;
 
 /*
  * To change this template, choose Tools | Templates
@@ -22,7 +21,8 @@ public class Main {
     public static void main(String args[]) {
         Cubo acessos = new Cubo("stats", "dwf_acesso");
 
-        Metrica quantidade = new Metrica(Metrica.Funcao.SUM, "quantidade");
+        Metrica quantidade =
+                new Metrica(acessos, Metrica.Funcao.SUM, "quantidade");
 
         Nivel tipoProduto = new Nivel("stats", "dwd_tipo_produto");
         tipoProduto.getPropriedades().add(new Propriedade("idtipoproduto", true, false));
@@ -46,58 +46,19 @@ public class Main {
         acessos.getDimensoes().add(produtoDimensao);
         acessos.getDimensoes().add(categoriaDimensao);
 
-        BiFacade.getInstance().salvarCubo(acessos);
-
-        List<Cubo> cubos = BiFacade.getInstance().findAllCubos();
-
-        for (Cubo cubo : cubos) {
-            cubo = BiFacade.getInstance().findCuboById(cubo.getId());
-            //BiFacade.getInstance().apagarCubo(cubo.getId());
-        }
-
-
+        // coluna
         Consulta consulta = new Consulta(acessos);
-        consulta.getColuna().getFilhos().add(new No(quantidade));
+        consulta.getColuna().getFilhos().add(new No(consulta.getColuna(), quantidade));
 
-        No noProduto = new No(tipoProduto);
-        noProduto.getFilhos().add(new No(produto));
+        // linha
+        No noProduto = new No(consulta.getLinha(), tipoProduto);
+        noProduto.getFilhos().add(new No(noProduto, produto));
+
+        No noCategoria = new No(consulta.getLinha(), categoria);
 
         consulta.getLinha().getFilhos().add(noProduto);
-        consulta.getLinha().getFilhos().add(new No(categoria));
+        consulta.getLinha().getFilhos().add(noCategoria);
 
-        System.out.println(toSql(consulta));
-    }
-
-    private static String toSql(Consulta consulta) {
-        String sql = "SELECT ";
-        sql += toSql(consulta.getLinha());
-        sql += toSql(consulta.getColuna());
-
-        sql += " FROM ";
-        sql += consulta.getCubo().getEsquema() + "." + consulta.getCubo().
-                getTabela();
-
-        return sql;
-    }
-
-    private static String toSql(No no) {
-        String sql = new String();
-
-        if (no.getEntity() != null) {
-            if (no.getEntity() instanceof Nivel) {
-                Nivel nivel = (Nivel) no.getEntity();
-                sql = nivel.getTabela() + "." + nivel.getPropriedadeCodigo().
-                        getColuna() + " ";
-            } else if (no.getEntity() instanceof Metrica) {
-                Metrica metrica = (Metrica) no.getEntity();
-                // TODO colocar o nome da tabela
-                sql = metrica.getFuncao() + "(" + metrica.getColuna() + ")";
-            }
-        }
-
-        for (No filho : no.getFilhos()) {
-            sql += " " + toSql(filho);
-        }
-        return sql;
+        System.out.println(BiFacade.getInstance().traduzirParaSql(consulta));
     }
 }

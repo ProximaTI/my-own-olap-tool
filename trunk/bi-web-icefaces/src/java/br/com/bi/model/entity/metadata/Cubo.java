@@ -96,4 +96,9 @@ public class Cubo extends MetadataEntity {
     public void setTabela(String tabela) {
         this.tabela = tabela;
     }
+
+    @Override
+    public void accept(MetadataEntityVisitor visitor) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

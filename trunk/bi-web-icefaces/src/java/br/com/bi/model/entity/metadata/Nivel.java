@@ -105,4 +105,9 @@ public class Nivel extends MetadataEntity {
         }
         return null;
     }
+
+    @Override
+    public void accept(MetadataEntityVisitor visitor) {
+        visitor.visit(this);
+    }
 }

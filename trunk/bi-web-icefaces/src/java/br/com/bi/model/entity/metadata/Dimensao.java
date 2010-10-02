@@ -28,4 +28,9 @@ public class Dimensao extends MetadataEntity {
     public void setNiveis(List<Nivel> niveis) {
         this.niveis = niveis;
     }
+
+    @Override
+    public void accept(MetadataEntityVisitor visitor) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
