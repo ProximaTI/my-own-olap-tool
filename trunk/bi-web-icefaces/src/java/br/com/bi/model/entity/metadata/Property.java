@@ -8,16 +8,16 @@ package br.com.bi.model.entity.metadata;
  *
  * @author Luiz
  */
-public class Propriedade extends MetadataEntity {
+public class Property extends MetadataEntity {
 
     private String coluna;
     private boolean propriedadeCodigo;
     private boolean propriedadeNome;
 
-    public Propriedade() {
+    public Property() {
     }
 
-    public Propriedade(String coluna, boolean propriedadeCodigo,
+    public Property(String coluna, boolean propriedadeCodigo,
             boolean propriedadeNome) {
         this.coluna = coluna;
         this.propriedadeCodigo = propriedadeCodigo;
@@ -27,7 +27,7 @@ public class Propriedade extends MetadataEntity {
     /**
      * @return the coluna
      */
-    public String getColuna() {
+    public String getColumn() {
         return coluna;
     }
 
@@ -41,7 +41,7 @@ public class Propriedade extends MetadataEntity {
     /**
      * @return the propriedadeCodigo
      */
-    public boolean isPropriedadeCodigo() {
+    public boolean isCodeProperty() {
         return propriedadeCodigo;
     }
 
@@ -55,7 +55,7 @@ public class Propriedade extends MetadataEntity {
     /**
      * @return the propriedadeNome
      */
-    public boolean isPropriedadeNome() {
+    public boolean isNameProperty() {
         return propriedadeNome;
     }
 

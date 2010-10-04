@@ -4,12 +4,18 @@
  */
 package br.com.bi.model.query.sql;
 
+import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.MetadataEntityVisitor;
-import br.com.bi.model.entity.metadata.Filtro;
-import br.com.bi.model.entity.metadata.Metrica;
-import br.com.bi.model.entity.metadata.Nivel;
-import br.com.bi.model.entity.query.Consulta;
-import br.com.bi.model.entity.query.No;
+import br.com.bi.model.entity.metadata.Filter;
+import br.com.bi.model.entity.metadata.Measure;
+import br.com.bi.model.entity.metadata.Level;
+import br.com.bi.model.entity.query.Query;
+import br.com.bi.model.entity.query.Node;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -25,24 +31,25 @@ public class SqlTranslator implements MetadataEntityVisitor {
 
     /**
      * Traduz uma consulta em uma instrução SQL.
-     * @param consulta
+     * @param query
      * @return
      */
-    public String translateToSql(Consulta consulta) {
+    public String translateToSql(Query query) {
         sql = new StringBuilder("SELECT ");
 
-        sql.append(translateNodeToSql(PREFIX_ROWS, consulta.getLinha())).append(", ");
-        sql.append(translateNodeToSql(PREFIX_COLUMNS, consulta.getColuna()));
+        sql.append(translateNodeToSql(PREFIX_ROWS, query.getRows())).append(", ");
+        sql.append(translateNodeToSql(PREFIX_COLUMNS, query.getColumns()));
 
         sql.append(" FROM ");
 
-        sql.append(fromClause(consulta));
+        sql.append(fromExpression(query));
 
-        sql.append(consulta.getCubo().getEsquema()).append(".").append(consulta.
-                getCubo().getTabela());
+        sql.append(" WHERE ");
 
-        if (consulta.getExpressaoFiltro() != null) {
-            sql.append(translateExpressionToSql(consulta.getExpressaoFiltro()));
+        sql.append(whereExpression(query));
+
+        if (query.getFilterExpression() != null) {
+            sql.append(translateExpression(query.getFilterExpression()));
         }
 
         return sql.toString();
@@ -50,60 +57,103 @@ public class SqlTranslator implements MetadataEntityVisitor {
 
     /**
      * Translate um nó em um fragmento de instrução SQL.
-     * @param no
+     * @param node
      * @return
      */
-    private String translateNodeToSql(String columnPrefix, No no) {
+    private String translateNodeToSql(String columnPrefix, Node node) {
         StringBuilder fragment = new StringBuilder();
 
         // ===============
         // = traduz o nó =
         // ===============
 
-        if (!no.isRaiz()) {
-            stack.push(no.getPai().getFilhos().indexOf(no));
+        if (!node.isRoot()) {
+            stack.push(node.getPai().getChildren().indexOf(node));
 
-            if (no.getMetadataEntity() instanceof Nivel) {
-                visit((Nivel) no.getMetadataEntity());
-            } else if (no.getMetadataEntity() instanceof Metrica) {
-                visit((Metrica) no.getMetadataEntity());
-            } else if (no.getMetadataEntity() instanceof Filtro) {
-                visit((Filtro) no.getMetadataEntity());
+            if (node.getMetadataEntity() instanceof Level) {
+                visit((Level) node.getMetadataEntity());
+            } else if (node.getMetadataEntity() instanceof Measure) {
+                visit((Measure) node.getMetadataEntity());
+            } else if (node.getMetadataEntity() instanceof Filter) {
+                visit((Filter) node.getMetadataEntity());
             }
 
             fragment.append(")");
-            fragment.append(" AS ").append(returnAlias(columnPrefix));
+            fragment.append(" AS ").append(columnAlias(columnPrefix));
         }
 
         // ====================
         // = traduz os filhos =
         // ====================
 
-        if (!no.getFilhos().isEmpty()) {
-            if (!no.isRaiz()) {
+        if (!node.getChildren().isEmpty()) {
+            if (!node.isRoot()) {
                 fragment.append(", ");
             }
 
-            for (int i = 0; i < no.getFilhos().size(); i++) {
-                No filho = no.getFilhos().get(i);
+            for (int i = 0; i < node.getChildren().size(); i++) {
+                Node filho = node.getChildren().get(i);
 
                 fragment.append(translateNodeToSql(columnPrefix, filho));
 
-                if (i < no.getFilhos().size() - 1) {
+                if (i < node.getChildren().size() - 1) {
                     fragment.append(", ");
                 }
             }
         }
 
-        if (!no.isRaiz()) {
+        if (!node.isRoot()) {
             stack.pop();
         }
 
         return fragment.toString();
     }
 
+    // =====================
+    // ====== Visitor ======
+    // =====================
+    /**
+     * Traduz uma métrica em um fragmento de instrução SQL.
+     * @param measure
+     */
+    public void visit(Measure measure) {
+
+        sql.append(measure.getFuncao()).append("(");
+
+        if (measure.getFilterExpression() != null) {
+            sql.append("CASE WHEN ");
+            sql.append(translateExpression(measure.getFilterExpression()));
+            sql.append(" THEN ");
+            sql.append(selectExpression(measure.getCube().
+                    getTable(), measure.getColumn()));
+            sql.append(" ELSE null END");
+        } else {
+            sql.append(selectExpression(measure.getCube().
+                    getTable(), measure.getColumn()));
+        }
+    }
+
+    /**
+     * Traduz um filtro em um fragmento de instrução SQL.
+     * @param filter
+     */
+    public void visit(Filter filter) {
+        sql.append("CASE WHEN ");
+        sql.append(translateExpression(filter.getExpression()));
+        sql.append(" THEN 1 ELSE 0 END");
+    }
+
+    /**
+     * Traduz um nível em um fragmento de instrução SQL.
+     * @param level
+     */
+    public void visit(Level level) {
+        sql.append(selectExpression(level.getTable(), level.getCodeProperty().
+                getColumn()));
+    }
+
     // ===========================
-    // ======= Utilitários =======
+    // ====== Gramática SQL ======
     // ===========================
     /**
      * Retorna uma string do tipo tabela + . + coluna.
@@ -111,21 +161,12 @@ public class SqlTranslator implements MetadataEntityVisitor {
      * @param column
      * @return
      */
-    public String returnTableColumn(String table, String column) {
-        StringBuilder fragment = new StringBuilder();
+    public String selectExpression(String table, String column) {
+        StringBuilder selectExpression = new StringBuilder();
 
-        fragment.append(table).append(".").append(column);
+        selectExpression.append(table).append(".").append(column);
 
-        return fragment.toString();
-    }
-
-    /**
-     * Traduz uma expressão de filtro em um fragmento SQL.
-     * @param expression
-     * @return
-     */
-    public String translateExpressionToSql(String expression) {
-        return expression;
+        return selectExpression.toString();
     }
 
     /**
@@ -133,69 +174,139 @@ public class SqlTranslator implements MetadataEntityVisitor {
      * Isto é feito levando-se em conta a posição do nó na árvore da consulta.
      * @return
      */
-    public String returnAlias(String columnPrefix) {
-        StringBuilder fragment = new StringBuilder(columnPrefix);
+    public String columnAlias(String aliasPrefix) {
+        StringBuilder columnAlias = new StringBuilder(aliasPrefix);
 
-        fragment.append("_");
+        columnAlias.append("_");
 
         for (int i = 0; i < stack.size(); i++) {
-            fragment.append(stack.peek());
+            columnAlias.append(stack.peek());
 
             if (i < stack.size() - 1) {
-                fragment.append("_");
+                columnAlias.append("_");
             }
         }
 
-        return fragment.toString();
+        return columnAlias.toString();
     }
-
-    private String fromClause(Consulta consulta) {
-
-
-        return null;
-    }
-
-    // =====================
-    // ====== Visitor ======
-    // =====================
 
     /**
-     * Traduz uma métrica em um fragmento de instrução SQL.
-     * @param metrica
+     * Retorna a expressão que corresponde à cláusula FROM do SELECT que está sendo contruído.
+     * As tabelas desta expressão correspondem aos níveis presentes nos nós da consulta, tanto
+     * explicitamente referenciados quanto os níveis presentes nos diversos filtros.
+     * 
+     * @param query
+     * @return
      */
-    public void visit(Metrica metrica) {
+    private String fromExpression(Query query) {
+        List<String> tables = new ArrayList<String>();
 
-        sql.append(metrica.getFuncao()).append("(");
+        tables.add(tableExpression(query.getCube().getSchema(), query.getCube().
+                getTable()));
 
-        if (metrica.getExpressaoFiltro() != null) {
-            sql.append("CASE WHEN ");
-            sql.append(translateExpressionToSql(metrica.getExpressaoFiltro()));
-            sql.append(" THEN ");
-            sql.append(returnTableColumn(metrica.getCubo().
-                    getTabela(), metrica.getColuna()));
-            sql.append(" ELSE null END");
-        } else {
-            sql.append(returnTableColumn(metrica.getCubo().
-                    getTabela(), metrica.getColuna()));
+        for (Level topLevel : topLevels(query)) {
+            tables.add(tableExpression(topLevel.getSchema(), topLevel.getTable()));
+            for (Level lowerLevel : lowerLevels(topLevel)) {
+                tables.add(tableExpression(lowerLevel.getSchema(), lowerLevel.
+                        getTable()));
+            }
         }
+
+        StringBuilder tableExpression = new StringBuilder();
+
+        for (int i = 0; i < tables.size(); i++) {
+            tableExpression.append(tables.get(i));
+
+            if (i < tables.size() - 1) {
+                tableExpression.append(",");
+            }
+        }
+
+        return tableExpression.toString();
     }
 
     /**
-     * Traduz um filtro em um fragmento de instrução SQL.
-     * @param filtro
+     * Retorna a expressão corresponde à referência para uma consulta.
+     * Normalmente esta expressão é denotada por "esquema.tabela".
+     * 
+     * @param schema
+     * @param table
+     * @return
      */
-    public void visit(Filtro filtro) {
-        sql.append("CASE WHEN ");
-        sql.append(translateExpressionToSql(filtro.getExpressao()));
-        sql.append(" THEN 1 ELSE 0 END");
+    private String tableExpression(String schema, String table) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(schema).append(".").append(table);
+
+        return sb.toString();
+    }
+
+    private String whereExpression(Query query) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    // =============================
+    // ======== Utilitários ========
+    // =============================
+    /**
+     * Traduz uma expressão de filtro em um fragmento SQL.
+     * @param expression
+     * @return
+     */
+    public String translateExpression(String expression) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
-     * Traduz um nível em um fragmento de instrução SQL.
-     * @param nivel
+     * Retorna os níveis utilizados na consulta que são os mais altos em suas dimensões.
+     * @param query
+     * @return
      */
-    public void visit(Nivel nivel) {
-        sql.append(returnTableColumn(nivel.getTabela(), nivel.
-                getPropriedadeCodigo().getColuna()));
+    private Collection<Level> topLevels(Query query) {
+        Map<Dimension, Level> topLevels = new HashMap<Dimension, Level>();
+
+        for (Level level : findLevelsPresent(query)) {
+            // se o nível está acima do que já está no mapa então ele é um "top level".
+            if (!topLevels.containsKey(level.getDimension()) || isHigherLevel(level, topLevels.
+                    get(level.getDimension()))) {
+                topLevels.put(level.getDimension(), level);
+            }
+        }
+
+        return topLevels.values();
+    }
+
+    private List<Level> lowerLevels(Level higherLevel) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    /**
+     * Diz se este nível denotado por lower encontra-se hierarquicamente abaixo do nível
+     * denotado por higher.
+     * @param level
+     * @return
+     */
+    public boolean isLowerLevel(Level lower, Level higher) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    /**
+     * Diz se este nível denotado por higher encontra-se hierarquicamente acima do nível
+     * denotado por lower.
+     * @param level
+     * @return
+     */
+    public boolean isHigherLevel(Level higher, Level lower) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    /**
+     * Retorna os nível presentes na consulta, seja explicitamente em um nó, ou indiretamente
+     * através de um nó filtro, ou filtro de métrica, ou ainda filtro na consulta.
+     * @param query
+     * @return
+     */
+    private List<Level> findLevelsPresent(Query query) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

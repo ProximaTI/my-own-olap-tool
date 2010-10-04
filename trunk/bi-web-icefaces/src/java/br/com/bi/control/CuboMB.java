@@ -5,7 +5,7 @@
 package br.com.bi.control;
 
 import br.com.bi.model.BiFacade;
-import br.com.bi.model.entity.metadata.Cubo;
+import br.com.bi.model.entity.metadata.Cube;
 import java.util.List;
 import javax.faces.context.FacesContext;
 
@@ -15,27 +15,27 @@ import javax.faces.context.FacesContext;
  */
 public class CuboMB {
 
-    private Cubo cubo;
+    private Cube cubo;
 
     /** Creates a new instance of Cubo */
     public CuboMB() {
     }
 
-    public List<Cubo> getCubos() {
+    public List<Cube> getCubos() {
         return BiFacade.getInstance().findAllCubos();
     }
 
     /**
      * @return the cubo
      */
-    public Cubo getCubo() {
+    public Cube getCubo() {
         return cubo;
     }
 
     /**
      * @param cubo the cubo to set
      */
-    public void setCubo(Cubo cubo) {
+    public void setCubo(Cube cubo) {
         this.cubo = cubo;
     }
 

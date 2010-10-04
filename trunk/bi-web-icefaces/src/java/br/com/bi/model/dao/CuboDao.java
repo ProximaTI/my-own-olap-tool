@@ -4,7 +4,7 @@
  */
 package br.com.bi.model.dao;
 
-import br.com.bi.model.entity.metadata.Cubo;
+import br.com.bi.model.entity.metadata.Cube;
 import java.util.List;
 
 /**
@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface CuboDao {
 
-    public List<Cubo> findAll();
+    public List<Cube> findAll();
 
-    public Cubo findById(int id);
+    public Cube findById(int id);
 
-    public void salvar(Cubo cubo);
+    public void salvar(Cube cubo);
 
     public void apagar(int id);
 }

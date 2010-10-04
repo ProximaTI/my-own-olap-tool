@@ -10,9 +10,9 @@ package br.com.bi.model.entity.metadata;
  */
 public interface MetadataEntityVisitor {
 
-    public void visit(Metrica metrica);
+    public void visit(Measure metrica);
 
-    public void visit(Filtro filtro);
+    public void visit(Filter filtro);
 
-    public void visit(Nivel nivel);
+    public void visit(Level nivel);
 }

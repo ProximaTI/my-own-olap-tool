@@ -4,7 +4,7 @@
  */
 package br.com.bi.model.dao;
 
-import br.com.bi.model.entity.metadata.Dimensao;
+import br.com.bi.model.entity.metadata.Dimension;
 import java.util.List;
 
 /**
@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface DimensaoDao {
 
-    public List<Dimensao> findAll();
+    public List<Dimension> findAll();
 
-    public Dimensao findById(int id);
+    public Dimension findById(int id);
 
-    public void salvar(Dimensao dimensao);
+    public void salvar(Dimension dimensao);
 
     public void apagar(int id);
 }

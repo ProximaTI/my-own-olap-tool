@@ -13,8 +13,8 @@ import br.com.bi.model.entity.Entity;
 public abstract class MetadataEntity extends Entity {
 
     private int id;
-    private String nome;
-    private String descricao;
+    private String name;
+    private String description;
 
     /**
      * @return the id
@@ -31,31 +31,31 @@ public abstract class MetadataEntity extends Entity {
     }
 
     /**
-     * @return the nome
+     * @return the name
      */
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param nome the nome to set
+     * @param name the name to set
      */
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
-     * @return the descricao
+     * @return the description
      */
-    public String getDescricao() {
-        return descricao;
+    public String getDescription() {
+        return description;
     }
 
     /**
-     * @param descricao the descricao to set
+     * @param description the description to set
      */
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public abstract void accept(MetadataEntityVisitor visitor);

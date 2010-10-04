@@ -5,7 +5,7 @@
 package br.com.bi.model.dao.impl;
 
 import br.com.bi.model.dao.ConsultaDao;
-import br.com.bi.model.entity.query.Consulta;
+import br.com.bi.model.entity.query.Query;
 import java.util.List;
 
 /**
@@ -14,15 +14,15 @@ import java.util.List;
  */
 public class ConsultaDaoJdbc extends AbstractDaoJdbc implements ConsultaDao {
 
-    public List<Consulta> getConsultas() {
+    public List<Query> findAll() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public Consulta getConsultasById(int id) {
+    public Query findById(int id) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void salvar(Consulta consulta) {
+    public void salvar(Query consulta) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

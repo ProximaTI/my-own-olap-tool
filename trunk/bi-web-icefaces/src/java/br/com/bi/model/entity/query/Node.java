@@ -12,16 +12,16 @@ import java.util.List;
  *
  * @author Luiz
  */
-public class No {
+public class Node {
 
-    private No pai;
+    private Node pai;
     private MetadataEntity metadataEntity;
-    private List<No> filhos = new ArrayList<No>();
+    private List<Node> filhos = new ArrayList<Node>();
 
-    public No() {
+    public Node() {
     }
 
-    public No(No pai, MetadataEntity entity) {
+    public Node(Node pai, MetadataEntity entity) {
         this.pai = pai;
         this.metadataEntity = entity;
     }
@@ -43,32 +43,32 @@ public class No {
     /**
      * @return the filhos
      */
-    public List<No> getFilhos() {
+    public List<Node> getChildren() {
         return filhos;
     }
 
     /**
      * @param filhos the filhos to set
      */
-    public void setFilhos(List<No> filhos) {
+    public void setFilhos(List<Node> filhos) {
         this.filhos = filhos;
     }
 
     /**
      * @return the pai
      */
-    public No getPai() {
+    public Node getPai() {
         return pai;
     }
 
     /**
      * @param pai the pai to set
      */
-    public void setPai(No pai) {
+    public void setPai(Node pai) {
         this.pai = pai;
     }
 
-    public boolean isRaiz() {
+    public boolean isRoot() {
         return this.pai == null;
     }
 }

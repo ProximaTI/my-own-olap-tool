@@ -8,14 +8,14 @@ package br.com.bi.model.entity.metadata;
  *
  * @author Luiz
  */
-public class Filtro extends MetadataEntity {
+public class Filter extends MetadataEntity {
 
     private String expressao;
 
     /**
      * @return the expressao
      */
-    public String getExpressao() {
+    public String getExpression() {
         return expressao;
     }
 

@@ -5,8 +5,8 @@
 package br.com.bi.model;
 
 import br.com.bi.model.dao.CuboDao;
-import br.com.bi.model.entity.metadata.Cubo;
-import br.com.bi.model.entity.query.Consulta;
+import br.com.bi.model.entity.metadata.Cube;
+import br.com.bi.model.entity.query.Query;
 import br.com.bi.model.query.sql.SqlTranslator;
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class BiFacade {
         return instance;
     }
 
-    public String traduzirParaSql(Consulta consulta) {
+    public String traduzirParaSql(Query consulta) {
         SqlTranslator translator = new SqlTranslator();
         return translator.translateToSql(consulta);
     }
@@ -41,7 +41,7 @@ public class BiFacade {
      * Salva no banco de dados o cubo informado.
      * @param cubo
      */
-    public void salvarCubo(Cubo cubo) {
+    public void salvarCubo(Cube cubo) {
         getCuboDAO().salvar(cubo);
     }
 
@@ -50,7 +50,7 @@ public class BiFacade {
      * @param id
      * @return
      */
-    public Cubo findCuboById(int id) {
+    public Cube findCuboById(int id) {
         return getCuboDAO().findById(id);
     }
 
@@ -58,7 +58,7 @@ public class BiFacade {
      * Retorna referência para todos os cubos.
      * @return
      */
-    public List<Cubo> findAllCubos() {
+    public List<Cube> findAllCubos() {
         return getCuboDAO().findAll();
     }
 

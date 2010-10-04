@@ -12,20 +12,20 @@ import br.com.bi.model.entity.Entity;
  */
 public class CuboNivel extends Entity {
 
-    private Nivel nivel;
+    private Level nivel;
     private String colunaJuncao;
 
     /**
      * @return the nivel
      */
-    public Nivel getNivel() {
+    public Level getNivel() {
         return nivel;
     }
 
     /**
      * @param nivel the nivel to set
      */
-    public void setNivel(Nivel nivel) {
+    public void setNivel(Level nivel) {
         this.nivel = nivel;
     }
 

@@ -1,12 +1,12 @@
 
 import br.com.bi.model.BiFacade;
-import br.com.bi.model.entity.metadata.Cubo;
-import br.com.bi.model.entity.metadata.Dimensao;
-import br.com.bi.model.entity.metadata.Metrica;
-import br.com.bi.model.entity.metadata.Nivel;
-import br.com.bi.model.entity.metadata.Propriedade;
-import br.com.bi.model.entity.query.Consulta;
-import br.com.bi.model.entity.query.No;
+import br.com.bi.model.entity.metadata.Cube;
+import br.com.bi.model.entity.metadata.Dimension;
+import br.com.bi.model.entity.metadata.Measure;
+import br.com.bi.model.entity.metadata.Level;
+import br.com.bi.model.entity.metadata.Property;
+import br.com.bi.model.entity.query.Query;
+import br.com.bi.model.entity.query.Node;
 
 /*
  * To change this template, choose Tools | Templates
@@ -19,42 +19,42 @@ import br.com.bi.model.entity.query.No;
 public class Main {
 
     public static void main(String args[]) {
-        Cubo acessos = new Cubo("stats", "dwf_acesso");
+        Cube acessos = new Cube("stats", "dwf_acesso");
 
-        Metrica quantidade =
-                new Metrica(acessos, Metrica.Funcao.SUM, "quantidade");
+        Measure quantidade =
+                new Measure(acessos, Measure.Funcao.SUM, "quantidade");
 
-        Nivel tipoProduto = new Nivel("stats", "dwd_tipo_produto");
-        tipoProduto.getPropriedades().add(new Propriedade("idtipoproduto", true, false));
-        tipoProduto.getPropriedades().add(new Propriedade("descricao", false, true));
+        Level tipoProduto = new Level("stats", "dwd_tipo_produto");
+        tipoProduto.getPropriedades().add(new Property("idtipoproduto", true, false));
+        tipoProduto.getPropriedades().add(new Property("descricao", false, true));
 
-        Nivel produto = new Nivel("stats", "dwd_tipo_produto", "idtipoproduto");
-        produto.getPropriedades().add(new Propriedade("idproduto", true, false));
-        produto.getPropriedades().add(new Propriedade("nomeproduto", false, true));
+        Level produto = new Level("stats", "dwd_tipo_produto", "idtipoproduto");
+        produto.getPropriedades().add(new Property("idproduto", true, false));
+        produto.getPropriedades().add(new Property("nomeproduto", false, true));
 
-        Nivel categoria = new Nivel("stats", "dwd_categoria");
-        categoria.getPropriedades().add(new Propriedade("idcategoria", true, false));
-        categoria.getPropriedades().add(new Propriedade("descricao", false, true));
+        Level categoria = new Level("stats", "dwd_categoria");
+        categoria.getPropriedades().add(new Property("idcategoria", true, false));
+        categoria.getPropriedades().add(new Property("descricao", false, true));
 
-        Dimensao categoriaDimensao = new Dimensao();
+        Dimension categoriaDimensao = new Dimension();
         categoriaDimensao.getNiveis().add(categoria);
 
-        Dimensao produtoDimensao = new Dimensao();
+        Dimension produtoDimensao = new Dimension();
         produtoDimensao.getNiveis().add(tipoProduto);
         produtoDimensao.getNiveis().add(produto);
 
         // coluna
-        Consulta consulta = new Consulta(acessos);
-        consulta.getColuna().getFilhos().add(new No(consulta.getColuna(), quantidade));
+        Query consulta = new Query(acessos);
+        consulta.getColumns().getChildren().add(new Node(consulta.getColumns(), quantidade));
 
         // linha
-        No noProduto = new No(consulta.getLinha(), tipoProduto);
-        noProduto.getFilhos().add(new No(noProduto, produto));
+        Node noProduto = new Node(consulta.getRows(), tipoProduto);
+        noProduto.getChildren().add(new Node(noProduto, produto));
 
-        No noCategoria = new No(consulta.getLinha(), categoria);
+        Node noCategoria = new Node(consulta.getRows(), categoria);
 
-        consulta.getLinha().getFilhos().add(noProduto);
-        consulta.getLinha().getFilhos().add(noCategoria);
+        consulta.getRows().getChildren().add(noProduto);
+        consulta.getRows().getChildren().add(noCategoria);
 
         System.out.println(BiFacade.getInstance().traduzirParaSql(consulta));
     }

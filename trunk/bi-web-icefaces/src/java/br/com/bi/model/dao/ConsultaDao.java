@@ -4,7 +4,7 @@
  */
 package br.com.bi.model.dao;
 
-import br.com.bi.model.entity.query.Consulta;
+import br.com.bi.model.entity.query.Query;
 import java.util.List;
 
 /**
@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface ConsultaDao {
 
-    public List<Consulta> getConsultas();
+    public List<Query> findAll();
 
-    public Consulta getConsultasById(int id);
+    public Query findById(int id);
 
-    public void salvar(Consulta consulta);
+    public void salvar(Query consulta);
 
     public void apagar(int id);
 }

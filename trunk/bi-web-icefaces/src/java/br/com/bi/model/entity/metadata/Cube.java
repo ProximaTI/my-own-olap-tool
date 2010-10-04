@@ -11,18 +11,18 @@ import java.util.List;
  *
  * @author Luiz
  */
-public class Cubo extends MetadataEntity {
+public class Cube extends MetadataEntity {
 
     private String esquema;
     private String tabela;
     private List<CuboNivel> niveis = new ArrayList<CuboNivel>();
-    private List<Metrica> metricas = new ArrayList<Metrica>();
-    private List<Filtro> filtros = new ArrayList<Filtro>();
+    private List<Measure> metricas = new ArrayList<Measure>();
+    private List<Filter> filtros = new ArrayList<Filter>();
 
-    public Cubo() {
+    public Cube() {
     }
 
-    public Cubo(String esquema, String tabela) {
+    public Cube(String esquema, String tabela) {
         this.esquema = esquema;
         this.tabela = tabela;
     }
@@ -30,35 +30,35 @@ public class Cubo extends MetadataEntity {
     /**
      * @return the filtros
      */
-    public List<Filtro> getFiltros() {
+    public List<Filter> getFiltros() {
         return filtros;
     }
 
     /**
      * @param filtros the filtros to set
      */
-    public void setFiltros(List<Filtro> filtros) {
+    public void setFiltros(List<Filter> filtros) {
         this.filtros = filtros;
     }
 
     /**
      * @return the metricas
      */
-    public List<Metrica> getMetricas() {
+    public List<Measure> getMetricas() {
         return metricas;
     }
 
     /**
      * @param metricas the metricas to set
      */
-    public void setMetricas(List<Metrica> metricas) {
+    public void setMetricas(List<Measure> metricas) {
         this.metricas = metricas;
     }
 
     /**
      * @return the esquema
      */
-    public String getEsquema() {
+    public String getSchema() {
         return esquema;
     }
 
@@ -72,7 +72,7 @@ public class Cubo extends MetadataEntity {
     /**
      * @return the tabela
      */
-    public String getTabela() {
+    public String getTable() {
         return tabela;
     }
 

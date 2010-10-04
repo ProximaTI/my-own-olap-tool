@@ -5,11 +5,11 @@
 package br.com.bi.model.dao.impl;
 
 import br.com.bi.model.dao.CuboDao;
-import br.com.bi.model.entity.metadata.Cubo;
+import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.CuboNivel;
-import br.com.bi.model.entity.metadata.Filtro;
-import br.com.bi.model.entity.metadata.Metrica;
-import br.com.bi.model.entity.metadata.Nivel;
+import br.com.bi.model.entity.metadata.Filter;
+import br.com.bi.model.entity.metadata.Measure;
+import br.com.bi.model.entity.metadata.Level;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * Retorna todos os cubos cadastrados (carga rasa).
      * @return
      */
-    public List<Cubo> findAll() {
+    public List<Cube> findAll() {
         return getJdbcTemplate().query("select * from cubo order by nome", new CuboShallowMapper());
     }
 
@@ -40,7 +40,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param id
      * @return
      */
-    public Cubo findById(int id) {
+    public Cube findById(int id) {
         return getJdbcTemplate().queryForObject("select * from cubo where id = ?", new Object[]{
                     id}, new CuboDeepMapper());
     }
@@ -50,13 +50,13 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param cubo
      */
     @Transactional
-    public void salvar(Cubo cubo) {
+    public void salvar(Cube cubo) {
         Map<String, Object> parameters = new HashMap<String, Object>();
 
-        parameters.put("nome", cubo.getNome());
-        parameters.put("descricao", cubo.getDescricao());
-        parameters.put("esquema", cubo.getEsquema());
-        parameters.put("tabela", cubo.getTabela());
+        parameters.put("nome", cubo.getName());
+        parameters.put("descricao", cubo.getDescription());
+        parameters.put("esquema", cubo.getSchema());
+        parameters.put("tabela", cubo.getTable());
 
         if (!cubo.isPersisted()) {
             SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
@@ -81,19 +81,19 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param cubo
      */
     @Transactional
-    private void salvarMetricas(Cubo cubo) {
+    private void salvarMetricas(Cube cubo) {
         List metricas = new ArrayList();
 
-        for (Metrica metrica : cubo.getMetricas()) {
+        for (Measure metrica : cubo.getMetricas()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("idcubo", cubo.getId());
-            parameters.put("nome", metrica.getNome());
-            parameters.put("descricao", metrica.getDescricao());
+            parameters.put("nome", metrica.getName());
+            parameters.put("descricao", metrica.getDescription());
             parameters.put("funcao", metrica.getCodigoFuncao());
-            parameters.put("coluna", metrica.getColuna());
-            parameters.put("expressaoFiltro", metrica.getExpressaoFiltro());
+            parameters.put("coluna", metrica.getColumn());
+            parameters.put("expressaoFiltro", metrica.getFilterExpression());
             parameters.put("metricaPadrao", metrica.isMetricaPadrao() ? 1 : 0);
 
             if (!metrica.isPersisted()) {
@@ -125,17 +125,17 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param cubo
      */
     @Transactional
-    private void salvarFiltros(Cubo cubo) {
+    private void salvarFiltros(Cube cubo) {
         List filtros = new ArrayList();
 
-        for (Filtro filtro : cubo.getFiltros()) {
+        for (Filter filtro : cubo.getFiltros()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("idcubo", cubo.getId());
-            parameters.put("nome", filtro.getNome());
-            parameters.put("descricao", filtro.getDescricao());
-            parameters.put("expressao", filtro.getExpressao());
+            parameters.put("nome", filtro.getName());
+            parameters.put("descricao", filtro.getDescription());
+            parameters.put("expressao", filtro.getExpression());
 
             if (!filtro.isPersisted()) {
                 SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
@@ -164,7 +164,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param cubo
      */
     @Transactional
-    private void salvarNiveis(Cubo cubo) {
+    private void salvarNiveis(Cube cubo) {
         List niveis = new ArrayList();
 
         for (CuboNivel nivel : cubo.getNiveis()) {
@@ -203,7 +203,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
     @Transactional
     public void apagar(int id) {
         // realiza carga completa do cubo
-        Cubo cubo = findById(id);
+        Cube cubo = findById(id);
 
         apagarFiltros(cubo.getId());
         apagarMetricas(cubo.getId());
@@ -224,7 +224,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                 return nivel;
             }
 
-            private Nivel findNivelById(int aInt) {
+            private Level findNivelById(int aInt) {
                 throw new UnsupportedOperationException("Not yet implemented");
             }
         });
@@ -235,17 +235,17 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param idCubo
      * @return
      */
-    private List<Filtro> findFiltrosByCubo(int idCubo) {
+    private List<Filter> findFiltrosByCubo(int idCubo) {
         return getJdbcTemplate().query("select * from filtro where idcubo = ?", new Object[]{
-                    idCubo}, new RowMapper<Filtro>() {
+                    idCubo}, new RowMapper<Filter>() {
 
-            public Filtro mapRow(ResultSet rs, int i) throws SQLException {
-                Filtro filtro = new Filtro();
+            public Filter mapRow(ResultSet rs, int i) throws SQLException {
+                Filter filtro = new Filter();
 
-                filtro.setDescricao(rs.getString("descricao"));
+                filtro.setDescription(rs.getString("descricao"));
                 filtro.setExpressao(rs.getString("expressao"));
                 filtro.setId(rs.getInt("id"));
-                filtro.setNome(rs.getString("nome"));
+                filtro.setName(rs.getString("nome"));
 
                 return filtro;
             }
@@ -257,20 +257,20 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param idCubo
      * @return
      */
-    private List<Metrica> findMetricasByCubo(int idCubo) {
+    private List<Measure> findMetricasByCubo(int idCubo) {
         return getJdbcTemplate().query("select * from metrica where idCubo = ?", new Object[]{
-                    idCubo}, new RowMapper<Metrica>() {
+                    idCubo}, new RowMapper<Measure>() {
 
-            public Metrica mapRow(ResultSet rs, int i) throws SQLException {
-                Metrica filtro = new Metrica();
+            public Measure mapRow(ResultSet rs, int i) throws SQLException {
+                Measure filtro = new Measure();
 
                 filtro.setColuna(rs.getString("coluna"));
-                filtro.setDescricao(rs.getString("descricao"));
+                filtro.setDescription(rs.getString("descricao"));
                 filtro.setExpressaoFiltro(rs.getString("expressaoFiltro"));
                 filtro.setCodigoFuncao(rs.getInt("funcao"));
                 filtro.setId(rs.getInt("id"));
                 filtro.setMetricaPadrao(rs.getInt("metricaPadrao") == 1);
-                filtro.setNome(rs.getString("nome"));
+                filtro.setName(rs.getString("nome"));
 
                 return filtro;
             }
@@ -307,14 +307,14 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                 new Object[]{idCubo});
     }
 
-    class CuboShallowMapper implements RowMapper<Cubo> {
+    class CuboShallowMapper implements RowMapper<Cube> {
 
-        public Cubo mapRow(ResultSet rs, int i) throws SQLException {
-            Cubo cubo = new Cubo();
-            cubo.setDescricao(rs.getString("descricao"));
+        public Cube mapRow(ResultSet rs, int i) throws SQLException {
+            Cube cubo = new Cube();
+            cubo.setDescription(rs.getString("descricao"));
             cubo.setEsquema(rs.getString("esquema"));
             cubo.setId(rs.getInt("id"));
-            cubo.setNome(rs.getString("nome"));
+            cubo.setName(rs.getString("nome"));
             cubo.setTabela(rs.getString("tabela"));
 
             return cubo;
@@ -324,8 +324,8 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
     class CuboDeepMapper extends CuboShallowMapper {
 
         @Override
-        public Cubo mapRow(ResultSet rs, int i) throws SQLException {
-            Cubo cubo = super.mapRow(rs, i);
+        public Cube mapRow(ResultSet rs, int i) throws SQLException {
+            Cube cubo = super.mapRow(rs, i);
 
             cubo.setNiveis(findNiveisByCubo(cubo.getId()));
             cubo.setFiltros(findFiltrosByCubo(cubo.getId()));

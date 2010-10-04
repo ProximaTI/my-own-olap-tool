@@ -8,18 +8,18 @@ package br.com.bi.model.entity.metadata;
  *
  * @author Luiz
  */
-public class Metrica extends MetadataEntity {
+public class Measure extends MetadataEntity {
 
-    private Cubo cubo;
+    private Cube cubo;
     private Funcao funcao;
     private String coluna;
     private String expressaoFiltro;
     private boolean metricaPadrao;
 
-    public Metrica() {
+    public Measure() {
     }
 
-    public Metrica(Cubo cubo, Funcao funcao, String coluna) {
+    public Measure(Cube cubo, Funcao funcao, String coluna) {
         this.cubo = cubo;
         this.funcao = funcao;
         this.coluna = coluna;
@@ -42,7 +42,7 @@ public class Metrica extends MetadataEntity {
     /**
      * @return the coluna
      */
-    public String getColuna() {
+    public String getColumn() {
         return coluna;
     }
 
@@ -56,7 +56,7 @@ public class Metrica extends MetadataEntity {
     /**
      * @return the expressaoFiltro
      */
-    public String getExpressaoFiltro() {
+    public String getFilterExpression() {
         return expressaoFiltro;
     }
 
@@ -111,14 +111,14 @@ public class Metrica extends MetadataEntity {
     /**
      * @return the cubo
      */
-    public Cubo getCubo() {
+    public Cube getCube() {
         return cubo;
     }
 
     /**
      * @param cubo the cubo to set
      */
-    public void setCubo(Cubo cubo) {
+    public void setCubo(Cube cubo) {
         this.cubo = cubo;
     }
 

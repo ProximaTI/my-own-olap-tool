@@ -5,9 +5,9 @@
 package br.com.bi.model.dao.impl;
 
 import br.com.bi.model.dao.DimensaoDao;
-import br.com.bi.model.entity.metadata.Dimensao;
-import br.com.bi.model.entity.metadata.Nivel;
-import br.com.bi.model.entity.metadata.Propriedade;
+import br.com.bi.model.entity.metadata.Dimension;
+import br.com.bi.model.entity.metadata.Level;
+import br.com.bi.model.entity.metadata.Property;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,20 +25,20 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
 
-    public List<Dimensao> findAll() {
+    public List<Dimension> findAll() {
         return getJdbcTemplate().query("select * from dimensao", new DimensaoShallowMapper());
     }
 
-    public Dimensao findById(int id) {
+    public Dimension findById(int id) {
         return getJdbcTemplate().queryForObject("select * from dimensao where id = :id", new Object[]{
                     id}, new DimensaoDeepMapper());
     }
 
-    public void salvar(Dimensao dimensao) {
+    public void salvar(Dimension dimensao) {
         Map<String, Object> parameters = new HashMap<String, Object>();
 
-        parameters.put("nome", dimensao.getNome());
-        parameters.put("descricao", dimensao.getDescricao());
+        parameters.put("nome", dimensao.getName());
+        parameters.put("descricao", dimensao.getDescription());
 
         if (!dimensao.isPersisted()) {
             SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
@@ -60,19 +60,19 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
      * @param dimensao
      */
     @Transactional
-    private void salvarNiveis(Dimensao dimensao) {
+    private void salvarNiveis(Dimension dimensao) {
         List niveis = new ArrayList();
 
-        for (Nivel nivel : dimensao.getNiveis()) {
+        for (Level nivel : dimensao.getNiveis()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("iddimensao", dimensao.getId());
-            parameters.put("nome", nivel.getNome());
-            parameters.put("descricao", nivel.getDescricao());
-            parameters.put("esquema", nivel.getEsquema());
-            parameters.put("tabela", nivel.getTabela());
-            parameters.put("juncaoNivelSuperior", nivel.getJuncaoNivelSuperior());
+            parameters.put("nome", nivel.getName());
+            parameters.put("descricao", nivel.getDescription());
+            parameters.put("esquema", nivel.getSchema());
+            parameters.put("tabela", nivel.getTable());
+            parameters.put("juncaoNivelSuperior", nivel.getJoinColumn());
 
             if (!nivel.isPersisted()) {
                 SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
@@ -112,8 +112,8 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
      * @param dimensao
      */
     @Transactional
-    private void apagarNiveis(Dimensao dimensao) {
-        for (Nivel nivel : dimensao.getNiveis()) {
+    private void apagarNiveis(Dimension dimensao) {
+        for (Level nivel : dimensao.getNiveis()) {
             apagarPropriedades(nivel);
         }
 
@@ -126,7 +126,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
      * @param nivel
      */
     @Transactional
-    private void apagarPropriedades(Nivel nivel) {
+    private void apagarPropriedades(Level nivel) {
         getJdbcTemplate().update("delete from propriedade where idnivel = ?", new Object[]{nivel.
                     getId()});
     }
@@ -136,19 +136,19 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
      * @param nivel
      */
     @Transactional
-    private void salvarPropriedades(Nivel nivel) {
+    private void salvarPropriedades(Level nivel) {
         List propriedades = new ArrayList();
 
-        for (Propriedade propriedade : nivel.getPropriedades()) {
+        for (Property propriedade : nivel.getProperties()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("idnivel", nivel.getId());
-            parameters.put("nome", propriedade.getNome());
-            parameters.put("descricao", propriedade.getDescricao());
-            parameters.put("coluna", propriedade.getColuna());
-            parameters.put("propriedadeCodigo", propriedade.isPropriedadeCodigo() ? 1 : 0);
-            parameters.put("propriedadeNome", propriedade.isPropriedadeNome() ? 1 : 0);
+            parameters.put("nome", propriedade.getName());
+            parameters.put("descricao", propriedade.getDescription());
+            parameters.put("coluna", propriedade.getColumn());
+            parameters.put("propriedadeCodigo", propriedade.isCodeProperty() ? 1 : 0);
+            parameters.put("propriedadeNome", propriedade.isNameProperty() ? 1 : 0);
 
             if (!propriedade.isPersisted()) {
                 SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
@@ -179,19 +179,19 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
      * @param idDimensao
      * @return
      */
-    private List<Nivel> findNiveisByDimensao(int idDimensao) {
+    private List<Level> findNiveisByDimensao(int idDimensao) {
         return getJdbcTemplate().query("select * from nivel where iddimensao = ?", new Object[]{
-                    idDimensao}, new RowMapper<Nivel>() {
+                    idDimensao}, new RowMapper<Level>() {
 
-            public Nivel mapRow(ResultSet rs, int i) throws SQLException {
-                Nivel nivel = new Nivel();
-                nivel.setDescricao(rs.getString("descricao"));
-                nivel.setEsquema(rs.getString("esquema"));
+            public Level mapRow(ResultSet rs, int i) throws SQLException {
+                Level nivel = new Level();
+                nivel.setDescription(rs.getString("descricao"));
+                nivel.setSchema(rs.getString("esquema"));
                 nivel.setId(rs.getInt("id"));
-                nivel.setJuncaoNivelSuperior(rs.getString("juncaoNivelSuperior"));
-                nivel.setNome(rs.getString("nome"));
-                nivel.setPropriedades(findPropriedadesByNivel(nivel.getId()));
-                nivel.setTabela(rs.getString("tabela"));
+                nivel.setJoinColumn(rs.getString("juncaoNivelSuperior"));
+                nivel.setName(rs.getString("nome"));
+                nivel.setProperties(findPropriedadesByNivel(nivel.getId()));
+                nivel.setTable(rs.getString("tabela"));
                 return nivel;
             }
         });
@@ -202,17 +202,17 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
      * @param idNivel
      * @return
      */
-    private List<Propriedade> findPropriedadesByNivel(int idNivel) {
+    private List<Property> findPropriedadesByNivel(int idNivel) {
         return getJdbcTemplate().query("select * from propriedade where idnivel = ?", new Object[]{
-                    idNivel}, new RowMapper<Propriedade>() {
+                    idNivel}, new RowMapper<Property>() {
 
-            public Propriedade mapRow(ResultSet rs, int i) throws SQLException {
-                Propriedade propriedade = new Propriedade();
+            public Property mapRow(ResultSet rs, int i) throws SQLException {
+                Property propriedade = new Property();
 
                 propriedade.setColuna(rs.getString("coluna"));
-                propriedade.setDescricao(rs.getString("descricao"));
+                propriedade.setDescription(rs.getString("descricao"));
                 propriedade.setId(rs.getInt("id"));
-                propriedade.setNome(rs.getString("nome"));
+                propriedade.setName(rs.getString("nome"));
                 propriedade.setPropriedadeCodigo(rs.getInt("propriedadeCodigo")
                         == 1);
                 propriedade.setPropriedadeNome(rs.getInt("propriedadeNome") == 1);
@@ -221,14 +221,14 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
         });
     }
 
-    class DimensaoShallowMapper implements RowMapper<Dimensao> {
+    class DimensaoShallowMapper implements RowMapper<Dimension> {
 
-        public Dimensao mapRow(ResultSet rs, int i) throws SQLException {
-            Dimensao dimensao = new Dimensao();
+        public Dimension mapRow(ResultSet rs, int i) throws SQLException {
+            Dimension dimensao = new Dimension();
 
-            dimensao.setDescricao(rs.getString("descricao"));
+            dimensao.setDescription(rs.getString("descricao"));
             dimensao.setId(rs.getInt("id"));
-            dimensao.setNome(rs.getString("nome"));
+            dimensao.setName(rs.getString("nome"));
 
             return dimensao;
         }
@@ -237,8 +237,8 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
     class DimensaoDeepMapper extends DimensaoShallowMapper {
 
         @Override
-        public Dimensao mapRow(ResultSet rs, int i) throws SQLException {
-            Dimensao dimensao = super.mapRow(rs, i);
+        public Dimension mapRow(ResultSet rs, int i) throws SQLException {
+            Dimension dimensao = super.mapRow(rs, i);
 
             dimensao.setNiveis(findNiveisByDimensao(rs.getInt("id")));
 
