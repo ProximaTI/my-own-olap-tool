@@ -15,7 +15,7 @@ public class Cubo extends MetadataEntity {
 
     private String esquema;
     private String tabela;
-    private List<Dimensao> dimensoes = new ArrayList<Dimensao>();
+    private List<CuboNivel> niveis = new ArrayList<CuboNivel>();
     private List<Metrica> metricas = new ArrayList<Metrica>();
     private List<Filtro> filtros = new ArrayList<Filtro>();
 
@@ -25,20 +25,6 @@ public class Cubo extends MetadataEntity {
     public Cubo(String esquema, String tabela) {
         this.esquema = esquema;
         this.tabela = tabela;
-    }
-
-    /**
-     * @return the dimensoes
-     */
-    public List<Dimensao> getDimensoes() {
-        return dimensoes;
-    }
-
-    /**
-     * @param dimensoes the dimensoes to set
-     */
-    public void setDimensoes(List<Dimensao> dimensoes) {
-        this.dimensoes = dimensoes;
     }
 
     /**
@@ -100,5 +86,19 @@ public class Cubo extends MetadataEntity {
     @Override
     public void accept(MetadataEntityVisitor visitor) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * @return the niveis
+     */
+    public List<CuboNivel> getNiveis() {
+        return niveis;
+    }
+
+    /**
+     * @param niveis the niveis to set
+     */
+    public void setNiveis(List<CuboNivel> niveis) {
+        this.niveis = niveis;
     }
 }

@@ -4,20 +4,20 @@
  */
 package br.com.bi.model.dao;
 
-import br.com.bi.model.entity.metadata.Cubo;
+import br.com.bi.model.entity.metadata.Dimensao;
 import java.util.List;
 
 /**
  *
  * @author Luiz
  */
-public interface CuboDao {
+public interface DimensaoDao {
 
-    public List<Cubo> findAll();
+    public List<Dimensao> findAll();
 
-    public Cubo findById(int id);
+    public Dimensao findById(int id);
 
-    public void salvar(Cubo cubo);
+    public void salvar(Dimensao dimensao);
 
     public void apagar(int id);
 }

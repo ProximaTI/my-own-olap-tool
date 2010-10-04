@@ -6,11 +6,10 @@ package br.com.bi.model.dao.impl;
 
 import br.com.bi.model.dao.CuboDao;
 import br.com.bi.model.entity.metadata.Cubo;
-import br.com.bi.model.entity.metadata.Dimensao;
+import br.com.bi.model.entity.metadata.CuboNivel;
 import br.com.bi.model.entity.metadata.Filtro;
 import br.com.bi.model.entity.metadata.Metrica;
 import br.com.bi.model.entity.metadata.Nivel;
-import br.com.bi.model.entity.metadata.Propriedade;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * Retorna todos os cubos cadastrados (carga rasa).
      * @return
      */
-    public List<Cubo> findAllCubos() {
+    public List<Cubo> findAll() {
         return getJdbcTemplate().query("select * from cubo order by nome", new CuboShallowMapper());
     }
 
@@ -41,7 +40,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param id
      * @return
      */
-    public Cubo findCuboById(int id) {
+    public Cubo findById(int id) {
         return getJdbcTemplate().queryForObject("select * from cubo where id = ?", new Object[]{
                     id}, new CuboDeepMapper());
     }
@@ -74,7 +73,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
 
         salvarMetricas(cubo);
         salvarFiltros(cubo);
-        salvarDimensoes(cubo);
+        salvarNiveis(cubo);
     }
 
     /**
@@ -161,142 +160,40 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
     }
 
     /**
-     * Persiste as dimensões de um cubo.
+     * Persiste os níveis de um cubo.
      * @param cubo
      */
     @Transactional
-    private void salvarDimensoes(Cubo cubo) {
-        List dimensoes = new ArrayList();
+    private void salvarNiveis(Cubo cubo) {
+        List niveis = new ArrayList();
 
-        for (Dimensao dimensao : cubo.getDimensoes()) {
+        for (CuboNivel nivel : cubo.getNiveis()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("idcubo", cubo.getId());
-            parameters.put("nome", dimensao.getNome());
-            parameters.put("descricao", dimensao.getDescricao());
-
-            if (!dimensao.isPersisted()) {
-                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
-                insert.withTableName("dimensao").usingGeneratedKeyColumns("id");
-                dimensao.setId(insert.executeAndReturnKey(parameters).intValue());
-            } else {
-                SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update dimensao set nome = :nome, "
-                        + "descricao = :descricao where id = :id");
-                parameters.put("id", dimensao.getId());
-                update.updateByNamedParam(parameters);
-            }
-
-            salvarNiveis(dimensao);
-
-            dimensoes.add(dimensao.getId());
-        }
-
-        if (dimensoes.size() > 0) {
-            getJdbcTemplate().update("delete from dimensao where not id in (:ids) and idcubo = :idcubo".
-                    replace(":ids", listToString(dimensoes)).replace(":idcubo", Integer.
-                    toString(cubo.getId())));
-        }
-    }
-
-    /**
-     * Persiste os níveis de uma dimensão.
-     * @param dimensao
-     */
-    @Transactional
-    private void salvarNiveis(Dimensao dimensao) {
-        List niveis = new ArrayList();
-
-        for (Nivel nivel : dimensao.getNiveis()) {
-
-            Map<String, Object> parameters = new HashMap<String, Object>();
-
-            parameters.put("iddimensao", dimensao.getId());
-            parameters.put("nome", nivel.getNome());
-            parameters.put("descricao", nivel.getDescricao());
-            parameters.put("esquema", nivel.getEsquema());
-            parameters.put("tabela", nivel.getTabela());
-            parameters.put("juncaoNivelSuperior", nivel.getJuncaoNivelSuperior());
+            parameters.put("idnivel", nivel.getNivel().getId());
+            parameters.put("colunaJuncao", nivel.getColunaJuncao());
 
             if (!nivel.isPersisted()) {
                 SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
-                insert.withTableName("nivel").usingGeneratedKeyColumns("id");
-                nivel.setId(insert.executeAndReturnKey(parameters).intValue());
+                insert.withTableName("nivel");
+                insert.execute(parameters);
             } else {
                 SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update nivel set nome = :nome, "
-                        + "descricao = :descricao, esquema = :esquema, tabela = :tabela, "
-                        + "juncaoNivelSuperior = :juncaoNivelSuperior where id = :id");
-                parameters.put("id", nivel.getId());
+                        new SqlUpdate(getDataSource(), "update cubo_nivel set colunaJuncao = :colunaJuncao"
+                        + " where idcubo = :id and idnivel = :idnivel");
                 update.updateByNamedParam(parameters);
             }
 
-            salvarPropriedades(nivel);
-
-            niveis.add(nivel.getId());
+            niveis.add(nivel.getNivel().getId());
         }
 
         if (niveis.size() > 0) {
-            getJdbcTemplate().update("delete from nivel where not id in (:ids) and iddimensao = :iddimensao".
-                    replace(":ids", listToString(niveis)).replace(":iddimensao", Integer.
-                    toString(dimensao.getId())));
+            getJdbcTemplate().update("delete from cubo_nivel "
+                    + "where not id in (:ids) and idcubo = :idcubo".replace(":ids", listToString(niveis)).
+                    replace(":idcubo", Integer.toString(cubo.getId())));
         }
-    }
-
-    /**
-     * Persiste as propriedades de um nível.
-     * @param nivel
-     */
-    @Transactional
-    private void salvarPropriedades(Nivel nivel) {
-        List propriedades = new ArrayList();
-
-        for (Propriedade propriedade : nivel.getPropriedades()) {
-
-            Map<String, Object> parameters = new HashMap<String, Object>();
-
-            parameters.put("idnivel", nivel.getId());
-            parameters.put("nome", propriedade.getNome());
-            parameters.put("descricao", propriedade.getDescricao());
-            parameters.put("coluna", propriedade.getColuna());
-            parameters.put("propriedadeCodigo", propriedade.isPropriedadeCodigo() ? 1 : 0);
-            parameters.put("propriedadeNome", propriedade.isPropriedadeNome() ? 1 : 0);
-
-            if (!propriedade.isPersisted()) {
-                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
-                insert.withTableName("propriedade").usingGeneratedKeyColumns("id");
-                propriedade.setId(insert.executeAndReturnKey(parameters).
-                        intValue());
-            } else {
-                SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update propriedade set nome = :nome, "
-                        + "descricao = :descricao, coluna = :coluna, propriedadeCodigo = :propriedadeCodigo, "
-                        + "propriedadeNome = :propriedadeNome where id = :id");
-                parameters.put("id", propriedade.getId());
-                update.updateByNamedParam(parameters);
-            }
-
-            propriedades.add(propriedade.getId());
-        }
-
-        if (propriedades.size() > 0) {
-            getJdbcTemplate().update("delete from propriedade where not id in (:ids) and idnivel = :idnivel".
-                    replace(":ids", listToString(propriedades)).replace(":idnivel", Integer.
-                    toString(nivel.getId())));
-        }
-    }
-
-    private String listToString(List<Integer> l) {
-        StringBuilder scrap = new StringBuilder();
-
-        for (Integer i : l) {
-            scrap.append(i.toString()).append(",");
-        }
-
-        scrap.delete(scrap.length() - 1, scrap.length());
-
-        return scrap.toString();
     }
 
     /**
@@ -306,79 +203,29 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
     @Transactional
     public void apagar(int id) {
         // realiza carga completa do cubo
-        Cubo cubo = findCuboById(id);
+        Cubo cubo = findById(id);
 
-        apagarFiltros(cubo);
-        apagarMetricas(cubo);
-        apagarDimensoes(cubo);
+        apagarFiltros(cubo.getId());
+        apagarMetricas(cubo.getId());
+        apagarNiveis(cubo.getId());
 
         getJdbcTemplate().update("delete from cubo where id = ?", new Object[]{
                     id});
     }
 
-    /**
-     * Retorna a lista de dimensões dado o identificador do cubo.
-     * @param idCubo
-     * @return
-     */
-    private List<Dimensao> findDimensoesByCubo(int idCubo) {
-        return getJdbcTemplate().query("select * from dimensao where idcubo = ?", new Object[]{
-                    idCubo}, new RowMapper<Dimensao>() {
+    private List<CuboNivel> findNiveisByCubo(int idCubo) {
+        return getJdbcTemplate().query("select * from cubo_nivel where idcubo = ?", new Object[]{
+                    idCubo}, new RowMapper<CuboNivel>() {
 
-            public Dimensao mapRow(ResultSet rs, int i) throws SQLException {
-                Dimensao dimensao = new Dimensao();
-                dimensao.setDescricao(rs.getString("descricao"));
-                dimensao.setId(rs.getInt("id"));
-                dimensao.setNiveis(findNiveisByDimensao(dimensao.getId()));
-                dimensao.setNome(rs.getString("nome"));
-                return dimensao;
-            }
-        });
-    }
-
-    /**
-     * Retorna a lista de níveis dado o identificador da dimensão.
-     * @param idDimensao
-     * @return
-     */
-    private List<Nivel> findNiveisByDimensao(int idDimensao) {
-        return getJdbcTemplate().query("select * from nivel where iddimensao = ?", new Object[]{
-                    idDimensao}, new RowMapper<Nivel>() {
-
-            public Nivel mapRow(ResultSet rs, int i) throws SQLException {
-                Nivel nivel = new Nivel();
-                nivel.setDescricao(rs.getString("descricao"));
-                nivel.setEsquema(rs.getString("esquema"));
-                nivel.setId(rs.getInt("id"));
-                nivel.setJuncaoNivelSuperior(rs.getString("juncaoNivelSuperior"));
-                nivel.setNome(rs.getString("nome"));
-                nivel.setPropriedades(findPropriedadesByNivel(nivel.getId()));
-                nivel.setTabela(rs.getString("tabela"));
+            public CuboNivel mapRow(ResultSet rs, int i) throws SQLException {
+                CuboNivel nivel = new CuboNivel();
+                nivel.setNivel(findNivelById(rs.getInt("idnivel")));
+                nivel.setColunaJuncao(rs.getString("colunaJuncao"));
                 return nivel;
             }
-        });
-    }
 
-    /**
-     * Retorna as propriedades de nível dado seu identificador.
-     * @param idNivel
-     * @return
-     */
-    private List<Propriedade> findPropriedadesByNivel(int idNivel) {
-        return getJdbcTemplate().query("select * from propriedade where idnivel = ?", new Object[]{
-                    idNivel}, new RowMapper<Propriedade>() {
-
-            public Propriedade mapRow(ResultSet rs, int i) throws SQLException {
-                Propriedade propriedade = new Propriedade();
-
-                propriedade.setColuna(rs.getString("coluna"));
-                propriedade.setDescricao(rs.getString("descricao"));
-                propriedade.setId(rs.getInt("id"));
-                propriedade.setNome(rs.getString("nome"));
-                propriedade.setPropriedadeCodigo(rs.getInt("propriedadeCodigo")
-                        == 1);
-                propriedade.setPropriedadeNome(rs.getInt("propriedadeNome") == 1);
-                return propriedade;
+            private Nivel findNivelById(int aInt) {
+                throw new UnsupportedOperationException("Not yet implemented");
             }
         });
     }
@@ -435,9 +282,9 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param cubo
      */
     @Transactional
-    private void apagarFiltros(Cubo cubo) {
+    private void apagarFiltros(int idCubo) {
         getJdbcTemplate().update("delete from filtro where idcubo = ?", new Object[]{
-                    cubo.getId()});
+                    idCubo});
     }
 
     /**
@@ -445,47 +292,19 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @param cubo
      */
     @Transactional
-    private void apagarMetricas(Cubo cubo) {
+    private void apagarMetricas(int idCubo) {
         getJdbcTemplate().update("delete from metrica where idcubo = ?", new Object[]{
-                    cubo.getId()});
+                    idCubo});
     }
 
     /**
-     * Apaga as dimensões de um cubo.
+     * Apaga os níveis de um cubo.
      * @param cubo
      */
     @Transactional
-    private void apagarDimensoes(Cubo cubo) {
-        for (Dimensao dimensao : cubo.getDimensoes()) {
-            apagarNiveis(dimensao);
-        }
-
-        getJdbcTemplate().update("delete from dimensao where idcubo = ?", new Object[]{cubo.
-                    getId()});
-    }
-
-    /**
-     * Apaga os níveis de uma dimensão.
-     * @param dimensao
-     */
-    @Transactional
-    private void apagarNiveis(Dimensao dimensao) {
-        for (Nivel nivel : dimensao.getNiveis()) {
-            apagarPropriedades(nivel);
-        }
-
-        getJdbcTemplate().update("delete from nivel where iddimensao = ?", new Object[]{dimensao.
-                    getId()});
-    }
-
-    /**
-     * Apagar as propriedades de nível.
-     * @param nivel
-     */
-    @Transactional
-    private void apagarPropriedades(Nivel nivel) {
-        getJdbcTemplate().update("delete from propriedade where idnivel = ?", new Object[]{nivel.
-                    getId()});
+    private void apagarNiveis(int idCubo) {
+        getJdbcTemplate().update("delete from cubo_nivel where idcubo = ?",
+                new Object[]{idCubo});
     }
 
     class CuboShallowMapper implements RowMapper<Cubo> {
@@ -508,7 +327,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
         public Cubo mapRow(ResultSet rs, int i) throws SQLException {
             Cubo cubo = super.mapRow(rs, i);
 
-            cubo.setDimensoes(findDimensoesByCubo(cubo.getId()));
+            cubo.setNiveis(findNiveisByCubo(cubo.getId()));
             cubo.setFiltros(findFiltrosByCubo(cubo.getId()));
             cubo.setMetricas(findMetricasByCubo(cubo.getId()));
 

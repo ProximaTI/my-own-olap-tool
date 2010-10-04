@@ -43,9 +43,6 @@ public class Main {
         produtoDimensao.getNiveis().add(tipoProduto);
         produtoDimensao.getNiveis().add(produto);
 
-        acessos.getDimensoes().add(produtoDimensao);
-        acessos.getDimensoes().add(categoriaDimensao);
-
         // coluna
         Consulta consulta = new Consulta(acessos);
         consulta.getColuna().getFilhos().add(new No(consulta.getColuna(), quantidade));

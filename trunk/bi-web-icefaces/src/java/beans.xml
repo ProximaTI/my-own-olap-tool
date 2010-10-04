@@ -21,6 +21,11 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <bean id="dimensaoDAO"
+        class="br.com.bi.model.dao.impl.DimensaoDaoJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>

@@ -51,7 +51,7 @@ public class BiFacade {
      * @return
      */
     public Cubo findCuboById(int id) {
-        return getCuboDAO().findCuboById(id);
+        return getCuboDAO().findById(id);
     }
 
     /**
@@ -59,7 +59,7 @@ public class BiFacade {
      * @return
      */
     public List<Cubo> findAllCubos() {
-        return getCuboDAO().findAllCubos();
+        return getCuboDAO().findAll();
     }
 
     /**
