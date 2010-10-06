@@ -15,7 +15,7 @@ public class Cube extends MetadataEntity {
 
     private String esquema;
     private String tabela;
-    private List<CuboNivel> niveis = new ArrayList<CuboNivel>();
+    private List<CubeLevel> niveis = new ArrayList<CubeLevel>();
     private List<Measure> metricas = new ArrayList<Measure>();
     private List<Filter> filtros = new ArrayList<Filter>();
 
@@ -91,14 +91,14 @@ public class Cube extends MetadataEntity {
     /**
      * @return the niveis
      */
-    public List<CuboNivel> getNiveis() {
+    public List<CubeLevel> getCubeLevels() {
         return niveis;
     }
 
     /**
      * @param niveis the niveis to set
      */
-    public void setNiveis(List<CuboNivel> niveis) {
+    public void setNiveis(List<CubeLevel> niveis) {
         this.niveis = niveis;
     }
 }

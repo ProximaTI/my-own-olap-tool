@@ -4,6 +4,8 @@
  */
 package br.com.bi.model.query.sql;
 
+import br.com.bi.model.dao.DimensaoDao;
+import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.MetadataEntityVisitor;
 import br.com.bi.model.entity.metadata.Filter;
@@ -22,12 +24,25 @@ import java.util.Stack;
  *
  * @author Luiz
  */
-public class SqlTranslator implements MetadataEntityVisitor {
+public class QueryTranslator implements MetadataEntityVisitor, Constants {
 
-    private static final String PREFIX_ROWS = "r";
-    private static final String PREFIX_COLUMNS = "c";
-    private StringBuilder sql = new StringBuilder();
     private Stack<Integer> stack = new Stack<Integer>();
+    private StringBuilder sql = new StringBuilder();
+    private DimensaoDao dimensaoDao;
+
+    /**
+     * @return the dimensaoDao
+     */
+    public DimensaoDao getDimensaoDao() {
+        return dimensaoDao;
+    }
+
+    /**
+     * @param dimensaoDao the dimensaoDao to set
+     */
+    public void setDimensaoDao(DimensaoDao dimensaoDao) {
+        this.dimensaoDao = dimensaoDao;
+    }
 
     /**
      * Traduz uma consulta em uma instrução SQL.
@@ -61,14 +76,14 @@ public class SqlTranslator implements MetadataEntityVisitor {
      * @return
      */
     private String translateNodeToSql(String columnPrefix, Node node) {
-        StringBuilder fragment = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         // ===============
         // = traduz o nó =
         // ===============
 
         if (!node.isRoot()) {
-            stack.push(node.getPai().getChildren().indexOf(node));
+            stack.push(node.getParent().getChildren().indexOf(node));
 
             if (node.getMetadataEntity() instanceof Level) {
                 visit((Level) node.getMetadataEntity());
@@ -78,8 +93,8 @@ public class SqlTranslator implements MetadataEntityVisitor {
                 visit((Filter) node.getMetadataEntity());
             }
 
-            fragment.append(")");
-            fragment.append(" AS ").append(columnAlias(columnPrefix));
+            sb.append(")");
+            sb.append(" AS ").append(columnAlias(columnPrefix));
         }
 
         // ====================
@@ -88,16 +103,16 @@ public class SqlTranslator implements MetadataEntityVisitor {
 
         if (!node.getChildren().isEmpty()) {
             if (!node.isRoot()) {
-                fragment.append(", ");
+                sb.append(", ");
             }
 
             for (int i = 0; i < node.getChildren().size(); i++) {
                 Node filho = node.getChildren().get(i);
 
-                fragment.append(translateNodeToSql(columnPrefix, filho));
+                sb.append(translateNodeToSql(columnPrefix, filho));
 
                 if (i < node.getChildren().size() - 1) {
-                    fragment.append(", ");
+                    sb.append(", ");
                 }
             }
         }
@@ -106,7 +121,7 @@ public class SqlTranslator implements MetadataEntityVisitor {
             stack.pop();
         }
 
-        return fragment.toString();
+        return sb.toString();
     }
 
     // =====================
@@ -124,11 +139,11 @@ public class SqlTranslator implements MetadataEntityVisitor {
             sql.append("CASE WHEN ");
             sql.append(translateExpression(measure.getFilterExpression()));
             sql.append(" THEN ");
-            sql.append(selectExpression(measure.getCube().
+            sql.append(columnExpression(measure.getCube().
                     getTable(), measure.getColumn()));
             sql.append(" ELSE null END");
         } else {
-            sql.append(selectExpression(measure.getCube().
+            sql.append(columnExpression(measure.getCube().
                     getTable(), measure.getColumn()));
         }
     }
@@ -148,7 +163,7 @@ public class SqlTranslator implements MetadataEntityVisitor {
      * @param level
      */
     public void visit(Level level) {
-        sql.append(selectExpression(level.getTable(), level.getCodeProperty().
+        sql.append(columnExpression(level.getTable(), level.getCodeProperty().
                 getColumn()));
     }
 
@@ -161,12 +176,12 @@ public class SqlTranslator implements MetadataEntityVisitor {
      * @param column
      * @return
      */
-    public String selectExpression(String table, String column) {
-        StringBuilder selectExpression = new StringBuilder();
+    public String columnExpression(String table, String column) {
+        StringBuilder sb = new StringBuilder();
 
-        selectExpression.append(table).append(".").append(column);
+        sb.append(table).append(".").append(column);
 
-        return selectExpression.toString();
+        return sb.toString();
     }
 
     /**
@@ -175,19 +190,19 @@ public class SqlTranslator implements MetadataEntityVisitor {
      * @return
      */
     public String columnAlias(String aliasPrefix) {
-        StringBuilder columnAlias = new StringBuilder(aliasPrefix);
+        StringBuilder sb = new StringBuilder(aliasPrefix);
 
-        columnAlias.append("_");
+        sb.append("_");
 
         for (int i = 0; i < stack.size(); i++) {
-            columnAlias.append(stack.peek());
+            sb.append(stack.peek());
 
             if (i < stack.size() - 1) {
-                columnAlias.append("_");
+                sb.append("_");
             }
         }
 
-        return columnAlias.toString();
+        return sb.toString();
     }
 
     /**
@@ -206,23 +221,23 @@ public class SqlTranslator implements MetadataEntityVisitor {
 
         for (Level topLevel : topLevels(query)) {
             tables.add(tableExpression(topLevel.getSchema(), topLevel.getTable()));
-            for (Level lowerLevel : lowerLevels(topLevel)) {
+            for (Level lowerLevel : dimensaoDao.lowerLevels(topLevel.getId())) {
                 tables.add(tableExpression(lowerLevel.getSchema(), lowerLevel.
                         getTable()));
             }
         }
 
-        StringBuilder tableExpression = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < tables.size(); i++) {
-            tableExpression.append(tables.get(i));
+            sb.append(tables.get(i));
 
             if (i < tables.size() - 1) {
-                tableExpression.append(",");
+                sb.append(",");
             }
         }
 
-        return tableExpression.toString();
+        return sb.toString();
     }
 
     /**
@@ -242,7 +257,44 @@ public class SqlTranslator implements MetadataEntityVisitor {
     }
 
     private String whereExpression(Query query) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        List<String> joins = new ArrayList<String>();
+
+        // do nível mais alto vai descendo e adicionando os joins até chegar o nível
+        // mais baixo e assim juntá-lo ao cubo
+        for (Level topLevel : topLevels(query)) {
+
+            List<Level> lowerLevels = dimensaoDao.lowerLevels(topLevel.getId());
+
+            List<String> buf = new ArrayList<String>();
+
+            for (Level lowerLevel : lowerLevels) {
+
+                buf.add(columnExpression(lowerLevel.getTable(), lowerLevel.
+                        getCodeProperty().getColumn()));
+
+                // de duas em duas colunas, escreve no buffer o join
+                if (buf.size() == 2) {
+                    joins.add(buf.get(0) + " = " + buf.get(1));
+                    buf = new ArrayList<String>();
+                }
+            }
+
+            Level lowestLevel = lowerLevels.get(lowerLevels.size() - 1);
+
+            for (CubeLevel level : query.getCube().getCubeLevels()) {
+                if (level.getNivel().getId() == lowestLevel.getId()) {
+                    joins.add(
+                            columnExpression(query.getCube().getTable(), level.
+                            getColunaJuncao())
+                            + " = " + columnExpression(lowestLevel.getTable(), lowestLevel.
+                            getJoinColumn()));
+                }
+            }
+        }
+
+        // TODO converter joins em uma string
+
+        return null;
     }
 
     // =============================
@@ -266,38 +318,16 @@ public class SqlTranslator implements MetadataEntityVisitor {
         Map<Dimension, Level> topLevels = new HashMap<Dimension, Level>();
 
         for (Level level : findLevelsPresent(query)) {
+            Dimension dimension = dimensaoDao.findByLevelId(level.getId());
+
             // se o nível está acima do que já está no mapa então ele é um "top level".
-            if (!topLevels.containsKey(level.getDimension()) || isHigherLevel(level, topLevels.
-                    get(level.getDimension()))) {
-                topLevels.put(level.getDimension(), level);
+            if (!topLevels.containsKey(dimension) || level.getIndice() > topLevels.
+                    get(dimension).getIndice()) {
+                topLevels.put(dimension, level);
             }
         }
 
         return topLevels.values();
-    }
-
-    private List<Level> lowerLevels(Level higherLevel) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Diz se este nível denotado por lower encontra-se hierarquicamente abaixo do nível
-     * denotado por higher.
-     * @param level
-     * @return
-     */
-    public boolean isLowerLevel(Level lower, Level higher) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Diz se este nível denotado por higher encontra-se hierarquicamente acima do nível
-     * denotado por lower.
-     * @param level
-     * @return
-     */
-    public boolean isHigherLevel(Level higher, Level lower) {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**

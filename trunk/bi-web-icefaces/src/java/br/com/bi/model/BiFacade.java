@@ -7,7 +7,7 @@ package br.com.bi.model;
 import br.com.bi.model.dao.CuboDao;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.query.Query;
-import br.com.bi.model.query.sql.SqlTranslator;
+import br.com.bi.model.query.sql.QueryTranslator;
 import java.util.List;
 
 /**
@@ -30,7 +30,7 @@ public class BiFacade {
     }
 
     public String traduzirParaSql(Query consulta) {
-        SqlTranslator translator = new SqlTranslator();
+        QueryTranslator translator = new QueryTranslator();
         return translator.translateToSql(consulta);
     }
 

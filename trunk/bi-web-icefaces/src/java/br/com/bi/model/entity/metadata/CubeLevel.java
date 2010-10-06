@@ -10,7 +10,7 @@ import br.com.bi.model.entity.Entity;
  *
  * @author Luiz
  */
-public class CuboNivel extends Entity {
+public class CubeLevel extends Entity {
 
     private Level nivel;
     private String colunaJuncao;

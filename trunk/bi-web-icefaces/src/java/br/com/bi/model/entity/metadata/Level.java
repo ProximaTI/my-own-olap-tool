@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class Level extends MetadataEntity {
 
-    private Dimension dimension;
     private String schema;
     private String table;
     private String joinColumn;
     private List<Property> properties = new ArrayList<Property>();
+    private int indice;
 
     public Level() {
     }
@@ -113,16 +113,16 @@ public class Level extends MetadataEntity {
     }
 
     /**
-     * @return the dimension
+     * @return the indice
      */
-    public Dimension getDimension() {
-        return dimension;
+    public int getIndice() {
+        return indice;
     }
 
     /**
-     * @param dimension the dimension to set
+     * @param indice the indice to set
      */
-    public void setDimension(Dimension dimension) {
-        this.dimension = dimension;
+    public void setIndice(int indice) {
+        this.indice = indice;
     }
 }

@@ -5,6 +5,7 @@
 package br.com.bi.model.dao;
 
 import br.com.bi.model.entity.metadata.Dimension;
+import br.com.bi.model.entity.metadata.Level;
 import java.util.List;
 
 /**
@@ -20,4 +21,18 @@ public interface DimensaoDao {
     public void salvar(Dimension dimensao);
 
     public void apagar(int id);
+
+    /**
+     * Retorna os níveis que estão hierarquicamente abaixo do nível denotado por idnivel.
+     * @param idnivel
+     * @return
+     */
+    public List<Level> lowerLevels(int idnivel);
+
+    /**
+     * Retorna a dimensão à qual pertence o nível denotado por idnivel.
+     * @param idnivel
+     * @return
+     */
+    public Dimension findByLevelId(int idnivel);
 }

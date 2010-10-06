@@ -6,7 +6,7 @@ package br.com.bi.model.dao.impl;
 
 import br.com.bi.model.dao.CuboDao;
 import br.com.bi.model.entity.metadata.Cube;
-import br.com.bi.model.entity.metadata.CuboNivel;
+import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Filter;
 import br.com.bi.model.entity.metadata.Measure;
 import br.com.bi.model.entity.metadata.Level;
@@ -167,7 +167,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
     private void salvarNiveis(Cube cubo) {
         List niveis = new ArrayList();
 
-        for (CuboNivel nivel : cubo.getNiveis()) {
+        for (CubeLevel nivel : cubo.getCubeLevels()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -213,12 +213,12 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                     id});
     }
 
-    private List<CuboNivel> findNiveisByCubo(int idCubo) {
+    private List<CubeLevel> findNiveisByCubo(int idCubo) {
         return getJdbcTemplate().query("select * from cubo_nivel where idcubo = ?", new Object[]{
-                    idCubo}, new RowMapper<CuboNivel>() {
+                    idCubo}, new RowMapper<CubeLevel>() {
 
-            public CuboNivel mapRow(ResultSet rs, int i) throws SQLException {
-                CuboNivel nivel = new CuboNivel();
+            public CubeLevel mapRow(ResultSet rs, int i) throws SQLException {
+                CubeLevel nivel = new CubeLevel();
                 nivel.setNivel(findNivelById(rs.getInt("idnivel")));
                 nivel.setColunaJuncao(rs.getString("colunaJuncao"));
                 return nivel;

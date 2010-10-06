@@ -57,7 +57,7 @@ public class Node {
     /**
      * @return the pai
      */
-    public Node getPai() {
+    public Node getParent() {
         return pai;
     }
 

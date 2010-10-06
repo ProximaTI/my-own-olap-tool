@@ -73,6 +73,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
             parameters.put("esquema", nivel.getSchema());
             parameters.put("tabela", nivel.getTable());
             parameters.put("juncaoNivelSuperior", nivel.getJoinColumn());
+            parameters.put("indice", nivel.getIndice());
 
             if (!nivel.isPersisted()) {
                 SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
@@ -82,7 +83,8 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
                 SqlUpdate update =
                         new SqlUpdate(getDataSource(), "update nivel set nome = :nome, "
                         + "descricao = :descricao, esquema = :esquema, tabela = :tabela, "
-                        + "juncaoNivelSuperior = :juncaoNivelSuperior where id = :id");
+                        + "juncaoNivelSuperior = :juncaoNivelSuperior, indice = :indice "
+                        + "where id = :id");
                 parameters.put("id", nivel.getId());
                 update.updateByNamedParam(parameters);
             }
@@ -93,7 +95,8 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
         }
 
         if (niveis.size() > 0) {
-            getJdbcTemplate().update("delete from nivel where not id in (:ids) and iddimensao = :iddimensao".
+            getJdbcTemplate().update("delete from nivel "
+                    + "where not id in (:ids) and iddimensao = :iddimensao".
                     replace(":ids", listToString(niveis)).replace(":iddimensao", Integer.
                     toString(dimensao.getId())));
         }
@@ -181,20 +184,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
      */
     private List<Level> findNiveisByDimensao(int idDimensao) {
         return getJdbcTemplate().query("select * from nivel where iddimensao = ?", new Object[]{
-                    idDimensao}, new RowMapper<Level>() {
-
-            public Level mapRow(ResultSet rs, int i) throws SQLException {
-                Level nivel = new Level();
-                nivel.setDescription(rs.getString("descricao"));
-                nivel.setSchema(rs.getString("esquema"));
-                nivel.setId(rs.getInt("id"));
-                nivel.setJoinColumn(rs.getString("juncaoNivelSuperior"));
-                nivel.setName(rs.getString("nome"));
-                nivel.setProperties(findPropriedadesByNivel(nivel.getId()));
-                nivel.setTable(rs.getString("tabela"));
-                return nivel;
-            }
-        });
+                    idDimensao}, new LevelMapper());
     }
 
     /**
@@ -221,6 +211,30 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
         });
     }
 
+    /**
+     * Retorna os níveis que estão hierarquicamente abaixo do nível denotado por idnivel,
+     * inclusive o próprio.
+     * @param idnivel
+     * @return
+     */
+    public List<Level> lowerLevels(int idnivel) {
+        return getJdbcTemplate().query("select a.* from nivel a, nivel b "
+                + "where a.iddimensao = b.iddimensao "
+                + "and a.indice <= b.indice and b.id = :id order by a.indice",
+                new Object[]{idnivel}, new LevelMapper());
+    }
+
+    /**
+     * Retorna a dimensão à qual pertence o nível denotado por idnivel.
+     * @param idnivel
+     * @return
+     */
+    public Dimension findByLevelId(int idnivel) {
+        return getJdbcTemplate().queryForObject("select a.* from dimensao a, nivel b "
+                + "where a.iddimensao = b.iddimensao and b.id = :id",
+                new Object[]{idnivel}, new DimensaoDeepMapper());
+    }
+
     class DimensaoShallowMapper implements RowMapper<Dimension> {
 
         public Dimension mapRow(ResultSet rs, int i) throws SQLException {
@@ -243,6 +257,23 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensaoDao {
             dimensao.setNiveis(findNiveisByDimensao(rs.getInt("id")));
 
             return dimensao;
+        }
+    }
+
+    class LevelMapper implements RowMapper<Level> {
+
+        public Level mapRow(ResultSet rs, int i) throws SQLException {
+            Level nivel = new Level();
+            nivel.setDescription(rs.getString("descricao"));
+            nivel.setSchema(rs.getString("esquema"));
+            nivel.setId(rs.getInt("id"));
+            nivel.setJoinColumn(rs.getString("juncaoNivelSuperior"));
+            nivel.setName(rs.getString("nome"));
+            nivel.setProperties(findPropriedadesByNivel(nivel.getId()));
+            nivel.setTable(rs.getString("tabela"));
+            nivel.setIndice(rs.getInt("indice"));
+
+            return nivel;
         }
     }
 }
