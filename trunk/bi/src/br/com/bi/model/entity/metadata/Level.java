@@ -15,7 +15,7 @@ public class Level extends MetadataEntity {
 
     private String schema;
     private String table;
-    private String joinColumn;
+    private String joinColumnUpperLevel;
     private List<Property> properties = new ArrayList<Property>();
     private int indice;
 
@@ -30,7 +30,7 @@ public class Level extends MetadataEntity {
     public Level(String schema, String table, String joinColumn) {
         this.schema = schema;
         this.table = table;
-        this.joinColumn = joinColumn;
+        this.joinColumnUpperLevel = joinColumn;
     }
 
     /**
@@ -76,17 +76,17 @@ public class Level extends MetadataEntity {
     }
 
     /**
-     * @return the joinColumn
+     * @return the joinColumnUpperLevel
      */
-    public String getJoinColumn() {
-        return joinColumn;
+    public String getJoinColumnUpperLevel() {
+        return joinColumnUpperLevel;
     }
 
     /**
-     * @param joinColumn the joinColumn to set
+     * @param joinColumnUpperLevel the joinColumn to set
      */
-    public void setJoinColumn(String joinColumn) {
-        this.joinColumn = joinColumn;
+    public void setJoinColumnUpperLevel(String joinColumnUpperLevel) {
+        this.joinColumnUpperLevel = joinColumnUpperLevel;
     }
 
     public Property getCodeProperty() {

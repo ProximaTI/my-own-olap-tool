@@ -48,15 +48,19 @@ public class QueryTranslator implements Constants {
 
         sql.append(" FROM ");
 
-        sql.append(fromExpression(query));
+        sql.append(fromExpression());
 
         sql.append(" WHERE ");
 
-        sql.append(whereExpression(query));
+        sql.append(whereExpression());
 
         if (query.getFilterExpression() != null) {
             sql.append(translateExpression(query.getFilterExpression()));
         }
+
+        sql.append(" GROUP BY ");
+
+        sql.append(groupByExpression());
 
         return sql.toString();
     }
@@ -114,9 +118,6 @@ public class QueryTranslator implements Constants {
         return sb.toString();
     }
 
-    // =====================
-    // ====== Visitor ======
-    // =====================
     /**
      * Traduz uma métrica em um fragmento de instrução SQL.
      * @param measure
@@ -170,9 +171,10 @@ public class QueryTranslator implements Constants {
         return sb.toString();
     }
 
-    // ===========================
-    // ====== Gramática SQL ======
-    // ===========================
+    // =================
+    // = Gramática SQL =
+    // =================
+    
     /**
      * Retorna uma string do tipo tabela + . + coluna.
      * @param table
@@ -213,17 +215,15 @@ public class QueryTranslator implements Constants {
      * As tabelas desta expressão correspondem aos níveis presentes nos nós da consulta, tanto
      * explicitamente referenciados quanto os níveis presentes nos diversos filtros.
      * 
-     * @param query
      * @return
      */
-    private String fromExpression(Query query) {
+    private String fromExpression() {
         List<String> tables = new ArrayList<String>();
 
         tables.add(tableExpression(query.getCube().getSchema(), query.getCube().
                 getTable()));
 
         for (Level topLevel : topLevels()) {
-            tables.add(tableExpression(topLevel.getSchema(), topLevel.getTable()));
             for (Level lowerLevel : MetadataFacade.getInstance().lowerLevels(topLevel.
                     getId())) {
                 tables.add(tableExpression(lowerLevel.getSchema(), lowerLevel.
@@ -237,7 +237,7 @@ public class QueryTranslator implements Constants {
             sb.append(tables.get(i));
 
             if (i < tables.size() - 1) {
-                sb.append(",");
+                sb.append(", ");
             }
         }
 
@@ -260,7 +260,11 @@ public class QueryTranslator implements Constants {
         return sb.toString();
     }
 
-    private String whereExpression(Query query) {
+    /**
+     * Produz a cláusula WHERE da consulta, baseado nos joins com os níveis referenciados.
+     * @return
+     */
+    private String whereExpression() {
         List<String> joins = new ArrayList<String>();
 
         // do nível mais alto vai descendo e adicionando os joins até chegar o nível
@@ -283,6 +287,8 @@ public class QueryTranslator implements Constants {
                 }
             }
 
+            // o nível mais baixo é o nível que faz junção com o cubo,
+            // e indiretamente liga todos os níveis superiores também.
             Level lowestLevel = lowerLevels.get(lowerLevels.size() - 1);
 
             for (CubeLevel level : query.getCube().getCubeLevels()) {
@@ -291,19 +297,55 @@ public class QueryTranslator implements Constants {
                             columnExpression(query.getCube().getTable(), level.
                             getColunaJuncao())
                             + " = " + columnExpression(lowestLevel.getTable(), lowestLevel.
-                            getJoinColumn()));
+                            getCodeProperty().getColumn()));
                 }
             }
         }
 
-        // TODO converter joins em uma string
+        StringBuilder sb = new StringBuilder();
 
-        return null;
+        if (joins.isEmpty()) {
+            sb.append("1 = 1");
+        } else {
+            for (int i = 0; i < joins.size(); i++) {
+                sb.append(joins.get(i));
+
+                if (i < joins.size() - 1) {
+                    sb.append(" AND ");
+                }
+            }
+        }
+
+        return sb.toString();
     }
 
-    // =============================
-    // ======== Utilitários ========
-    // =============================
+    /**
+     * Produz a cláusula GROUP BY da consulta.
+     * @return
+     */
+    private String groupByExpression() {
+        StringBuilder sb = new StringBuilder();
+
+        List<Level> levelsPresent = levelsPresent();
+
+        for (int i = 0; i < levelsPresent.size(); i++) {
+            Level level = levelsPresent.get(i);
+
+            sb.append(columnExpression(level.getTable(), level.getCodeProperty().
+                    getColumn()));
+
+            if (i < levelsPresent.size() - 1) {
+                sb.append(", ");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    // ===============
+    // = Utilitários =
+    // ===============
+    
     /**
      * Traduz uma expressão de filtro em um fragmento SQL.
      * @param expression
@@ -350,6 +392,13 @@ public class QueryTranslator implements Constants {
         return bucket;
     }
 
+    /**
+     * Extrai os níveis referenciados numa consulta, seja explicitamente em um nó,
+     * os através de um filtro.
+     * 
+     * @param bucket
+     * @param node
+     */
     private void extractLevels(List<Level> bucket, Node node) {
         if (node.getMetadataEntity() instanceof Level) {
             bucket.add((Level) node.getMetadataEntity());

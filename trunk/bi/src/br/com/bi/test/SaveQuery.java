@@ -62,6 +62,6 @@ public class SaveQuery {
         query.getRows().addChildren(linha);
         query.getColumns().addChildren(coluna);
 
-        MetadataFacade.getInstance().traduzirParaSql(query);
+        System.out.println(MetadataFacade.getInstance().translateToSql(query));
     }
 }

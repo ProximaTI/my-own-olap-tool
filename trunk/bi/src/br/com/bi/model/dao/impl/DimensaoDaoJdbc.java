@@ -72,7 +72,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
             parameters.put("descricao", nivel.getDescription());
             parameters.put("esquema", nivel.getSchema());
             parameters.put("tabela", nivel.getTable());
-            parameters.put("juncaoNivelSuperior", nivel.getJoinColumn());
+            parameters.put("juncaoNivelSuperior", nivel.getJoinColumnUpperLevel());
             parameters.put("indice", nivel.getIndice());
 
             if (!nivel.isPersisted()) {
@@ -220,7 +220,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
     public List<Level> lowerLevels(int idnivel) {
         return getJdbcTemplate().query("select a.* from nivel a, nivel b "
                 + "where a.iddimensao = b.iddimensao "
-                + "and a.indice <= b.indice and b.id = :id order by a.indice",
+                + "and a.indice <= b.indice and b.id = ? order by a.indice desc",
                 new Object[]{idnivel}, new LevelMapper());
     }
 
@@ -231,7 +231,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
      */
     public Dimension findByLevelId(int idnivel) {
         return getJdbcTemplate().queryForObject("select a.* from dimensao a, nivel b "
-                + "where a.iddimensao = b.iddimensao and b.id = ?",
+                + "where a.id = b.iddimensao and b.id = ?",
                 new Object[]{idnivel}, new DimensaoDeepMapper());
     }
 
@@ -267,7 +267,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
             nivel.setDescription(rs.getString("descricao"));
             nivel.setSchema(rs.getString("esquema"));
             nivel.setId(rs.getInt("id"));
-            nivel.setJoinColumn(rs.getString("juncaoNivelSuperior"));
+            nivel.setJoinColumnUpperLevel(rs.getString("juncaoNivelSuperior"));
             nivel.setName(rs.getString("nome"));
             nivel.setProperties(findPropriedadesByNivel(nivel.getId()));
             nivel.setTable(rs.getString("tabela"));

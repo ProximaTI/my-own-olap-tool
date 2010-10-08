@@ -33,8 +33,8 @@ public class MetadataFacade {
         return instance;
     }
 
-    public String traduzirParaSql(Query consulta) {
-        QueryTranslator translator = new QueryTranslator(consulta);
+    public String translateToSql(Query query) {
+        QueryTranslator translator = new QueryTranslator(query);
         return translator.translate();
     }
 
