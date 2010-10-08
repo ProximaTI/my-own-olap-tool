@@ -13,7 +13,8 @@ import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.model.entity.query.Query;
 import br.com.bi.model.entity.query.Node;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,7 +175,6 @@ public class QueryTranslator implements Constants {
     // =================
     // = Gramática SQL =
     // =================
-    
     /**
      * Retorna uma string do tipo tabela + . + coluna.
      * @param table
@@ -267,36 +267,47 @@ public class QueryTranslator implements Constants {
     private String whereExpression() {
         List<String> joins = new ArrayList<String>();
 
+        List<Level> topLevels = topLevels();
+
         // do nível mais alto vai descendo e adicionando os joins até chegar o nível
         // mais baixo e assim juntá-lo ao cubo
-        for (Level topLevel : topLevels()) {
-
+        for (Level topLevel : topLevels) {
             List<Level> lowerLevels = MetadataFacade.getInstance().lowerLevels(topLevel.
                     getId());
 
-            List<String> buf = new ArrayList<String>();
+            for (int i = 0; i < lowerLevels.size(); i++) {
+                // de duas em duas colunas, coloca o join na lista
+                if (i > 0 & (i + 1) % 2 == 0) {
+                    String upperColumn = columnExpression(lowerLevels.get(i - 1).
+                            getTable(), lowerLevels.get(i - 1).getCodeProperty().
+                            getColumn());
 
-            for (Level lowerLevel : lowerLevels) {
-                buf.add(columnExpression(lowerLevel.getTable(), lowerLevel.
-                        getCodeProperty().getColumn()));
+                    String thisColumn = columnExpression(lowerLevels.get(i).
+                            getTable(), lowerLevels.get(i).
+                            getJoinColumnUpperLevel());
 
-                // de duas em duas colunas, escreve no buffer o join
-                if (buf.size() == 2) {
-                    joins.add(buf.get(0) + " = " + buf.get(1));
-                    buf = new ArrayList<String>();
+                    joins.add(thisColumn + " = " + upperColumn);
                 }
             }
 
-            // o nível mais baixo é o nível que faz junção com o cubo,
+            // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
+            Collections.sort(lowerLevels, new Comparator<Level>() {
+
+                public int compare(Level level1, Level level2) {
+                    return Integer.valueOf(level1.getIndice()).compareTo(Integer.
+                            valueOf(level2.getIndice()));
+                }
+            });
+
             Level lowestLevel = lowerLevels.get(lowerLevels.size() - 1);
 
             for (CubeLevel level : query.getCube().getCubeLevels()) {
                 if (level.getNivel().getId() == lowestLevel.getId()) {
                     joins.add(
                             columnExpression(query.getCube().getTable(), level.
-                            getColunaJuncao())
-                            + " = " + columnExpression(lowestLevel.getTable(), lowestLevel.
+                            getColunaJuncao()) + " = "
+                            + columnExpression(lowestLevel.getTable(), lowestLevel.
                             getCodeProperty().getColumn()));
                 }
             }
@@ -345,7 +356,6 @@ public class QueryTranslator implements Constants {
     // ===============
     // = Utilitários =
     // ===============
-    
     /**
      * Traduz uma expressão de filtro em um fragmento SQL.
      * @param expression
@@ -360,21 +370,23 @@ public class QueryTranslator implements Constants {
      * @param query
      * @return
      */
-    private Collection<Level> topLevels() {
-        Map<Dimension, Level> topLevels = new HashMap<Dimension, Level>();
+    private List<Level> topLevels() {
+        Map<Integer, Level> topLevels = new HashMap<Integer, Level>();
 
-        for (Level level : levelsPresent()) {
+        List<Level> levelsPresent = levelsPresent();
+
+        for (Level level : levelsPresent) {
             Dimension dimension = MetadataFacade.getInstance().findByLevelId(level.
                     getId());
 
             // se o nível está acima do que já está no mapa então ele é um "top level".
-            if (!topLevels.containsKey(dimension) || level.getIndice() > topLevels.
-                    get(dimension).getIndice()) {
-                topLevels.put(dimension, level);
+            if (!topLevels.containsKey(dimension.getId()) || level.getIndice() < topLevels.
+                    get(dimension.getId()).getIndice()) {
+                topLevels.put(dimension.getId(), level);
             }
         }
 
-        return topLevels.values();
+        return new ArrayList<Level>(topLevels.values());
     }
 
     /**

@@ -6,7 +6,6 @@ package br.com.bi.model.entity.query;
 
 import br.com.bi.model.entity.metadata.MetadataEntity;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -22,8 +21,7 @@ public class Node {
     public Node() {
     }
 
-    public Node(Node parent, MetadataEntity entity) {
-        this.parent = parent;
+    public Node(MetadataEntity entity) {
         this.metadataEntity = entity;
     }
 

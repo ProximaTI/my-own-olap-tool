@@ -220,7 +220,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
     public List<Level> lowerLevels(int idnivel) {
         return getJdbcTemplate().query("select a.* from nivel a, nivel b "
                 + "where a.iddimensao = b.iddimensao "
-                + "and a.indice <= b.indice and b.id = ? order by a.indice desc",
+                + "and a.indice >= b.indice and b.id = ? order by a.indice",
                 new Object[]{idnivel}, new LevelMapper());
     }
 

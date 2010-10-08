@@ -21,46 +21,87 @@ import br.com.bi.model.entity.query.Query;
 public class SaveQuery {
 
     public static void main(String args[]) {
-        Property codigo = new Property("idcategoria", true, false);
-        codigo.setName("Código");
+        Property idcategoria = new Property("idcategoria", true, false);
+        idcategoria.setName("Código");
 
         Level categoria = new Level();
         categoria.setSchema("stats");
         categoria.setTable("dwd_categoria");
         categoria.setIndice(0);
         categoria.setName("Categoria");
-        categoria.getProperties().add(codigo);
+        categoria.getProperties().add(idcategoria);
 
-        Dimension categoriaDimensao = new Dimension();
-        categoriaDimensao.setName("Categoria");
-        categoriaDimensao.getLevels().add(categoria);
+        Dimension d_categoria = new Dimension();
+        d_categoria.setName("Categoria");
+        d_categoria.getLevels().add(categoria);
 
-        MetadataFacade.getInstance().save(categoriaDimensao);
+        MetadataFacade.getInstance().save(d_categoria);
+
+        CubeLevel c_categoria = new CubeLevel();
+        c_categoria.setColunaJuncao("idcategoria");
+        c_categoria.setNivel(categoria);
+
+        // ================================================
+
+        Property idtipoproduto = new Property("idtipoproduto", true, false);
+        idtipoproduto.setName("Código");
+
+        Level tipoProduto = new Level();
+        tipoProduto.setSchema("stats");
+        tipoProduto.setTable("dwd_tipo_produto");
+        tipoProduto.setIndice(0);
+        tipoProduto.setName("Tipo Produto");
+        tipoProduto.getProperties().add(idtipoproduto);
+
+        Property idproduto = new Property("idproduto", true, false);
+        idproduto.setName("Código");
+
+        Level produto = new Level();
+        produto.setSchema("stats");
+        produto.setTable("dwd_produto_eletronico");
+        produto.setIndice(1);
+        produto.setName("Produto");
+        produto.setJoinColumnUpperLevel("idtipoproduto");
+        produto.getProperties().add(idproduto);
+
+        Dimension d_produto = new Dimension();
+        d_produto.setName("Produto");
+        d_produto.getLevels().add(tipoProduto);
+        d_produto.getLevels().add(produto);
+
+        MetadataFacade.getInstance().save(d_produto);
 
         Measure quantidade = new Measure(Measure.Funcao.SUM, "quantidade");
         quantidade.setName("Total de acessos");
 
-        CubeLevel categoriaCubo = new CubeLevel();
-        categoriaCubo.setColunaJuncao("idcategoria");
-        categoriaCubo.setNivel(categoria);
+        CubeLevel c_produto = new CubeLevel();
+        c_produto.setColunaJuncao("idproduto");
+        c_produto.setNivel(produto);
 
-        Cube cube = new Cube("stats", "dwf_acesso");
-        cube.getMetricas().add(quantidade);
-        cube.getCubeLevels().add(categoriaCubo);
+        Cube acessos = new Cube("stats", "dwf_acesso");
+        acessos.getMetricas().add(quantidade);
+        acessos.getCubeLevels().add(c_produto);
+        acessos.getCubeLevels().add(c_categoria);
 
-        MetadataFacade.getInstance().save(cube);
+
+        MetadataFacade.getInstance().save(acessos);
 
         // consulta
 
-        Node linha = new Node();
-        linha.setMetadataEntity(categoria);
+        Node n_tipoProduto = new Node();
+        n_tipoProduto.setMetadataEntity(tipoProduto);
+        n_tipoProduto.addChildren(new Node(produto));
 
-        Node coluna = new Node();
-        coluna.setMetadataEntity(quantidade);
+        Node n_categoria = new Node();
+        n_categoria.setMetadataEntity(categoria);
 
-        Query query = new Query(cube);
-        query.getRows().addChildren(linha);
-        query.getColumns().addChildren(coluna);
+        Node n_quantidade = new Node();
+        n_quantidade.setMetadataEntity(quantidade);
+
+        Query query = new Query(acessos);
+        query.getRows().addChildren(n_tipoProduto);
+        query.getRows().addChildren(n_categoria);
+        query.getColumns().addChildren(n_quantidade);
 
         System.out.println(MetadataFacade.getInstance().translateToSql(query));
     }
