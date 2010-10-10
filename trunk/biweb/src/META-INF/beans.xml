@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.5.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd http://www.springframework.org/schema/tool http://www.springframework.org/schema/tool/spring-tool-2.5.xsd">
+  <tx:annotation-driven/>
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+    <property name="url" value="jdbc:mysql://localhost:3306/bi"/>
+    <property name="username" value="bi"/>
+    <property name="password" value="bi"/>
+  </bean>
+  <!-- ============================================ -->
+  <!-- =============== Persistência =============== -->
+  <!-- ============================================ -->
+  <bean id="queryDAO"
+        class="br.com.bi.model.persistence.queries.dao.impl.jdbc.JdbcQueryDAO">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="nodeDAO" ref="nodeDAO"/>
+    <property name="queryIncrementer" ref="queryIncrementer"/>
+  </bean>
+  <bean id="queryIncrementer"
+        class="org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer">
+    <constructor-arg ref="dataSource"/>
+    <constructor-arg value="query_id_seq"/>
+    <constructor-arg value="query_id"/>
+  </bean>
+  <bean id="nodeDAO"
+        class="br.com.bi.model.persistence.queries.dao.impl.jdbc.JdbcNodeDAO">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="nodeIncrementer" ref="nodeIncrementer"/>
+  </bean>
+  <bean id="nodeIncrementer"
+        class="org.springframework.jdbc.support.incrementer.MySQLMaxValueIncrementer">
+    <constructor-arg ref="dataSource"/>
+    <constructor-arg value="node_id_seq"/>
+    <constructor-arg value="node_id"/>
+  </bean>
+  <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+</beans>
