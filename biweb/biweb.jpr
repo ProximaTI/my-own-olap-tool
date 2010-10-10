@@ -171,15 +171,11 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <value n="id" v="Jasper Analysis"/>
-            <value n="isJDK" v="false"/>
-         </hash>
-         <hash>
             <value n="id" v="MySQL JDBC"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" path="../../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
+            <url n="id" path="../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
@@ -195,55 +191,7 @@
          <list n="libraryDefinitions">
             <hash>
                <list n="classPath">
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/asm-commons.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/asm.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-collections-2.1.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-collections.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-dbcp-1.2.1.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-dbcp.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-discovery-0.2.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-io.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-lang.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-logging-1.0.4.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-logging.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-math-1.0.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-math.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-pool-1.2.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-pool.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-vfs-1.0.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/commons-vfs.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/eigenbase-properties-1.1.0.10924.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/eigenbase-properties.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/eigenbase-resgen-1.3.0.11873.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/eigenbase-resgen.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/eigenbase-xom-1.3.0.11999.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/eigenbase-xom.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/javacup-0.10k.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/javacup.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/jlfgr-1.0.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/jlfgr.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/log4j-1.2.9.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/log4j.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/olap4j-0.9.8-SNAPSHOT.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/olap4j.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/workbench-3.2.0-SNAPSHOT.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/workbench.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/xalan.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/xercesImpl.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/xml-apis.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/xmlunit.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/xpp3.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/xsdlib.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/mondrian-3.2.0-SNAPSHOT.jar" jar-entry=""/>
-                  <url path="../../../Ferramentas/Jasper Analysis Workbench/jasper/lib/mondrian.jar" jar-entry=""/>
-               </list>
-               <value n="deployedByDefault" v="true"/>
-               <value n="description" v="Jasper Analysis"/>
-               <value n="id" v="Jasper Analysis"/>
-            </hash>
-            <hash>
-               <list n="classPath">
-                  <url path="../../../../../../Program Files/NetBeans 6.9.1/ide/modules/ext/mysql-connector-java-5.1.6-bin.jar" jar-entry=""/>
+                  <url protocol="jar" path="file:/Program Files/NetBeans 6.9.1/ide/modules/ext/mysql-connector-java-5.1.6-bin.jar!/"/>
                </list>
                <value n="deployedByDefault" v="true"/>
                <value n="description" v="MySQL JDBC"/>
@@ -305,15 +253,11 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <value n="id" v="Jasper Analysis"/>
-            <value n="isJDK" v="false"/>
-         </hash>
-         <hash>
             <value n="id" v="MySQL JDBC"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" path="../../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
+            <url n="id" path="../../../AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
