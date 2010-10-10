@@ -25,7 +25,7 @@ public class SaveCube {
         Level categoria = new Level();
         categoria.setSchema("stats");
         categoria.setTable("dwd_categoria");
-        categoria.setIndice(0);
+        categoria.setIndex(0);
         categoria.setName("Categoria");
         categoria.getProperties().add(codigo);
 
@@ -39,11 +39,11 @@ public class SaveCube {
         quantidade.setName("Total de acessos");
 
         CubeLevel categoriaCubo = new CubeLevel();
-        categoriaCubo.setColunaJuncao("idcategoria");
-        categoriaCubo.setNivel(categoria);
+        categoriaCubo.setJoinColumn("idcategoria");
+        categoriaCubo.setLevel(categoria);
 
         Cube cube = new Cube("stats", "dwf_acesso");
-        cube.getMetricas().add(quantidade);
+        cube.getMeasures().add(quantidade);
         cube.getCubeLevels().add(categoriaCubo);
 
         MetadataFacade.getInstance().save(cube);

@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Stack;
 
 /**
- *
+ * Classe responsável por tomar uma consulta e traduzí-la em uma instrução SQL.
  * @author Luiz
  */
 public class QueryTranslator implements Constants {
@@ -67,7 +67,7 @@ public class QueryTranslator implements Constants {
     }
 
     /**
-     * Translate um nó em um fragmento de instrução SQL.
+     * Traduz um nó de uma consulta em um fragmento de instrução SQL.
      * @param node
      * @return
      */
@@ -126,7 +126,7 @@ public class QueryTranslator implements Constants {
     public String translateMeasure(Measure measure) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(measure.getFuncao()).append("(");
+        sb.append(measure.getFunction()).append("(");
 
         if (measure.getFilterExpression() != null) {
             sb.append("CASE WHEN ");
@@ -175,6 +175,7 @@ public class QueryTranslator implements Constants {
     // =================
     // = Gramática SQL =
     // =================
+    
     /**
      * Retorna uma string do tipo tabela + . + coluna.
      * @param table
@@ -261,7 +262,8 @@ public class QueryTranslator implements Constants {
     }
 
     /**
-     * Produz a cláusula WHERE da consulta, baseado nos joins com os níveis referenciados.
+     * Produz a cláusula WHERE da consulta, baseado nos joins resultantes das referências
+     * para os níveis da consulta.
      * @return
      */
     private String whereExpression() {
@@ -295,18 +297,18 @@ public class QueryTranslator implements Constants {
             Collections.sort(lowerLevels, new Comparator<Level>() {
 
                 public int compare(Level level1, Level level2) {
-                    return Integer.valueOf(level1.getIndice()).compareTo(Integer.
-                            valueOf(level2.getIndice()));
+                    return Integer.valueOf(level1.getIndex()).compareTo(Integer.
+                            valueOf(level2.getIndex()));
                 }
             });
 
             Level lowestLevel = lowerLevels.get(lowerLevels.size() - 1);
 
             for (CubeLevel level : query.getCube().getCubeLevels()) {
-                if (level.getNivel().getId() == lowestLevel.getId()) {
+                if (level.getLevel().getId() == lowestLevel.getId()) {
                     joins.add(
                             columnExpression(query.getCube().getTable(), level.
-                            getColunaJuncao()) + " = "
+                            getJoinColumn()) + " = "
                             + columnExpression(lowestLevel.getTable(), lowestLevel.
                             getCodeProperty().getColumn()));
                 }
@@ -356,6 +358,7 @@ public class QueryTranslator implements Constants {
     // ===============
     // = Utilitários =
     // ===============
+    
     /**
      * Traduz uma expressão de filtro em um fragmento SQL.
      * @param expression
@@ -380,8 +383,8 @@ public class QueryTranslator implements Constants {
                     getId());
 
             // se o nível está acima do que já está no mapa então ele é um "top level".
-            if (!topLevels.containsKey(dimension.getId()) || level.getIndice() < topLevels.
-                    get(dimension.getId()).getIndice()) {
+            if (!topLevels.containsKey(dimension.getId()) || level.getIndex() < topLevels.
+                    get(dimension.getId()).getIndex()) {
                 topLevels.put(dimension.getId(), level);
             }
         }

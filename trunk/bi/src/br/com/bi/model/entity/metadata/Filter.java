@@ -10,19 +10,19 @@ package br.com.bi.model.entity.metadata;
  */
 public class Filter extends MetadataEntity {
 
-    private String expressao;
+    private String expression;
 
     /**
      * @return the expressao
      */
     public String getExpression() {
-        return expressao;
+        return expression;
     }
 
     /**
-     * @param expressao the expressao to set
+     * @param expression the expressao to set
      */
-    public void setExpressao(String expressao) {
-        this.expressao = expressao;
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 }

@@ -13,19 +13,19 @@ import java.util.List;
  */
 public class Dimension extends MetadataEntity {
 
-    private List<Level> niveis = new ArrayList<Level>();
+    private List<Level> levels = new ArrayList<Level>();
 
     /**
      * @return the niveis
      */
     public List<Level> getLevels() {
-        return niveis;
+        return levels;
     }
 
     /**
-     * @param niveis the niveis to set
+     * @param levels the niveis to set
      */
-    public void setNiveis(List<Level> niveis) {
-        this.niveis = niveis;
+    public void setLevels(List<Level> levels) {
+        this.levels = levels;
     }
 }

@@ -17,7 +17,7 @@ public class Level extends MetadataEntity {
     private String table;
     private String joinColumnUpperLevel;
     private List<Property> properties = new ArrayList<Property>();
-    private int indice;
+    private int index;
 
     public Level() {
     }
@@ -110,14 +110,14 @@ public class Level extends MetadataEntity {
     /**
      * @return the indice
      */
-    public int getIndice() {
-        return indice;
+    public int getIndex() {
+        return index;
     }
 
     /**
-     * @param indice the indice to set
+     * @param index the indice to set
      */
-    public void setIndice(int indice) {
-        this.indice = indice;
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

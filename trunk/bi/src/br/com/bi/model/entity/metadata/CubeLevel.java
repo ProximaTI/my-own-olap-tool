@@ -12,34 +12,34 @@ import br.com.bi.model.entity.Entity;
  */
 public class CubeLevel extends Entity {
 
-    private Level nivel;
-    private String colunaJuncao;
+    private Level level;
+    private String joinColumn;
 
     /**
      * @return the nivel
      */
-    public Level getNivel() {
-        return nivel;
+    public Level getLevel() {
+        return level;
     }
 
     /**
-     * @param nivel the nivel to set
+     * @param level the nivel to set
      */
-    public void setNivel(Level nivel) {
-        this.nivel = nivel;
+    public void setLevel(Level level) {
+        this.level = level;
     }
 
     /**
      * @return the colunaJuncao
      */
-    public String getColunaJuncao() {
-        return colunaJuncao;
+    public String getJoinColumn() {
+        return joinColumn;
     }
 
     /**
-     * @param colunaJuncao the colunaJuncao to set
+     * @param joinColumn the colunaJuncao to set
      */
-    public void setColunaJuncao(String colunaJuncao) {
-        this.colunaJuncao = colunaJuncao;
+    public void setJoinColumn(String joinColumn) {
+        this.joinColumn = joinColumn;
     }
 }

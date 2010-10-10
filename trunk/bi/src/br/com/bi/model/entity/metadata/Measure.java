@@ -10,83 +10,83 @@ package br.com.bi.model.entity.metadata;
  */
 public class Measure extends MetadataEntity {
 
-    private Funcao funcao;
-    private String coluna;
-    private String expressaoFiltro;
-    private boolean metricaPadrao;
+    private Funcao function;
+    private String column;
+    private String filterExpression;
+    private boolean defaultMeasure;
 
     public Measure() {
     }
 
-    public Measure(Funcao funcao, String coluna) {
-        this.funcao = funcao;
-        this.coluna = coluna;
+    public Measure(Funcao function, String coluna) {
+        this.function = function;
+        this.column = coluna;
     }
 
     /**
      * @return the funcao
      */
-    public Funcao getFuncao() {
-        return funcao;
+    public Funcao getFunction() {
+        return function;
     }
 
     /**
-     * @param funcao the funcao to set
+     * @param function the funcao to set
      */
-    public void setFuncao(Funcao funcao) {
-        this.funcao = funcao;
+    public void setFunction(Funcao function) {
+        this.function = function;
     }
 
     /**
      * @return the coluna
      */
     public String getColumn() {
-        return coluna;
+        return column;
     }
 
     /**
-     * @param coluna the coluna to set
+     * @param column the coluna to set
      */
-    public void setColuna(String coluna) {
-        this.coluna = coluna;
+    public void setColumn(String column) {
+        this.column = column;
     }
 
     /**
      * @return the expressaoFiltro
      */
     public String getFilterExpression() {
-        return expressaoFiltro;
+        return filterExpression;
     }
 
     /**
-     * @param expressaoFiltro the expressaoFiltro to set
+     * @param filterExpression the expressaoFiltro to set
      */
-    public void setExpressaoFiltro(String expressaoFiltro) {
-        this.expressaoFiltro = expressaoFiltro;
+    public void setFilterExpression(String filterExpression) {
+        this.filterExpression = filterExpression;
     }
 
     /**
      * @return the metricaPadrao
      */
-    public boolean isMetricaPadrao() {
-        return metricaPadrao;
+    public boolean isDefaultMeasure() {
+        return defaultMeasure;
     }
 
     /**
-     * @param metricaPadrao the metricaPadrao to set
+     * @param defaultMeasure the metricaPadrao to set
      */
-    public void setMetricaPadrao(boolean metricaPadrao) {
-        this.metricaPadrao = metricaPadrao;
+    public void setDefaultMeasure(boolean defaultMeasure) {
+        this.defaultMeasure = defaultMeasure;
     }
 
     public void setCodigoFuncao(int funcao) {
-        setFuncao(codigoToFuncao(funcao));
+        setFunction(codigoToFuncao(funcao));
     }
 
     public int getCodigoFuncao() {
-        if (funcao == Funcao.SUM) {
+        if (function == Funcao.SUM) {
             return 1;
-        } else if (funcao == Funcao.COUNT) {
+        } else if (function == Funcao.COUNT) {
             return 2;
         } else {
             return 3;

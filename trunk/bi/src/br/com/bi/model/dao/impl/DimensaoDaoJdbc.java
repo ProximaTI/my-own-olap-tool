@@ -73,7 +73,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
             parameters.put("esquema", nivel.getSchema());
             parameters.put("tabela", nivel.getTable());
             parameters.put("juncaoNivelSuperior", nivel.getJoinColumnUpperLevel());
-            parameters.put("indice", nivel.getIndice());
+            parameters.put("indice", nivel.getIndex());
 
             if (!nivel.isPersisted()) {
                 SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
@@ -254,7 +254,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
         public Dimension mapRow(ResultSet rs, int i) throws SQLException {
             Dimension dimensao = super.mapRow(rs, i);
 
-            dimensao.setNiveis(findNiveisByDimensao(rs.getInt("id")));
+            dimensao.setLevels(findNiveisByDimensao(rs.getInt("id")));
 
             return dimensao;
         }
@@ -271,7 +271,7 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
             nivel.setName(rs.getString("nome"));
             nivel.setProperties(findPropriedadesByNivel(nivel.getId()));
             nivel.setTable(rs.getString("tabela"));
-            nivel.setIndice(rs.getInt("indice"));
+            nivel.setIndex(rs.getInt("indice"));
 
             return nivel;
         }

@@ -27,7 +27,7 @@ public class SaveQuery {
         Level categoria = new Level();
         categoria.setSchema("stats");
         categoria.setTable("dwd_categoria");
-        categoria.setIndice(0);
+        categoria.setIndex(0);
         categoria.setName("Categoria");
         categoria.getProperties().add(idcategoria);
 
@@ -38,8 +38,8 @@ public class SaveQuery {
         MetadataFacade.getInstance().save(d_categoria);
 
         CubeLevel c_categoria = new CubeLevel();
-        c_categoria.setColunaJuncao("idcategoria");
-        c_categoria.setNivel(categoria);
+        c_categoria.setJoinColumn("idcategoria");
+        c_categoria.setLevel(categoria);
 
         // ================================================
 
@@ -49,7 +49,7 @@ public class SaveQuery {
         Level tipoProduto = new Level();
         tipoProduto.setSchema("stats");
         tipoProduto.setTable("dwd_tipo_produto");
-        tipoProduto.setIndice(0);
+        tipoProduto.setIndex(0);
         tipoProduto.setName("Tipo Produto");
         tipoProduto.getProperties().add(idtipoproduto);
 
@@ -59,7 +59,7 @@ public class SaveQuery {
         Level produto = new Level();
         produto.setSchema("stats");
         produto.setTable("dwd_produto_eletronico");
-        produto.setIndice(1);
+        produto.setIndex(1);
         produto.setName("Produto");
         produto.setJoinColumnUpperLevel("idtipoproduto");
         produto.getProperties().add(idproduto);
@@ -75,11 +75,11 @@ public class SaveQuery {
         quantidade.setName("Total de acessos");
 
         CubeLevel c_produto = new CubeLevel();
-        c_produto.setColunaJuncao("idproduto");
-        c_produto.setNivel(produto);
+        c_produto.setJoinColumn("idproduto");
+        c_produto.setLevel(produto);
 
         Cube acessos = new Cube("stats", "dwf_acesso");
-        acessos.getMetricas().add(quantidade);
+        acessos.getMeasures().add(quantidade);
         acessos.getCubeLevels().add(c_produto);
         acessos.getCubeLevels().add(c_categoria);
 

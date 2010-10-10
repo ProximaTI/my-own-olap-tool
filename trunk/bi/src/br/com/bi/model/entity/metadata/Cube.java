@@ -13,87 +13,87 @@ import java.util.List;
  */
 public class Cube extends MetadataEntity {
 
-    private String esquema;
-    private String tabela;
-    private List<CubeLevel> niveis = new ArrayList<CubeLevel>();
-    private List<Measure> metricas = new ArrayList<Measure>();
-    private List<Filter> filtros = new ArrayList<Filter>();
+    private String schema;
+    private String table;
+    private List<CubeLevel> levels = new ArrayList<CubeLevel>();
+    private List<Measure> measures = new ArrayList<Measure>();
+    private List<Filter> filters = new ArrayList<Filter>();
 
     public Cube() {
     }
 
-    public Cube(String esquema, String tabela) {
-        this.esquema = esquema;
-        this.tabela = tabela;
+    public Cube(String schema, String table) {
+        this.schema = schema;
+        this.table = table;
     }
 
     /**
      * @return the filtros
      */
-    public List<Filter> getFiltros() {
-        return filtros;
+    public List<Filter> getFilters() {
+        return filters;
     }
 
     /**
-     * @param filtros the filtros to set
+     * @param filters the filtros to set
      */
-    public void setFiltros(List<Filter> filtros) {
-        this.filtros = filtros;
+    public void setFilters(List<Filter> filters) {
+        this.filters = filters;
     }
 
     /**
      * @return the metricas
      */
-    public List<Measure> getMetricas() {
-        return metricas;
+    public List<Measure> getMeasures() {
+        return measures;
     }
 
     /**
      * @param metricas the metricas to set
      */
-    public void setMetricas(List<Measure> metricas) {
-        this.metricas = metricas;
+    public void setMeasures(List<Measure> metricas) {
+        this.measures = metricas;
     }
 
     /**
      * @return the esquema
      */
     public String getSchema() {
-        return esquema;
+        return schema;
     }
 
     /**
-     * @param esquema the esquema to set
+     * @param schema the esquema to set
      */
-    public void setEsquema(String esquema) {
-        this.esquema = esquema;
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 
     /**
      * @return the tabela
      */
     public String getTable() {
-        return tabela;
+        return table;
     }
 
     /**
-     * @param tabela the tabela to set
+     * @param table the tabela to set
      */
-    public void setTabela(String tabela) {
-        this.tabela = tabela;
+    public void setTable(String table) {
+        this.table = table;
     }
 
     /**
      * @return the niveis
      */
     public List<CubeLevel> getCubeLevels() {
-        return niveis;
+        return levels;
     }
 
     /**
-     * @param niveis the niveis to set
+     * @param levels the niveis to set
      */
-    public void setNiveis(List<CubeLevel> niveis) {
-        this.niveis = niveis;
+    public void setLevels(List<CubeLevel> levels) {
+        this.levels = levels;
     }
 }
