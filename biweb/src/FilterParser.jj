@@ -1,0 +1,35 @@
+PARSER_BEGIN(FilterParser)
+
+public class FilterParser {
+  public static void main(String args[]) {
+  }
+}
+PARSER_END(FilterParser)
+
+/* ======================= */
+/* = Definição de tokens = */
+/* ======================= */
+
+/* Pular espaços em branco */
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* Operadores e parentesis */
+
+TOKEN [IGNORE_CASE] :
+{
+  < BINARY_LOGIC_OPERATOR: "ou" | "e" >
+| < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
+| < NOT: "não" >
+| < LPAR: "(" >
+| < RPAR: ")" >
+| < DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+| < IDENTIFIER: "[" (["a"-"z"])* "]" >
+}

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.1"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+          xmlns:tr="http://myfaces.apache.org/trinidad"
+          xmlns:c="http://java.sun.com/jsp/jstl/core">
+  <c:set var="biwebBundle" value="#{adfBundle['br.com.bi.biwebBundle']}"/>
+  <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+  <af:pageTemplateDef var="attrs">
+    <af:decorativeBox theme="medium" topHeight="60px" id="pt_db1">
+      <f:facet name="center">
+        <af:panelStretchLayout id="psl2" topHeight="65px" bottomHeight="15px">
+          <f:facet name="center">
+            <af:facetRef facetName="content"/>
+          </f:facet>
+          <f:facet name="top">
+            <af:panelGroupLayout layout="scroll"
+                                 xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+                                 id="pgl3">
+              <af:spacer width="10" height="5" id="s7"/>
+              <af:panelGroupLayout layout="horizontal"
+                                   xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+                                   id="pgl1">
+                <af:spacer width="10" height="10" id="spacer1"/>
+                <af:activeImage source="/images/transparent-cube2.png"
+                                id="ai1"/>
+                <af:spacer width="10" height="10" id="s1"/>
+                <af:outputText value="#{biwebBundle.MINHA_PR_U00F3PRIA_FERRAMENTA_}" id="ot1"
+                               inlineStyle="font-size:large;"/>
+              </af:panelGroupLayout>
+              <af:spacer width="10" height="10" id="s8"/>
+            </af:panelGroupLayout>
+          </f:facet>
+          <f:facet name="bottom">
+            <af:spacer width="10" height="10" id="s10"/>
+          </f:facet>
+        </af:panelStretchLayout>
+      </f:facet>
+    </af:decorativeBox>
+    <af:xmlContent>
+      <component xmlns="http://xmlns.oracle.com/adf/faces/rich/component">
+        <display-name>bi</display-name>
+        <facet>
+          <facet-name>content</facet-name>
+        </facet>
+      </component>
+    </af:xmlContent>
+  </af:pageTemplateDef>
+</jsp:root>
