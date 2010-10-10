@@ -1,0 +1,67 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<SDM>
+   <OverallProperties
+      id="OverallProperties1">
+      <property
+         name="y">325.55176</property>
+      <property
+         name="x">88.01758</property>
+   </OverallProperties>
+   <Page
+      id="Page2">
+      <property
+         name="wildcard">true</property>
+      <property
+         name="y">170.35059</property>
+      <property
+         name="x">88.01758</property>
+      <property
+         name="jspName">*</property>
+   </Page>
+   <Page
+      id="Page3">
+      <property
+         name="wildcard">false</property>
+      <property
+         name="y">83.5</property>
+      <property
+         name="x">256.0547</property>
+      <property
+         name="jspName">/queryEdit.jspx</property>
+   </Page>
+   <Page
+      id="Page5">
+      <property
+         name="wildcard">false</property>
+      <property
+         name="y">256.20117</property>
+      <property
+         name="x">256.0547</property>
+      <property
+         name="jspName">/queryCad.jspx</property>
+   </Page>
+   <NavigationCase
+      islink="true"
+      id="NavigationCase7"
+      from="Page2"
+      to="Page3">
+      <property
+         name="fromOutcome">queryEdit</property>
+      <property
+         name="description">Navigation Case</property>
+      <property
+         name="sdm:polyPoints">R45,124.01758,167.0,215.05469,83.149414,L50</property>
+   </NavigationCase>
+   <NavigationCase
+      islink="true"
+      id="NavigationCase8"
+      from="Page2"
+      to="Page5">
+      <property
+         name="fromOutcome">queryCad</property>
+      <property
+         name="description">Navigation Case</property>
+      <property
+         name="sdm:polyPoints">R55,124.01758,174.0,215.05469,255.85059,L50</property>
+   </NavigationCase>
+</SDM>

@@ -10,29 +10,6 @@
   <navigation-rule>
     <from-view-id>/queryEdit.jspx</from-view-id>
   </navigation-rule>
-  <managed-bean>
-    <managed-bean-name>queryCad</managed-bean-name>
-    <managed-bean-class>br.com.bi.view.managedbeans.QueryCad</managed-bean-class>
-    <managed-bean-scope>session</managed-bean-scope>
-    <managed-property>
-      <property-name>listener</property-name>
-      <value>#{queryEdit}</value>
-    </managed-property>
-  </managed-bean>
-  <managed-bean>
-    <managed-bean-name>queryEdit</managed-bean-name>
-    <managed-bean-class>br.com.bi.view.managedbeans.QueryEdit</managed-bean-class>
-    <managed-bean-scope>session</managed-bean-scope>
-  </managed-bean>
-  <managed-bean>
-    <managed-bean-name>cubeMetadata</managed-bean-name>
-    <managed-bean-class>br.com.bi.view.managedbeans.CubeMetadataBean</managed-bean-class>
-    <managed-bean-scope>session</managed-bean-scope>
-    <managed-property>
-      <property-name>listener</property-name>
-      <value>#{queryEdit}</value>
-    </managed-property>
-  </managed-bean>
   <navigation-rule>
     <from-view-id>*</from-view-id>
     <navigation-case>
