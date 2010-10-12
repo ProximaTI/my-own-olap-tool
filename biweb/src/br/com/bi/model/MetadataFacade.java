@@ -4,6 +4,7 @@
  */
 package br.com.bi.model;
 
+
 import br.com.bi.model.dao.CuboDao;
 import br.com.bi.model.dao.DimensionDao;
 import br.com.bi.model.entity.metadata.Cube;
@@ -11,7 +12,9 @@ import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.model.entity.query.Query;
 import br.com.bi.model.query.sql.QueryTranslator;
+
 import java.util.List;
+
 
 /**
  *
@@ -41,6 +44,7 @@ public class MetadataFacade {
     // ============
     // === Cubo ===
     // ============
+
     /**
      * Salva no banco de dados o cubo informado.
      * @param cube
@@ -73,6 +77,7 @@ public class MetadataFacade {
     public void deleteCube(int id) {
         getCubeDao().delete(id);
     }
+    
     // ================
     // === Dimensão ===
     // ================
@@ -102,11 +107,12 @@ public class MetadataFacade {
     }
 
     // ================================
+
     private CuboDao getCubeDao() {
-        return (CuboDao) Application.getContext().getBean(CUBE_DAO);
+        return (CuboDao)Application.getContext().getBean(CUBE_DAO);
     }
 
     private DimensionDao getDimensionDao() {
-        return (DimensionDao) Application.getContext().getBean(DIMENSION_DAO);
+        return (DimensionDao)Application.getContext().getBean(DIMENSION_DAO);
     }
 }

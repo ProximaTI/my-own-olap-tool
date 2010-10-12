@@ -4,22 +4,27 @@
  */
 package br.com.bi.model.dao.impl;
 
+
 import br.com.bi.model.dao.CuboDao;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Filter;
-import br.com.bi.model.entity.metadata.Measure;
 import br.com.bi.model.entity.metadata.Level;
+import br.com.bi.model.entity.metadata.Measure;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.object.SqlUpdate;
 import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  *
@@ -32,7 +37,8 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @return
      */
     public List<Cube> findAll() {
-        return getJdbcTemplate().query("select * from cubo order by nome", new CuboShallowMapper());
+        return getJdbcTemplate().query("select * from cubo order by nome",
+                                       new CuboShallowMapper());
     }
 
     /**
@@ -41,8 +47,9 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @return
      */
     public Cube findById(int id) {
-        return getJdbcTemplate().queryForObject("select * from cubo where id = ?", new Object[]{
-                    id}, new CuboDeepMapper());
+        return getJdbcTemplate().queryForObject("select * from cubo where id = ?",
+                                                new Object[] { id },
+                                                new CuboDeepMapper());
     }
 
     /**
@@ -64,9 +71,9 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
             cubo.setId(insert.executeAndReturnKey(parameters).intValue());
         } else {
             SqlUpdate update =
-                    new SqlUpdate(getDataSource(), "update cubo set nome = :nome, "
-                    + "descricao = :descricao, esquema = :esquema, tabela = :tabela "
-                    + "where id = :id");
+                new SqlUpdate(getDataSource(), "update cubo set nome = :nome, " +
+                              "descricao = :descricao, esquema = :esquema, tabela = :tabela " +
+                              "where id = :id");
             parameters.put("id", cubo.getId());
             update.updateByNamedParam(parameters);
         }
@@ -94,18 +101,20 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
             parameters.put("funcao", metrica.getCodigoFuncao());
             parameters.put("coluna", metrica.getColumn());
             parameters.put("expressaoFiltro", metrica.getFilterExpression());
-            parameters.put("metricaPadrao", metrica.isDefaultMeasure() ? 1 : 0);
+            parameters.put("metricaPadrao",
+                           metrica.isDefaultMeasure() ? 1 : 0);
 
             if (!metrica.isPersisted()) {
-                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                SimpleJdbcInsert insert =
+                    new SimpleJdbcInsert(getDataSource());
                 insert.withTableName("metrica").usingGeneratedKeyColumns("id");
                 metrica.setId(insert.executeAndReturnKey(parameters).intValue());
             } else {
                 SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update metrica set nome = :nome, "
-                        + "descricao = :descricao, funcao = :funcao, coluna = :coluna,"
-                        + "expressaoFiltro = :expressaoFiltro, metricaPadrao = :metricaPadrao "
-                        + "where id = :id");
+                    new SqlUpdate(getDataSource(), "update metrica set nome = :nome, " +
+                                  "descricao = :descricao, funcao = :funcao, coluna = :coluna," +
+                                  "expressaoFiltro = :expressaoFiltro, metricaPadrao = :metricaPadrao " +
+                                  "where id = :id");
                 parameters.put("id", metrica.getId());
                 update.updateByNamedParam(parameters);
             }
@@ -114,9 +123,9 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
         }
 
         if (metricas.size() > 0) {
-            getJdbcTemplate().update("delete from metrica where not id in (:ids) and idcubo = :idcubo".
-                    replace(":ids", listToString(metricas)).replace(":idcubo", Integer.
-                    toString(cubo.getId())));
+            getJdbcTemplate().update("delete from metrica where not id in (:ids) and idcubo = :idcubo".replace(":ids",
+                                                                                                               listToString(metricas)).replace(":idcubo",
+                                                                                                                                               Integer.toString(cubo.getId())));
         }
     }
 
@@ -138,13 +147,14 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
             parameters.put("expressao", filtro.getExpression());
 
             if (!filtro.isPersisted()) {
-                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                SimpleJdbcInsert insert =
+                    new SimpleJdbcInsert(getDataSource());
                 insert.withTableName("filtro").usingGeneratedKeyColumns("id");
                 filtro.setId(insert.executeAndReturnKey(parameters).intValue());
             } else {
                 SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update filtro set nome = :nome, "
-                        + "descricao = :descricao, expressao = :expressao where id = :id");
+                    new SqlUpdate(getDataSource(), "update filtro set nome = :nome, " +
+                                  "descricao = :descricao, expressao = :expressao where id = :id");
                 parameters.put("id", filtro.getId());
                 update.updateByNamedParam(parameters);
             }
@@ -153,9 +163,9 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
         }
 
         if (filtros.size() > 0) {
-            getJdbcTemplate().update("delete from filtro where not id in (:ids) and idcubo = :idcubo".
-                    replace(":ids", listToString(filtros)).replace(":idcubo", Integer.
-                    toString(cubo.getId())));
+            getJdbcTemplate().update("delete from filtro where not id in (:ids) and idcubo = :idcubo".replace(":ids",
+                                                                                                              listToString(filtros)).replace(":idcubo",
+                                                                                                                                             Integer.toString(cubo.getId())));
         }
     }
 
@@ -176,13 +186,14 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
             parameters.put("colunaJuncao", nivel.getJoinColumn());
 
             if (!nivel.isPersisted()) {
-                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                SimpleJdbcInsert insert =
+                    new SimpleJdbcInsert(getDataSource());
                 insert.withTableName("cubo_nivel");
                 insert.execute(parameters);
             } else {
                 SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update cubo_nivel set colunaJuncao = :colunaJuncao"
-                        + " where idcubo = :id and idnivel = :idnivel");
+                    new SqlUpdate(getDataSource(), "update cubo_nivel set colunaJuncao = :colunaJuncao" +
+                                  " where idcubo = :id and idnivel = :idnivel");
                 update.updateByNamedParam(parameters);
             }
 
@@ -190,9 +201,10 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
         }
 
         if (niveis.size() > 0) {
-            getJdbcTemplate().update("delete from cubo_nivel "
-                    + "where not idnivel in (:ids) and idcubo = :idcubo".replace(":ids", listToString(niveis)).
-                    replace(":idcubo", Integer.toString(cubo.getId())));
+            getJdbcTemplate().update("delete from cubo_nivel " +
+                                     "where not idnivel in (:ids) and idcubo = :idcubo".replace(":ids",
+                                                                                                listToString(niveis)).replace(":idcubo",
+                                                                                                                              Integer.toString(cubo.getId())));
         }
     }
 
@@ -202,32 +214,31 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      */
     @Transactional
     public void delete(int id) {
-        // realiza carga completa do cubo
-        Cube cubo = findById(id);
+        apagarFiltros(id);
+        apagarMetricas(id);
+        apagarNiveis(id);
 
-        apagarFiltros(cubo.getId());
-        apagarMetricas(cubo.getId());
-        apagarNiveis(cubo.getId());
-
-        getJdbcTemplate().update("delete from cubo where id = ?", new Object[]{
-                    id});
+        getJdbcTemplate().update("delete from cubo where id = ?",
+                                 new Object[] { id });
     }
 
     private List<CubeLevel> findNiveisByCubo(int idCubo) {
-        return getJdbcTemplate().query("select * from cubo_nivel where idcubo = ?", new Object[]{
-                    idCubo}, new RowMapper<CubeLevel>() {
+        return getJdbcTemplate().query("select * from cubo_nivel where idcubo = ?",
+                                       new Object[] { idCubo },
+                                       new RowMapper<CubeLevel>() {
 
-            public CubeLevel mapRow(ResultSet rs, int i) throws SQLException {
-                CubeLevel nivel = new CubeLevel();
-                nivel.setLevel(findNivelById(rs.getInt("idnivel")));
-                nivel.setJoinColumn(rs.getString("colunaJuncao"));
-                return nivel;
-            }
+                public CubeLevel mapRow(ResultSet rs,
+                                        int i) throws SQLException {
+                    CubeLevel nivel = new CubeLevel();
+                    nivel.setLevel(findNivelById(rs.getInt("idnivel")));
+                    nivel.setJoinColumn(rs.getString("colunaJuncao"));
+                    return nivel;
+                }
 
-            private Level findNivelById(int aInt) {
-                throw new UnsupportedOperationException("Not yet implemented");
-            }
-        });
+                private Level findNivelById(int aInt) {
+                    throw new UnsupportedOperationException("Not yet implemented");
+                }
+            });
     }
 
     /**
@@ -236,20 +247,21 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @return
      */
     private List<Filter> findFiltrosByCubo(int idCubo) {
-        return getJdbcTemplate().query("select * from filtro where idcubo = ?", new Object[]{
-                    idCubo}, new RowMapper<Filter>() {
+        return getJdbcTemplate().query("select * from filtro where idcubo = ?",
+                                       new Object[] { idCubo },
+                                       new RowMapper<Filter>() {
 
-            public Filter mapRow(ResultSet rs, int i) throws SQLException {
-                Filter filtro = new Filter();
+                public Filter mapRow(ResultSet rs, int i) throws SQLException {
+                    Filter filtro = new Filter();
 
-                filtro.setDescription(rs.getString("descricao"));
-                filtro.setExpression(rs.getString("expressao"));
-                filtro.setId(rs.getInt("id"));
-                filtro.setName(rs.getString("nome"));
+                    filtro.setDescription(rs.getString("descricao"));
+                    filtro.setExpression(rs.getString("expressao"));
+                    filtro.setId(rs.getInt("id"));
+                    filtro.setName(rs.getString("nome"));
 
-                return filtro;
-            }
-        });
+                    return filtro;
+                }
+            });
     }
 
     /**
@@ -258,23 +270,25 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      * @return
      */
     private List<Measure> findMetricasByCubo(int idCubo) {
-        return getJdbcTemplate().query("select * from metrica where idCubo = ?", new Object[]{
-                    idCubo}, new RowMapper<Measure>() {
+        return getJdbcTemplate().query("select * from metrica where idCubo = ?",
+                                       new Object[] { idCubo },
+                                       new RowMapper<Measure>() {
 
-            public Measure mapRow(ResultSet rs, int i) throws SQLException {
-                Measure filtro = new Measure();
+                public Measure mapRow(ResultSet rs,
+                                      int i) throws SQLException {
+                    Measure filtro = new Measure();
 
-                filtro.setColumn(rs.getString("coluna"));
-                filtro.setDescription(rs.getString("descricao"));
-                filtro.setFilterExpression(rs.getString("expressaoFiltro"));
-                filtro.setCodigoFuncao(rs.getInt("funcao"));
-                filtro.setId(rs.getInt("id"));
-                filtro.setDefaultMeasure(rs.getInt("metricaPadrao") == 1);
-                filtro.setName(rs.getString("nome"));
+                    filtro.setColumn(rs.getString("coluna"));
+                    filtro.setDescription(rs.getString("descricao"));
+                    filtro.setFilterExpression(rs.getString("expressaoFiltro"));
+                    filtro.setCodigoFuncao(rs.getInt("funcao"));
+                    filtro.setId(rs.getInt("id"));
+                    filtro.setDefaultMeasure(rs.getInt("metricaPadrao") == 1);
+                    filtro.setName(rs.getString("nome"));
 
-                return filtro;
-            }
-        });
+                    return filtro;
+                }
+            });
     }
 
     /**
@@ -283,8 +297,8 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      */
     @Transactional
     private void apagarFiltros(int idCubo) {
-        getJdbcTemplate().update("delete from filtro where idcubo = ?", new Object[]{
-                    idCubo});
+        getJdbcTemplate().update("delete from filtro where idcubo = ?",
+                                 new Object[] { idCubo });
     }
 
     /**
@@ -293,8 +307,8 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
      */
     @Transactional
     private void apagarMetricas(int idCubo) {
-        getJdbcTemplate().update("delete from metrica where idcubo = ?", new Object[]{
-                    idCubo});
+        getJdbcTemplate().update("delete from metrica where idcubo = ?",
+                                 new Object[] { idCubo });
     }
 
     /**
@@ -304,7 +318,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
     @Transactional
     private void apagarNiveis(int idCubo) {
         getJdbcTemplate().update("delete from cubo_nivel where idcubo = ?",
-                new Object[]{idCubo});
+                                 new Object[] { idCubo });
     }
 
     class CuboShallowMapper implements RowMapper<Cube> {
