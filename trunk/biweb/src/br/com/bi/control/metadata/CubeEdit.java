@@ -3,6 +3,9 @@ package br.com.bi.control.metadata;
 import br.com.bi.model.entity.metadata.Cube;
 
 public class CubeEdit {
+    public static final String CUBE_EDIT_BEAN_NAME = "cubeEdit";
+    public static final String CUBE_EDIT_ACTION = "cubeEdit";
+
     private Cube cube;
 
     public Cube getCube() {
@@ -41,7 +44,7 @@ public class CubeEdit {
 
     }
 
-    // métrica
+    // mï¿½trica
 
     public void insertMeasure() {
 

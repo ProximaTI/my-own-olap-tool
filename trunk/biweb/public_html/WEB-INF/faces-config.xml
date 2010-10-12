@@ -20,5 +20,23 @@
       <from-outcome>queryEdit</from-outcome>
       <to-view-id>/queryEdit.jspx</to-view-id>
     </navigation-case>
+    <navigation-case>
+      <from-outcome>cubeCad</from-outcome>
+      <to-view-id>/cubeCad.jsp</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>cubeEdit</from-outcome>
+      <to-view-id>/cubeEdit.jsp</to-view-id>
+    </navigation-case>
   </navigation-rule>
+  <managed-bean>
+    <managed-bean-name>cubeCad</managed-bean-name>
+    <managed-bean-class>br.com.bi.control.metadata.CubeCad</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+  <managed-bean>
+    <managed-bean-name>cubeEdit</managed-bean-name>
+    <managed-bean-class>br.com.bi.control.metadata.CubeEdit</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
 </faces-config>
