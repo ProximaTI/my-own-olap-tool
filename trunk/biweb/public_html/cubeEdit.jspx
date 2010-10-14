@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.1"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+          xmlns:c="http://java.sun.com/jsp/jstl/core">
+  <c:set var="biwebBundle" value="#{adfBundle['br.com.bi.biwebBundle']}"/>
+  <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+  <f:view>
+    <af:document id="d1">
+      <af:form id="f1">
+        <af:pageTemplate viewId="/template/bi.jspx" id="pt1">
+          <f:facet name="content">
+            <af:panelBox id="pb1" showDisclosure="false"
+                         text="#{cubeEdit.title}">
+              <af:panelStretchLayout id="psl5" topHeight="40px">
+                <f:facet name="center">
+                  <af:panelStretchLayout id="psl7" startWidth="10px"
+                                         endWidth="10px" topHeight="150px"
+                                         bottomHeight="10px">
+                    <f:facet name="bottom">
+                      <af:spacer width="10" height="10" id="s12"/>
+                    </f:facet>
+                    <f:facet name="center">
+                      <af:panelTabbed id="pt2">
+                        <af:showDetailItem text="#{biwebBundle.N_U00EDVEIS_ASSOCIADOS}"
+                                           id="sdi1" stretchChildren="first">
+                          <af:panelStretchLayout id="psl1" startWidth="10px"
+                                                 endWidth="10px"
+                                                 bottomHeight="10px"
+                                                 topHeight="30px">
+                            <f:facet name="bottom">
+                              <af:spacer width="10" height="10" id="s2"/>
+                            </f:facet>
+                            <f:facet name="center">
+                              <af:table var="row" rowBandingInterval="0"
+                                        id="table1"
+                                        value="#{cubeEdit.cube.cubeLevels}">
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.NOME}"
+                                           id="column1">
+                                  <af:outputText value="#{row.level.name}"
+                                                 id="outputText1"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.DESCRICAO}"
+                                           id="column2">
+                                  <af:outputText value="#{row.level.description}"
+                                                 id="outputText2"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.ESQUEMA}"
+                                           id="column3">
+                                  <af:outputText value="#{row.level.schema}"
+                                                 id="outputText3"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.TABELA}"
+                                           id="column4">
+                                  <af:outputText value="#{row.level.table}"
+                                                 id="outputText4"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.COLUNA_DE_JUNCAO}"
+                                           id="column5">
+                                  <af:outputText value="#{row.joinColumn}"
+                                                 id="outputText5"/>
+                                </af:column>
+                              </af:table>
+                            </f:facet>
+                            <f:facet name="start">
+                              <af:spacer width="10" height="10" id="s4"/>
+                            </f:facet>
+                            <f:facet name="end">
+                              <af:spacer width="10" height="10" id="s3"/>
+                            </f:facet>
+                            <f:facet name="top">
+                              <af:toolbar id="t2">
+                                <af:commandToolbarButton id="ctb1"
+                                                         icon="/images/tiny_new_doc.png"
+                                                         text="#{biwebBundle.NOVO}"
+                                                         action="#{cubeCad.insert}"/>
+                                <af:commandToolbarButton id="commandToolbarButton1"
+                                                         text="#{biwebBundle.ALTERAR}"
+                                                         icon="/images/edit.png"
+                                                         action="#{cubeCad.edit}"/>
+                                <af:commandToolbarButton text="#{biwebBundle.EXCLUIR}"
+                                                         id="ctb3"
+                                                         icon="/images/editclear_16.png"
+                                                         action="#{cubeCad.delete}"/>
+                              </af:toolbar>
+                            </f:facet>
+                          </af:panelStretchLayout>
+                        </af:showDetailItem>
+                        <af:showDetailItem text="#{biwebBundle.FILTROS}"
+                                           id="sdi2" stretchChildren="first">
+                          <af:panelStretchLayout id="panelStretchLayout1"
+                                                 startWidth="10px"
+                                                 endWidth="10px"
+                                                 bottomHeight="10px"
+                                                 topHeight="30px">
+                            <f:facet name="bottom">
+                              <af:spacer width="10" height="10" id="s5"/>
+                            </f:facet>
+                            <f:facet name="center">
+                              <af:table var="row" rowBandingInterval="0"
+                                        id="table3"
+                                        value="#{cubeEdit.cube.filters}">
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.NOME}"
+                                           id="column11">
+                                  <af:outputText value="#{row.name}"
+                                                 id="outputText11"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.DESCRICAO}"
+                                           id="column12">
+                                  <af:outputText value="#{row.description}"
+                                                 id="outputText12"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.EXPRESSAO}"
+                                           id="column13">
+                                  <af:outputText value="#{row.schema}"
+                                                 id="outputText13"/>
+                                </af:column>
+                              </af:table>
+                            </f:facet>
+                            <f:facet name="start">
+                              <af:spacer width="10" height="10" id="spacer2"/>
+                            </f:facet>
+                            <f:facet name="end">
+                              <af:spacer width="10" height="10" id="spacer3"/>
+                            </f:facet>
+                            <f:facet name="top">
+                              <af:toolbar id="toolbar1">
+                                <af:commandToolbarButton id="commandToolbarButton3"
+                                                         icon="/images/tiny_new_doc.png"
+                                                         text="#{biwebBundle.NOVO}"
+                                                         action="#{cubeCad.insert}"/>
+                                <af:commandToolbarButton id="commandToolbarButton4"
+                                                         text="#{biwebBundle.ALTERAR}"
+                                                         icon="/images/edit.png"
+                                                         action="#{cubeCad.edit}"/>
+                                <af:commandToolbarButton text="#{biwebBundle.EXCLUIR}"
+                                                         id="commandToolbarButton5"
+                                                         icon="/images/editclear_16.png"
+                                                         action="#{cubeCad.delete}"/>
+                              </af:toolbar>
+                            </f:facet>
+                          </af:panelStretchLayout>
+                        </af:showDetailItem>
+                        <af:showDetailItem text="#{biwebBundle.METRICAS}"
+                                           id="sdi3" stretchChildren="first">
+                          <af:panelStretchLayout id="panelStretchLayout2"
+                                                 startWidth="10px"
+                                                 endWidth="10px"
+                                                 bottomHeight="10px"
+                                                 topHeight="30px">
+                            <f:facet name="bottom">
+                              <af:spacer width="10" height="10" id="spacer4"/>
+                            </f:facet>
+                            <f:facet name="center">
+                              <af:table var="row" rowBandingInterval="0"
+                                        id="table2"
+                                        value="#{cubeEdit.cube.measures}">
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.NOME}"
+                                           id="column6">
+                                  <af:outputText value="#{row.name}"
+                                                 id="outputText6"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.DESCRICAO}"
+                                           id="column10">
+                                  <af:outputText value="#{row.description}"
+                                                 id="outputText10"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.FUNCAO_AGREGACAO}"
+                                           id="column8">
+                                  <af:outputText value="#{row.schema}"
+                                                 id="outputText8"/>
+                                </af:column>
+                                <af:column sortable="false"
+                                           headerText="#{biwebBundle.EXPRESSAO_DE_FILTRO}"
+                                           id="column9">
+                                  <af:outputText value="#{row.description}"
+                                                 id="outputText9"/>
+                                </af:column>
+                              </af:table>
+                            </f:facet>
+                            <f:facet name="start">
+                              <af:spacer width="10" height="10" id="spacer5"/>
+                            </f:facet>
+                            <f:facet name="end">
+                              <af:spacer width="10" height="10" id="spacer6"/>
+                            </f:facet>
+                            <f:facet name="top">
+                              <af:toolbar id="toolbar2">
+                                <af:commandToolbarButton id="commandToolbarButton6"
+                                                         icon="/images/tiny_new_doc.png"
+                                                         text="#{biwebBundle.Nova}"
+                                                         action="#{cubeCad.insert}"/>
+                                <af:commandToolbarButton id="commandToolbarButton7"
+                                                         text="#{biwebBundle.ALTERAR}"
+                                                         icon="/images/edit.png"
+                                                         action="#{cubeCad.edit}"/>
+                                <af:commandToolbarButton text="#{biwebBundle.EXCLUIR}"
+                                                         id="commandToolbarButton8"
+                                                         icon="/images/editclear_16.png"
+                                                         action="#{cubeCad.delete}"/>
+                              </af:toolbar>
+                            </f:facet>
+                          </af:panelStretchLayout>
+                        </af:showDetailItem>
+                      </af:panelTabbed>
+                    </f:facet>
+                    <f:facet name="start">
+                      <af:spacer width="10" height="10" id="s14"/>
+                    </f:facet>
+                    <f:facet name="end">
+                      <af:spacer width="10" height="10" id="s13"/>
+                    </f:facet>
+                    <f:facet name="top">
+                      <af:panelFormLayout xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+                                          id="pgl6">
+                        <af:spacer width="10" height="5" id="s15"/>
+                        <af:panelLabelAndMessage label="#{biwebBundle.NOME_DO_CUBO}"
+                                                 id="plam2" showRequired="true">
+                          <af:inputText id="it2" maximumLength="255"
+                                        value="#{cubeEdit.cube.name}"
+                                        required="true" columns="50"
+                                        simple="true"/>
+                        </af:panelLabelAndMessage>
+                        <af:panelLabelAndMessage label="#{biwebBundle.DESCRICAO_DO_CUBO}"
+                                                 id="panelLabelAndMessage1">
+                          <af:inputText id="inputText1" maximumLength="255"
+                                        value="#{cubeEdit.cube.description}"
+                                        required="true" columns="50"
+                                        simple="true" rows="3"/>
+                        </af:panelLabelAndMessage>
+                        <af:panelLabelAndMessage label="#{biwebBundle.ESQUEMA}"
+                                                 id="plam1" showRequired="true">
+                          <af:selectOneChoice id="soc1" simple="true"
+                                              value="#{cubeEdit.cube.schema}"
+                                              autoSubmit="true">
+                            <f:selectItems value="" id="si1"/>
+                          </af:selectOneChoice>
+                        </af:panelLabelAndMessage>
+                        <af:panelLabelAndMessage label="#{biwebBundle.TABELA}"
+                                                 id="panelLabelAndMessage2"
+                                                 showRequired="true">
+                          <af:selectOneChoice id="selectOneChoice1"
+                                              simple="true"
+                                              value="#{cubeEdit.cube.table}"
+                                              partialTriggers="soc1">
+                            <f:selectItems value="" id="selectItems1"/>
+                          </af:selectOneChoice>
+                        </af:panelLabelAndMessage>
+                      </af:panelFormLayout>
+                    </f:facet>
+                  </af:panelStretchLayout>
+                </f:facet>
+                <f:facet name="top">
+                  <af:panelGroupLayout layout="scroll"
+                                       xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+                                       id="pgl5">
+                    <af:separator id="s11"/>
+                    <af:toolbar id="t3">
+                      <af:commandToolbarButton text="#{biwebBundle.SALVAR}"
+                                               id="commandToolbarButton2"
+                                               icon="/images/13Save.gif"/>
+                      <af:commandToolbarButton text="#{biwebBundle.FECHAR}"
+                                               id="ctb2"
+                                               icon="/images/close.png"
+                                               immediate="true"/>
+                    </af:toolbar>
+                    <af:separator id="separator1"/>
+                  </af:panelGroupLayout>
+                </f:facet>
+              </af:panelStretchLayout>
+            </af:panelBox>
+          </f:facet>
+        </af:pageTemplate>
+      </af:form>
+    </af:document>
+  </f:view>
+</jsp:root>

@@ -16,6 +16,9 @@ import oracle.adf.view.rich.component.rich.data.RichTable;
  * @author Luiz Augusto Garcia da Silva
  */
 public class CubeCad {
+    public static final String CUBE_CAD_BEAN_NAME = "cubeCad";
+    public static final String CUBE_CAD_ACTION = "cubeCad";
+
     private RichTable table;
 
     /**
@@ -31,10 +34,15 @@ public class CubeCad {
      * @return
      */
     public String edit() {
+        Cube selectedCube = (Cube)table.getSelectedRowData();
+
+        // realiza a carga completa do cubo
+        selectedCube =
+                MetadataFacade.getInstance().findCubeById(selectedCube.getId());
+
         CubeEdit cubeEdit =
             (CubeEdit)Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
-        // TODO clonar antes
-        cubeEdit.setCube((Cube)table.getSelectedRowData());
+        cubeEdit.setCube((Cube)selectedCube.clone());
         return CubeEdit.CUBE_EDIT_ACTION;
     }
 

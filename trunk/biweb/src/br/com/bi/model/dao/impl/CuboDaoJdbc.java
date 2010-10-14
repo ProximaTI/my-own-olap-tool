@@ -6,6 +6,7 @@ package br.com.bi.model.dao.impl;
 
 
 import br.com.bi.model.dao.CuboDao;
+import br.com.bi.model.dao.DimensionDao;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Filter;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Luiz
  */
 public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
+    private DimensionDao dimensionDao;
 
     /**
      * Retorna todos os cubos cadastrados (carga rasa).
@@ -229,14 +231,12 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
 
                 public CubeLevel mapRow(ResultSet rs,
                                         int i) throws SQLException {
-                    CubeLevel nivel = new CubeLevel();
-                    nivel.setLevel(findNivelById(rs.getInt("idnivel")));
-                    nivel.setJoinColumn(rs.getString("colunaJuncao"));
-                    return nivel;
-                }
+                    CubeLevel cubeLevel = new CubeLevel();
+                    cubeLevel.setLevel(dimensionDao.findLevelById(rs.getInt("idnivel")));
+                    cubeLevel.setJoinColumn(rs.getString("colunaJuncao"));
+                    cubeLevel.setPersisted(true);
 
-                private Level findNivelById(int aInt) {
-                    throw new UnsupportedOperationException("Not yet implemented");
+                    return cubeLevel;
                 }
             });
     }
@@ -252,14 +252,15 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                                        new RowMapper<Filter>() {
 
                 public Filter mapRow(ResultSet rs, int i) throws SQLException {
-                    Filter filtro = new Filter();
+                    Filter filter = new Filter();
 
-                    filtro.setDescription(rs.getString("descricao"));
-                    filtro.setExpression(rs.getString("expressao"));
-                    filtro.setId(rs.getInt("id"));
-                    filtro.setName(rs.getString("nome"));
+                    filter.setDescription(rs.getString("descricao"));
+                    filter.setExpression(rs.getString("expressao"));
+                    filter.setId(rs.getInt("id"));
+                    filter.setName(rs.getString("nome"));
+                    filter.setPersisted(true);
 
-                    return filtro;
+                    return filter;
                 }
             });
     }
@@ -276,17 +277,17 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
 
                 public Measure mapRow(ResultSet rs,
                                       int i) throws SQLException {
-                    Measure filtro = new Measure();
+                    Measure measure = new Measure();
 
-                    filtro.setColumn(rs.getString("coluna"));
-                    filtro.setDescription(rs.getString("descricao"));
-                    filtro.setFilterExpression(rs.getString("expressaoFiltro"));
-                    filtro.setCodigoFuncao(rs.getInt("funcao"));
-                    filtro.setId(rs.getInt("id"));
-                    filtro.setDefaultMeasure(rs.getInt("metricaPadrao") == 1);
-                    filtro.setName(rs.getString("nome"));
-
-                    return filtro;
+                    measure.setColumn(rs.getString("coluna"));
+                    measure.setDescription(rs.getString("descricao"));
+                    measure.setFilterExpression(rs.getString("expressaoFiltro"));
+                    measure.setCodigoFuncao(rs.getInt("funcao"));
+                    measure.setId(rs.getInt("id"));
+                    measure.setDefaultMeasure(rs.getInt("metricaPadrao") == 1);
+                    measure.setName(rs.getString("nome"));
+                    measure.setPersisted(true);
+                    return measure;
                 }
             });
     }
@@ -321,6 +322,14 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                                  new Object[] { idCubo });
     }
 
+    public DimensionDao getDimensionDao() {
+        return dimensionDao;
+    }
+
+    public void setDimensionDao(DimensionDao dimensionDao) {
+        this.dimensionDao = dimensionDao;
+    }
+
     class CuboShallowMapper implements RowMapper<Cube> {
 
         public Cube mapRow(ResultSet rs, int i) throws SQLException {
@@ -330,6 +339,7 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
             cubo.setId(rs.getInt("id"));
             cubo.setName(rs.getString("nome"));
             cubo.setTable(rs.getString("tabela"));
+            cubo.setPersisted(true);
 
             return cubo;
         }
@@ -341,9 +351,10 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
         public Cube mapRow(ResultSet rs, int i) throws SQLException {
             Cube cubo = super.mapRow(rs, i);
 
-            cubo.setLevels(findNiveisByCubo(cubo.getId()));
+            cubo.setCubeLevels(findNiveisByCubo(cubo.getId()));
             cubo.setFilters(findFiltrosByCubo(cubo.getId()));
             cubo.setMeasures(findMetricasByCubo(cubo.getId()));
+            cubo.setPersisted(true);
 
             return cubo;
         }

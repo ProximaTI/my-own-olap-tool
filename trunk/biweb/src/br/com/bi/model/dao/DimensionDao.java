@@ -4,8 +4,10 @@
  */
 package br.com.bi.model.dao;
 
+
 import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.Level;
+
 import java.util.List;
 
 /**
@@ -35,4 +37,6 @@ public interface DimensionDao {
      * @return
      */
     public Dimension findByLevelId(int idnivel);
+
+    public Level findLevelById(int i);
 }

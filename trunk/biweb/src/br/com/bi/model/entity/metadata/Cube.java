@@ -93,7 +93,23 @@ public class Cube extends IdentifiedEntity {
     /**
      * @param levels the niveis to set
      */
-    public void setLevels(List<CubeLevel> levels) {
+    public void setCubeLevels(List<CubeLevel> levels) {
         this.levels = levels;
+    }
+
+    @Override
+    public Object clone() {
+        Cube clone = new Cube();
+        
+        clone.setCubeLevels(new ArrayList<CubeLevel>(this.getCubeLevels()));
+        clone.setDescription(this.getDescription());
+        clone.setFilters(new ArrayList<Filter>(this.getFilters()));
+        clone.setMeasures(new ArrayList<Measure>(this.getMeasures()));
+        clone.setName(this.getName());
+        clone.setPersisted(this.isPersisted());
+        clone.setSchema(this.getSchema());
+        clone.setTable(this.getTable());
+
+        return clone;
     }
 }

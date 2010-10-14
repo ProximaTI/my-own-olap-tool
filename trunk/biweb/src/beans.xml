@@ -19,6 +19,7 @@
     <bean id="cubeDao"
         class="br.com.bi.model.dao.impl.CuboDaoJdbc">
         <property name="dataSource" ref="dataSource"/>
+        <property name="dimensionDao" ref="dimensionDao"/>
     </bean>
 
     <bean id="dimensionDao"

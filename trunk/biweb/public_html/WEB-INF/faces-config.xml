@@ -22,11 +22,11 @@
     </navigation-case>
     <navigation-case>
       <from-outcome>cubeCad</from-outcome>
-      <to-view-id>/cubeCad.jsp</to-view-id>
+      <to-view-id>/cubeCad.jspx</to-view-id>
     </navigation-case>
     <navigation-case>
       <from-outcome>cubeEdit</from-outcome>
-      <to-view-id>/cubeEdit.jsp</to-view-id>
+      <to-view-id>/cubeEdit.jspx</to-view-id>
     </navigation-case>
   </navigation-rule>
   <managed-bean>

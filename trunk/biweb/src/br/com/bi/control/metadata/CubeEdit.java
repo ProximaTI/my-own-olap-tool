@@ -1,6 +1,8 @@
 package br.com.bi.control.metadata;
 
+import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.Cube;
+import br.com.bi.view.jsf.Util;
 
 public class CubeEdit extends MetadataEntityEdit {
     public static final String CUBE_EDIT_BEAN_NAME = "cubeEdit";
@@ -10,9 +12,9 @@ public class CubeEdit extends MetadataEntityEdit {
 
     public String getTitle() {
         if (cube.isPersisted())
-            return "ALTERAR_CUBO";
+            return Util.getBundleValue("ALTERAR_CUBO");
         else
-            return "NOVO_CUBO";
+            return Util.getBundleValue("NOVO_CUBO");
     }
 
     public Cube getCube() {
@@ -51,7 +53,7 @@ public class CubeEdit extends MetadataEntityEdit {
 
     }
 
-    // m�trica
+    // métrica
 
     public void insertMeasure() {
 
@@ -66,10 +68,11 @@ public class CubeEdit extends MetadataEntityEdit {
     }
 
     public String save() {
-        return null;
+        MetadataFacade.getInstance().save(cube);
+        return CubeCad.CUBE_CAD_ACTION;
     }
 
     public String cancel() {
-        return null;
+      return CubeCad.CUBE_CAD_ACTION;
     }
 }
