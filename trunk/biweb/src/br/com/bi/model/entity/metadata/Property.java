@@ -8,7 +8,7 @@ package br.com.bi.model.entity.metadata;
  *
  * @author Luiz
  */
-public class Property extends MetadataEntity {
+public class Property extends IdentifiedEntity {
 
     private String coluna;
     private boolean propriedadeCodigo;

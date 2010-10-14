@@ -8,7 +8,7 @@ package br.com.bi.model.entity.metadata;
  *
  * @author Luiz
  */
-public class Filter extends MetadataEntity {
+public class Filter extends IdentifiedEntity {
 
     private String expression;
 

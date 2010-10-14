@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Luiz
  */
-public class Dimension extends MetadataEntity {
+public class Dimension extends IdentifiedEntity {
 
     private List<Level> levels = new ArrayList<Level>();
 

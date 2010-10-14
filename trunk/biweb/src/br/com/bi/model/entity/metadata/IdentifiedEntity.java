@@ -10,7 +10,7 @@ import br.com.bi.model.entity.Entity;
  *
  * @author Luiz
  */
-public abstract class MetadataEntity extends Entity {
+public abstract class IdentifiedEntity extends Entity {
 
     private int id;
     private String name;

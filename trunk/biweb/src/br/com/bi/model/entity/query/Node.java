@@ -4,7 +4,7 @@
  */
 package br.com.bi.model.entity.query;
 
-import br.com.bi.model.entity.metadata.MetadataEntity;
+import br.com.bi.model.entity.metadata.IdentifiedEntity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,27 +15,27 @@ import java.util.List;
 public class Node {
 
     private Node parent;
-    private MetadataEntity metadataEntity;
+    private IdentifiedEntity metadataEntity;
     private List<Node> children = new ArrayList<Node>();
 
     public Node() {
     }
 
-    public Node(MetadataEntity entity) {
+    public Node(IdentifiedEntity entity) {
         this.metadataEntity = entity;
     }
 
     /**
      * @return the entity
      */
-    public MetadataEntity getMetadataEntity() {
+    public IdentifiedEntity getMetadataEntity() {
         return metadataEntity;
     }
 
     /**
      * @param entity the entity to set
      */
-    public void setMetadataEntity(MetadataEntity entity) {
+    public void setMetadataEntity(IdentifiedEntity entity) {
         this.metadataEntity = entity;
     }
 

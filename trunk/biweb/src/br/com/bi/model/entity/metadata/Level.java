@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Luiz
  */
-public class Level extends MetadataEntity {
+public class Level extends IdentifiedEntity {
 
     private String schema;
     private String table;
