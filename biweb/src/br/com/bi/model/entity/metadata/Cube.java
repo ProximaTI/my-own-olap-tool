@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Luiz
  */
-public class Cube extends MetadataEntity {
+public class Cube extends IdentifiedEntity {
 
     private String schema;
     private String table;

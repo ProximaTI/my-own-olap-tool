@@ -8,7 +8,7 @@ package br.com.bi.model.entity.metadata;
  *
  * @author Luiz
  */
-public class Measure extends MetadataEntity {
+public class Measure extends IdentifiedEntity {
 
     private Funcao function;
     private String column;

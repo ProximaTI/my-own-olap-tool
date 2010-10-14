@@ -2,11 +2,18 @@ package br.com.bi.control.metadata;
 
 import br.com.bi.model.entity.metadata.Cube;
 
-public class CubeEdit {
+public class CubeEdit extends MetadataEntityEdit {
     public static final String CUBE_EDIT_BEAN_NAME = "cubeEdit";
     public static final String CUBE_EDIT_ACTION = "cubeEdit";
 
-    private Cube cube;
+    private Cube cube = new Cube();
+
+    public String getTitle() {
+        if (cube.isPersisted())
+            return "ALTERAR_CUBO";
+        else
+            return "NOVO_CUBO";
+    }
 
     public Cube getCube() {
         return cube;
