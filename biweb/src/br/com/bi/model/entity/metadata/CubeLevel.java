@@ -4,6 +4,7 @@
  */
 package br.com.bi.model.entity.metadata;
 
+
 import br.com.bi.model.entity.Entity;
 
 /**

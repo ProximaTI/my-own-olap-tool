@@ -4,20 +4,25 @@
  */
 package br.com.bi.model.dao.impl;
 
+
 import br.com.bi.model.dao.DimensionDao;
 import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.model.entity.metadata.Property;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.object.SqlUpdate;
 import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  *
@@ -26,12 +31,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
 
     public List<Dimension> findAll() {
-        return getJdbcTemplate().query("select * from dimensao", new DimensaoShallowMapper());
+        return getJdbcTemplate().query("select * from dimensao",
+                                       new DimensaoShallowMapper());
+    }
+
+    public Level findLevelById(int id) {
+        return getJdbcTemplate().queryForObject("select * from nivel where id = ?",
+                                                new Object[] { id },
+                                                new LevelMapper());
     }
 
     public Dimension findById(int id) {
-        return getJdbcTemplate().queryForObject("select * from dimensao where id = :id", new Object[]{
-                    id}, new DimensaoDeepMapper());
+        return getJdbcTemplate().queryForObject("select * from dimensao where id = :id",
+                                                new Object[] { id },
+                                                new DimensaoDeepMapper());
     }
 
     public void salvar(Dimension dimensao) {
@@ -46,8 +59,8 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
             dimensao.setId(insert.executeAndReturnKey(parameters).intValue());
         } else {
             SqlUpdate update =
-                    new SqlUpdate(getDataSource(), "update dimensao set nome = :nome, "
-                    + "descricao = :descricao where id = :id");
+                new SqlUpdate(getDataSource(), "update dimensao set nome = :nome, " +
+                              "descricao = :descricao where id = :id");
             parameters.put("id", dimensao.getId());
             update.updateByNamedParam(parameters);
         }
@@ -61,154 +74,163 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
      */
     @Transactional
     private void salvarNiveis(Dimension dimensao) {
-        List niveis = new ArrayList();
+        List<Integer> levels = new ArrayList<Integer>();
 
-        for (Level nivel : dimensao.getLevels()) {
+        for (Level level : dimensao.getLevels()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("iddimensao", dimensao.getId());
-            parameters.put("nome", nivel.getName());
-            parameters.put("descricao", nivel.getDescription());
-            parameters.put("esquema", nivel.getSchema());
-            parameters.put("tabela", nivel.getTable());
-            parameters.put("juncaoNivelSuperior", nivel.getJoinColumnUpperLevel());
-            parameters.put("indice", nivel.getIndex());
+            parameters.put("nome", level.getName());
+            parameters.put("descricao", level.getDescription());
+            parameters.put("esquema", level.getSchema());
+            parameters.put("tabela", level.getTable());
+            parameters.put("juncaoNivelSuperior",
+                           level.getJoinColumnUpperLevel());
+            parameters.put("indice", level.getIndex());
 
-            if (!nivel.isPersisted()) {
-                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+            if (!level.isPersisted()) {
+                SimpleJdbcInsert insert =
+                    new SimpleJdbcInsert(getDataSource());
                 insert.withTableName("nivel").usingGeneratedKeyColumns("id");
-                nivel.setId(insert.executeAndReturnKey(parameters).intValue());
+                level.setId(insert.executeAndReturnKey(parameters).intValue());
             } else {
                 SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update nivel set nome = :nome, "
-                        + "descricao = :descricao, esquema = :esquema, tabela = :tabela, "
-                        + "juncaoNivelSuperior = :juncaoNivelSuperior, indice = :indice "
-                        + "where id = :id");
-                parameters.put("id", nivel.getId());
+                    new SqlUpdate(getDataSource(), "update nivel set nome = :nome, " +
+                                  "descricao = :descricao, esquema = :esquema, tabela = :tabela, " +
+                                  "juncaoNivelSuperior = :juncaoNivelSuperior, indice = :indice " +
+                                  "where id = :id");
+                parameters.put("id", level.getId());
                 update.updateByNamedParam(parameters);
             }
 
-            salvarPropriedades(nivel);
+            saveProperties(level);
 
-            niveis.add(nivel.getId());
+            levels.add(level.getId());
         }
 
-        if (niveis.size() > 0) {
-            getJdbcTemplate().update("delete from nivel "
-                    + "where not id in (:ids) and iddimensao = :iddimensao".
-                    replace(":ids", listToString(niveis)).replace(":iddimensao", Integer.
-                    toString(dimensao.getId())));
+        if (levels.size() > 0) {
+            getJdbcTemplate().update("delete from nivel " +
+                                     "where not id in (:ids) and iddimensao = :iddimensao".replace(":ids",
+                                                                                                   listToString(levels)).replace(":iddimensao",
+                                                                                                                                 Integer.toString(dimensao.getId())));
         }
     }
 
     @Transactional
     public void delete(int idDimensao) {
-        apagarNiveis(findById(idDimensao));
+        deleteLevels(findById(idDimensao));
 
-        getJdbcTemplate().update("delete from dimensao where id = ?", new Object[]{
-                    idDimensao});
+        getJdbcTemplate().update("delete from dimensao where id = ?",
+                                 new Object[] { idDimensao });
     }
 
     /**
      * Apaga os níveis de uma dimensão.
-     * @param dimensao
+     * @param dimension
      */
     @Transactional
-    private void apagarNiveis(Dimension dimensao) {
-        for (Level nivel : dimensao.getLevels()) {
-            apagarPropriedades(nivel);
+    private void deleteLevels(Dimension dimension) {
+        for (Level level : dimension.getLevels()) {
+            deleteProperties(level);
         }
 
-        getJdbcTemplate().update("delete from nivel where iddimensao = ?", new Object[]{dimensao.
-                    getId()});
+        getJdbcTemplate().update("delete from nivel where iddimensao = ?",
+                                 new Object[] { dimension.getId() });
     }
 
     /**
      * Apagar as propriedades de nível.
-     * @param nivel
+     * @param level
      */
     @Transactional
-    private void apagarPropriedades(Level nivel) {
-        getJdbcTemplate().update("delete from propriedade where idnivel = ?", new Object[]{nivel.
-                    getId()});
+    private void deleteProperties(Level level) {
+        getJdbcTemplate().update("delete from propriedade where idnivel = ?",
+                                 new Object[] { level.getId() });
     }
 
     /**
      * Persiste as propriedades de um nível.
-     * @param nivel
+     * @param level
      */
     @Transactional
-    private void salvarPropriedades(Level nivel) {
-        List propriedades = new ArrayList();
+    private void saveProperties(Level level) {
+        List properties = new ArrayList();
 
-        for (Property propriedade : nivel.getProperties()) {
+        for (Property propriedade : level.getProperties()) {
 
             Map<String, Object> parameters = new HashMap<String, Object>();
 
-            parameters.put("idnivel", nivel.getId());
+            parameters.put("idnivel", level.getId());
             parameters.put("nome", propriedade.getName());
             parameters.put("descricao", propriedade.getDescription());
             parameters.put("coluna", propriedade.getColumn());
-            parameters.put("propriedadeCodigo", propriedade.isCodeProperty() ? 1 : 0);
-            parameters.put("propriedadeNome", propriedade.isNameProperty() ? 1 : 0);
+            parameters.put("propriedadeCodigo",
+                           propriedade.isCodeProperty() ? 1 : 0);
+            parameters.put("propriedadeNome",
+                           propriedade.isNameProperty() ? 1 : 0);
 
             if (!propriedade.isPersisted()) {
-                SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
+                SimpleJdbcInsert insert =
+                    new SimpleJdbcInsert(getDataSource());
                 insert.withTableName("propriedade").usingGeneratedKeyColumns("id");
-                propriedade.setId(insert.executeAndReturnKey(parameters).
-                        intValue());
+                propriedade.setId(insert.executeAndReturnKey(parameters).intValue());
             } else {
                 SqlUpdate update =
-                        new SqlUpdate(getDataSource(), "update propriedade set nome = :nome, "
-                        + "descricao = :descricao, coluna = :coluna, propriedadeCodigo = :propriedadeCodigo, "
-                        + "propriedadeNome = :propriedadeNome where id = :id");
+                    new SqlUpdate(getDataSource(), "update propriedade set nome = :nome, " +
+                                  "descricao = :descricao, coluna = :coluna, propriedadeCodigo = :propriedadeCodigo, " +
+                                  "propriedadeNome = :propriedadeNome where id = :id");
                 parameters.put("id", propriedade.getId());
                 update.updateByNamedParam(parameters);
             }
 
-            propriedades.add(propriedade.getId());
+            properties.add(propriedade.getId());
         }
 
-        if (propriedades.size() > 0) {
-            getJdbcTemplate().update("delete from propriedade where not id in (:ids) and idnivel = :idnivel".
-                    replace(":ids", listToString(propriedades)).replace(":idnivel", Integer.
-                    toString(nivel.getId())));
+        if (properties.size() > 0) {
+            getJdbcTemplate().update("delete from propriedade where not id in (:ids) and idnivel = :idnivel".replace(":ids",
+                                                                                                                     listToString(properties)).replace(":idnivel",
+                                                                                                                                                       Integer.toString(level.getId())));
         }
     }
 
     /**
      * Retorna a lista de níveis dado o identificador da dimensão.
-     * @param idDimensao
+     * @param id
      * @return
      */
-    private List<Level> findNiveisByDimensao(int idDimensao) {
-        return getJdbcTemplate().query("select * from nivel where iddimensao = ?", new Object[]{
-                    idDimensao}, new LevelMapper());
+    private List<Level> findLevelsByDimensionId(int id) {
+        return getJdbcTemplate().query("select * from nivel where iddimensao = ?",
+                                       new Object[] { id }, new LevelMapper());
     }
 
     /**
      * Retorna as propriedades de nível dado seu identificador.
-     * @param idNivel
+     * @param id
      * @return
      */
-    private List<Property> findPropriedadesByNivel(int idNivel) {
-        return getJdbcTemplate().query("select * from propriedade where idnivel = ?", new Object[]{
-                    idNivel}, new RowMapper<Property>() {
+    private List<Property> findPropertiesByLevel(int id) {
+        return getJdbcTemplate().query("select * from propriedade where idnivel = ?",
+                                       new Object[] { id },
+                                       new RowMapper<Property>() {
 
-            public Property mapRow(ResultSet rs, int i) throws SQLException {
-                Property propriedade = new Property();
+                public Property mapRow(ResultSet rs,
+                                       int i) throws SQLException {
+                    Property property = new Property();
 
-                propriedade.setColuna(rs.getString("coluna"));
-                propriedade.setDescription(rs.getString("descricao"));
-                propriedade.setId(rs.getInt("id"));
-                propriedade.setName(rs.getString("nome"));
-                propriedade.setPropriedadeCodigo(rs.getInt("propriedadeCodigo")
-                        == 1);
-                propriedade.setPropriedadeNome(rs.getInt("propriedadeNome") == 1);
-                return propriedade;
-            }
-        });
+                    property.setColuna(rs.getString("coluna"));
+                    property.setDescription(rs.getString("descricao"));
+                    property.setId(rs.getInt("id"));
+                    property.setName(rs.getString("nome"));
+                    property.setPropriedadeCodigo(rs.getInt("propriedadeCodigo") ==
+                                                  1);
+                    property.setPropriedadeNome(rs.getInt("propriedadeNome") ==
+                                                1);
+                    property.setPersisted(true);
+
+                    return property;
+                }
+            });
     }
 
     /**
@@ -218,10 +240,11 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
      * @return
      */
     public List<Level> lowerLevels(int idnivel) {
-        return getJdbcTemplate().query("select a.* from nivel a, nivel b "
-                + "where a.iddimensao = b.iddimensao "
-                + "and a.indice >= b.indice and b.id = ? order by a.indice",
-                new Object[]{idnivel}, new LevelMapper());
+        return getJdbcTemplate().query("select a.* from nivel a, nivel b " +
+                                       "where a.iddimensao = b.iddimensao " +
+                                       "and a.indice >= b.indice and b.id = ? order by a.indice",
+                                       new Object[] { idnivel },
+                                       new LevelMapper());
     }
 
     /**
@@ -230,21 +253,23 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
      * @return
      */
     public Dimension findByLevelId(int idnivel) {
-        return getJdbcTemplate().queryForObject("select a.* from dimensao a, nivel b "
-                + "where a.id = b.iddimensao and b.id = ?",
-                new Object[]{idnivel}, new DimensaoDeepMapper());
+        return getJdbcTemplate().queryForObject("select a.* from dimensao a, nivel b " +
+                                                "where a.id = b.iddimensao and b.id = ?",
+                                                new Object[] { idnivel },
+                                                new DimensaoDeepMapper());
     }
 
     class DimensaoShallowMapper implements RowMapper<Dimension> {
 
         public Dimension mapRow(ResultSet rs, int i) throws SQLException {
-            Dimension dimensao = new Dimension();
+            Dimension dimension = new Dimension();
 
-            dimensao.setDescription(rs.getString("descricao"));
-            dimensao.setId(rs.getInt("id"));
-            dimensao.setName(rs.getString("nome"));
+            dimension.setDescription(rs.getString("descricao"));
+            dimension.setId(rs.getInt("id"));
+            dimension.setName(rs.getString("nome"));
+            dimension.setPersisted(true);
 
-            return dimensao;
+            return dimension;
         }
     }
 
@@ -252,28 +277,28 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
 
         @Override
         public Dimension mapRow(ResultSet rs, int i) throws SQLException {
-            Dimension dimensao = super.mapRow(rs, i);
+            Dimension dimension = super.mapRow(rs, i);
 
-            dimensao.setLevels(findNiveisByDimensao(rs.getInt("id")));
+            dimension.setLevels(findLevelsByDimensionId(rs.getInt("id")));
 
-            return dimensao;
+            return dimension;
         }
     }
 
     class LevelMapper implements RowMapper<Level> {
 
         public Level mapRow(ResultSet rs, int i) throws SQLException {
-            Level nivel = new Level();
-            nivel.setDescription(rs.getString("descricao"));
-            nivel.setSchema(rs.getString("esquema"));
-            nivel.setId(rs.getInt("id"));
-            nivel.setJoinColumnUpperLevel(rs.getString("juncaoNivelSuperior"));
-            nivel.setName(rs.getString("nome"));
-            nivel.setProperties(findPropriedadesByNivel(nivel.getId()));
-            nivel.setTable(rs.getString("tabela"));
-            nivel.setIndex(rs.getInt("indice"));
-
-            return nivel;
+            Level level = new Level();
+            level.setDescription(rs.getString("descricao"));
+            level.setSchema(rs.getString("esquema"));
+            level.setId(rs.getInt("id"));
+            level.setJoinColumnUpperLevel(rs.getString("juncaoNivelSuperior"));
+            level.setName(rs.getString("nome"));
+            level.setProperties(findPropertiesByLevel(level.getId()));
+            level.setTable(rs.getString("tabela"));
+            level.setIndex(rs.getInt("indice"));
+            level.setPersisted(true);
+            return level;
         }
     }
 }

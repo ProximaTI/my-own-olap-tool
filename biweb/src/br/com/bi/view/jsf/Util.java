@@ -1,5 +1,8 @@
 package br.com.bi.view.jsf;
 
+
+import java.util.PropertyResourceBundle;
+
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
@@ -23,5 +26,11 @@ public class Util {
         ELContext el = ctx.getELContext();
         ValueExpression ve = createExpression(varName, Object.class);
         return ve.getValue(el);
+    }
+
+    public static String getBundleValue(String key) {
+        PropertyResourceBundle prb =
+            (PropertyResourceBundle)getELVar("biwebBundle");
+        return prb.getString(key);
     }
 }
