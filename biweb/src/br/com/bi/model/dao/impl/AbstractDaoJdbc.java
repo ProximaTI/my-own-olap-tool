@@ -5,13 +5,15 @@
 package br.com.bi.model.dao.impl;
 
 import java.util.List;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
+
+import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
+
 
 /**
  *
  * @author Luiz
  */
-public abstract class AbstractDaoJdbc extends JdbcDaoSupport {
+public abstract class AbstractDaoJdbc extends SimpleJdbcDaoSupport {
 
     protected String listToString(List<Integer> l) {
         StringBuilder fragment = new StringBuilder();

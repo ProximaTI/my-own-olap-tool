@@ -10,7 +10,6 @@ import br.com.bi.model.dao.DimensionDao;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Filter;
-import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.model.entity.metadata.Measure;
 
 import java.sql.ResultSet;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.object.SqlUpdate;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -69,15 +67,14 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
 
         if (!cubo.isPersisted()) {
             SimpleJdbcInsert insert = new SimpleJdbcInsert(getDataSource());
-            insert.withTableName("cubo").usingGeneratedKeyColumns("id");
+            insert.withTableName("cubo");
+            insert.usingGeneratedKeyColumns("id");
             cubo.setId(insert.executeAndReturnKey(parameters).intValue());
         } else {
-            SqlUpdate update =
-                new SqlUpdate(getDataSource(), "update cubo set nome = :nome, " +
-                              "descricao = :descricao, esquema = :esquema, tabela = :tabela " +
-                              "where id = :id");
             parameters.put("id", cubo.getId());
-            update.updateByNamedParam(parameters);
+            getSimpleJdbcTemplate().update("update cubo set nome = :nome, " +
+                                           "descricao = :descricao, esquema = :esquema, tabela = :tabela " +
+                                           "where id = :id", parameters);
         }
 
         salvarMetricas(cubo);
@@ -112,13 +109,11 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                 insert.withTableName("metrica").usingGeneratedKeyColumns("id");
                 metrica.setId(insert.executeAndReturnKey(parameters).intValue());
             } else {
-                SqlUpdate update =
-                    new SqlUpdate(getDataSource(), "update metrica set nome = :nome, " +
-                                  "descricao = :descricao, funcao = :funcao, coluna = :coluna," +
-                                  "expressaoFiltro = :expressaoFiltro, metricaPadrao = :metricaPadrao " +
-                                  "where id = :id");
                 parameters.put("id", metrica.getId());
-                update.updateByNamedParam(parameters);
+                getSimpleJdbcTemplate().update("update metrica set nome = :nome, " +
+                                               "descricao = :descricao, funcao = :funcao, coluna = :coluna," +
+                                               "expressaoFiltro = :expressaoFiltro, metricaPadrao = :metricaPadrao " +
+                                               "where id = :id", parameters);
             }
 
             metricas.add(metrica.getId());
@@ -154,11 +149,10 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                 insert.withTableName("filtro").usingGeneratedKeyColumns("id");
                 filtro.setId(insert.executeAndReturnKey(parameters).intValue());
             } else {
-                SqlUpdate update =
-                    new SqlUpdate(getDataSource(), "update filtro set nome = :nome, " +
-                                  "descricao = :descricao, expressao = :expressao where id = :id");
                 parameters.put("id", filtro.getId());
-                update.updateByNamedParam(parameters);
+                getSimpleJdbcTemplate().update("update filtro set nome = :nome, " +
+                                               "descricao = :descricao, expressao = :expressao where id = :id",
+                                               parameters);
             }
 
             filtros.add(filtro.getId());
@@ -193,10 +187,9 @@ public class CuboDaoJdbc extends AbstractDaoJdbc implements CuboDao {
                 insert.withTableName("cubo_nivel");
                 insert.execute(parameters);
             } else {
-                SqlUpdate update =
-                    new SqlUpdate(getDataSource(), "update cubo_nivel set colunaJuncao = :colunaJuncao" +
-                                  " where idcubo = :id and idnivel = :idnivel");
-                update.updateByNamedParam(parameters);
+                getSimpleJdbcTemplate().update("update cubo_nivel set colunaJuncao = :colunaJuncao" +
+                                               " where idcubo = :idcubo and idnivel = :idnivel",
+                                               parameters);
             }
 
             niveis.add(nivel.getLevel().getId());

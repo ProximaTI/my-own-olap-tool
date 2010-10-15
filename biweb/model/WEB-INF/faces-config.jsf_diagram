@@ -50,7 +50,7 @@
       <property
          name="description">Navigation Case</property>
       <property
-         name="sdm:polyPoints">R34,124.01758,160.0,215.05469,83.149414,L50</property>
+         name="sdm:polyPoints">R45,124.01758,167.0,215.05469,83.149414,L50</property>
    </NavigationCase>
    <NavigationCase
       islink="true"
@@ -62,52 +62,52 @@
       <property
          name="description">Navigation Case</property>
       <property
-         name="sdm:polyPoints">R66,124.01758,181.0,215.05469,255.85059,L50</property>
+         name="sdm:polyPoints">R55,124.01758,174.0,215.05469,255.85059,L50</property>
    </NavigationCase>
    <Page
-      id="Page7">
+      id="Page11">
       <property
          name="wildcard">false</property>
       <property
-         name="y">156.49414</property>
+         name="y">108.649414</property>
       <property
-         name="x">381.0</property>
+         name="x">-95.0</property>
       <property
-         name="jspName">/cubeCad.jsp</property>
-   </Page>
-   <Page
-      id="Page8">
-      <property
-         name="wildcard">false</property>
-      <property
-         name="y">226.49414</property>
-      <property
-         name="x">460.0</property>
-      <property
-         name="jspName">/cubeEdit.jsp</property>
+         name="jspName">/cubeCad.jspx</property>
    </Page>
    <NavigationCase
       islink="true"
-      id="NavigationCase9"
+      id="NavigationCase12"
       from="Page2"
-      to="Page7">
+      to="Page11">
       <property
          name="fromOutcome">cubeCad</property>
       <property
          name="description">Navigation Case</property>
       <property
-         name="sdm:polyPoints">R45,125.38527,167.0,340.0,156.14355,L50</property>
+         name="sdm:polyPoints">L50,52.01758,170.5,-54.0,108.29883,R50</property>
    </NavigationCase>
+   <Page
+      id="Page13">
+      <property
+         name="wildcard">false</property>
+      <property
+         name="y">-7.350586</property>
+      <property
+         name="x">158.0</property>
+      <property
+         name="jspName">/cubeEdit.jspx</property>
+   </Page>
    <NavigationCase
       islink="true"
-      id="NavigationCase10"
+      id="NavigationCase14"
       from="Page2"
-      to="Page8">
+      to="Page13">
       <property
          name="fromOutcome">cubeEdit</property>
       <property
          name="description">Navigation Case</property>
       <property
-         name="sdm:polyPoints">R55,125.57865,174.0,419.0,226.14355,L50</property>
+         name="sdm:polyPoints">T50,88.01758,128.0,158.0,46.29883,B50</property>
    </NavigationCase>
 </SDM>

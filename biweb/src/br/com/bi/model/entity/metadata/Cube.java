@@ -100,7 +100,7 @@ public class Cube extends IdentifiedEntity {
     @Override
     public Object clone() {
         Cube clone = new Cube();
-        
+
         clone.setCubeLevels(new ArrayList<CubeLevel>(this.getCubeLevels()));
         clone.setDescription(this.getDescription());
         clone.setFilters(new ArrayList<Filter>(this.getFilters()));
@@ -109,7 +109,7 @@ public class Cube extends IdentifiedEntity {
         clone.setPersisted(this.isPersisted());
         clone.setSchema(this.getSchema());
         clone.setTable(this.getTable());
-
+        clone.setId(this.getId());
         return clone;
     }
 }
