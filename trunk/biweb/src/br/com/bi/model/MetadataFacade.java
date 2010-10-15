@@ -7,6 +7,7 @@ package br.com.bi.model;
 
 import br.com.bi.model.dao.CuboDao;
 import br.com.bi.model.dao.DimensionDao;
+import br.com.bi.model.driver.RdbmsDriver;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.Level;
@@ -24,6 +25,8 @@ public class MetadataFacade {
 
     private static final String CUBE_DAO = "cubeDao";
     private static final String DIMENSION_DAO = "dimensionDao";
+    private static final String RDBMS_DRIVER = "rdbmsDriver";
+
     private static MetadataFacade instance;
 
     private MetadataFacade() {
@@ -41,9 +44,9 @@ public class MetadataFacade {
         return translator.translate();
     }
 
-    // ============
-    // === Cubo ===
-    // ============
+    // ========
+    // = Cubo =
+    // ========
 
     /**
      * Salva no banco de dados o cubo informado.
@@ -77,10 +80,10 @@ public class MetadataFacade {
     public void deleteCube(int id) {
         getCubeDao().delete(id);
     }
-    
-    // ================
-    // === Dimensão ===
-    // ================
+
+    // ============
+    // = Dimensão =
+    // ============
 
     public void save(Dimension dimension) {
         getDimensionDao().salvar(dimension);
@@ -106,7 +109,31 @@ public class MetadataFacade {
         return getDimensionDao().findByLevelId(id);
     }
 
-    // ================================
+    // ============
+    // = Metadata =
+    // ============
+
+    /**
+     * Retorna todos os esquemas do banco de dados.
+     * @return
+     */
+    public List<String> findAllSchemas() {
+        RdbmsDriver driver =
+            (RdbmsDriver)Application.getContext().getBean(RDBMS_DRIVER);
+
+        return driver.getSchemas();
+    }
+
+    public List<String> findTablesBySchema(String schema) {
+        RdbmsDriver driver =
+            (RdbmsDriver)Application.getContext().getBean(RDBMS_DRIVER);
+
+        return driver.getTables(schema);
+    }
+
+    // =======================
+    // = Data access objects =
+    // =======================
 
     private CuboDao getCubeDao() {
         return (CuboDao)Application.getContext().getBean(CUBE_DAO);

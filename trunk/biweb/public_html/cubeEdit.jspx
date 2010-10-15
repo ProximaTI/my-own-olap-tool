@@ -235,16 +235,15 @@
                         <af:panelLabelAndMessage label="#{biwebBundle.DESCRICAO_DO_CUBO}"
                                                  id="panelLabelAndMessage1">
                           <af:inputText id="inputText1" maximumLength="255"
-                                        value="#{cubeEdit.cube.description}"
-                                        required="true" columns="50"
+                                        value="#{cubeEdit.cube.description}" columns="50"
                                         simple="true" rows="3"/>
                         </af:panelLabelAndMessage>
                         <af:panelLabelAndMessage label="#{biwebBundle.ESQUEMA}"
                                                  id="plam1" showRequired="true">
                           <af:selectOneChoice id="soc1" simple="true"
                                               value="#{cubeEdit.cube.schema}"
-                                              autoSubmit="true">
-                            <f:selectItems value="" id="si1"/>
+                                              autoSubmit="true" required="true">
+                            <f:selectItems value="#{cubeEdit.schemas}" id="si1"/>
                           </af:selectOneChoice>
                         </af:panelLabelAndMessage>
                         <af:panelLabelAndMessage label="#{biwebBundle.TABELA}"
@@ -253,8 +252,9 @@
                           <af:selectOneChoice id="selectOneChoice1"
                                               simple="true"
                                               value="#{cubeEdit.cube.table}"
-                                              partialTriggers="soc1">
-                            <f:selectItems value="" id="selectItems1"/>
+                                              partialTriggers="soc1"
+                                              required="true">
+                            <f:selectItems value="#{cubeEdit.tables}" id="selectItems1"/>
                           </af:selectOneChoice>
                         </af:panelLabelAndMessage>
                       </af:panelFormLayout>
@@ -269,11 +269,13 @@
                     <af:toolbar id="t3">
                       <af:commandToolbarButton text="#{biwebBundle.SALVAR}"
                                                id="commandToolbarButton2"
-                                               icon="/images/13Save.gif"/>
+                                               icon="/images/13Save.gif"
+                                               action="#{cubeEdit.save}"/>
                       <af:commandToolbarButton text="#{biwebBundle.FECHAR}"
                                                id="ctb2"
                                                icon="/images/close.png"
-                                               immediate="true"/>
+                                               immediate="true"
+                                               action="#{cubeEdit.cancel}"/>
                     </af:toolbar>
                     <af:separator id="separator1"/>
                   </af:panelGroupLayout>
