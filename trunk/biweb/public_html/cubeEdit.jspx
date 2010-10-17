@@ -22,11 +22,11 @@
                     </f:facet>
                     <f:facet name="center">
                       <af:panelTabbed id="pt2">
-                        <af:showDetailItem text="#{biwebBundle.N_U00EDVEIS_ASSOCIADOS}"
+                        <af:showDetailItem text="#{biwebBundle.NIVEIS_VINCULADOS}"
                                            id="sdi1" stretchChildren="first">
                           <af:panelStretchLayout id="psl1" startWidth="10px"
                                                  endWidth="10px"
-                                                 bottomHeight="10px"
+                                                 bottomHeight="2px"
                                                  topHeight="30px">
                             <f:facet name="bottom">
                               <af:spacer width="10" height="10" id="s2"/>
@@ -34,7 +34,9 @@
                             <f:facet name="center">
                               <af:table var="row" rowBandingInterval="0"
                                         id="table1"
-                                        value="#{cubeEdit.cube.cubeLevels}">
+                                        value="#{cubeEdit.cube.cubeLevels}"
+                                        binding="#{cubeEdit.tblCubeLevel}"
+                                        rowSelection="single">
                                 <af:column sortable="false"
                                            headerText="#{biwebBundle.NOME}"
                                            id="column1">
@@ -74,20 +76,48 @@
                               <af:spacer width="10" height="10" id="s3"/>
                             </f:facet>
                             <f:facet name="top">
-                              <af:toolbar id="t2">
-                                <af:commandToolbarButton id="ctb1"
-                                                         icon="/images/tiny_new_doc.png"
-                                                         text="#{biwebBundle.NOVO}"
-                                                         action="#{cubeCad.insert}"/>
-                                <af:commandToolbarButton id="commandToolbarButton1"
-                                                         text="#{biwebBundle.ALTERAR}"
-                                                         icon="/images/edit.png"
-                                                         action="#{cubeCad.edit}"/>
-                                <af:commandToolbarButton text="#{biwebBundle.EXCLUIR}"
-                                                         id="ctb3"
-                                                         icon="/images/editclear_16.png"
-                                                         action="#{cubeCad.delete}"/>
-                              </af:toolbar>
+                              <af:panelGroupLayout layout="scroll"
+                                                   xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+                                                   id="pgl2">
+                                <af:toolbar id="t2">
+                                  <af:commandToolbarButton id="btnInsert"
+                                                           icon="/images/tiny_new_doc.png"
+                                                           text="#{biwebBundle.NOVO}"
+                                                           immediate="true">
+                                    <af:showPopupBehavior popupId="cubeLevelPopup"
+                                                          triggerType="action"/>
+                                  </af:commandToolbarButton>
+                                  <af:commandToolbarButton id="btnEdit"
+                                                           text="#{biwebBundle.ALTERAR}"
+                                                           icon="/images/edit.png"
+                                                           action="#{cubeCad.edit}"/>
+                                  <af:commandToolbarButton text="#{biwebBundle.EXCLUIR}"
+                                                           id="ctb3"
+                                                           icon="/images/editclear_16.png"
+                                                           action="#{cubeCad.delete}"/>
+                                </af:toolbar>
+                                <af:popup id="cubeLevelPopup"
+                                          contentDelivery="lazyUncached"
+                                          popupFetchListener="#{cubeLevelEdit.popupFetched}">
+                                  <af:panelWindow id="pw1"
+                                                  title="#{cubeLevelEdit.title}"
+                                                  modal="true">
+                                    <af:panelFormLayout id="pfl1"
+                                                        labelWidth="95">
+                                      <f:facet name="footer"/>
+                                      <af:inputComboboxListOfValues label="#{biwebBundle.NIVEL}"
+                                                                    popupTitle="Search and Result Dialog"
+                                                                    id="iclov1"
+                                                                    value="#{cubeLevelEdit.cubeLevel.level}"/>
+                                      <af:selectOneChoice label="#{biwebBundle.COLUNA_DE_JUNCAO}"
+                                                          id="soc2"
+                                                          value="#{cubeLevelEdit.cubeLevel.joinColumn}">
+                                        <f:selectItems value="" id="si2"/>
+                                      </af:selectOneChoice>
+                                    </af:panelFormLayout>
+                                  </af:panelWindow>
+                                </af:popup>
+                              </af:panelGroupLayout>
                             </f:facet>
                           </af:panelStretchLayout>
                         </af:showDetailItem>
@@ -265,7 +295,9 @@
                   <af:panelGroupLayout layout="scroll"
                                        xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
                                        id="pgl5">
-                    <af:separator id="s11"/>
+                    <af:separator id="s11">
+                      \aaaaaaaaaaaaaaaa
+                    </af:separator>
                     <af:toolbar id="t3">
                       <af:commandToolbarButton text="#{biwebBundle.SALVAR}"
                                                id="commandToolbarButton2"

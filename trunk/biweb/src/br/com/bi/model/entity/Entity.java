@@ -10,7 +10,8 @@ package br.com.bi.model.entity;
  * @author Luiz
  */
 public abstract class Entity {
-
+    private int parentIndex = -1;
+    
     private boolean persisted;
 
     /**
@@ -25,5 +26,13 @@ public abstract class Entity {
      */
     public void setPersisted(boolean persisted) {
         this.persisted = persisted;
+    }
+
+    public void setParentIndex(int parentIndex) {
+        this.parentIndex = parentIndex;
+    }
+
+    public int getParentIndex() {
+        return parentIndex;
     }
 }
