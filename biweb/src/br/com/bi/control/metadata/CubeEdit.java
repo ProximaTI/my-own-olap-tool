@@ -3,6 +3,7 @@ package br.com.bi.control.metadata;
 
 import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.Cube;
+import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.view.jsf.Util;
 
 import java.util.ArrayList;
@@ -10,15 +11,23 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import oracle.adf.view.rich.component.rich.data.RichTable;
+
+
 /**
  * Controle para a edição de um cubo.
- * 
+ *
  * @author Luiz Augusto
  */
 public class CubeEdit {
     public static final String CUBE_EDIT_BEAN_NAME = "cubeEdit";
     public static final String CUBE_EDIT_ACTION = "cubeEdit";
+    public static final String CUBE_LEVEL_POPUP = "cubeLevelPopup";
+    public static final String BTN_INSERT = "btnInsert";
+    public static final String BTN_EDIT = "btnEdit";
 
+  private RichTable tblCubeLevel;
+  
     private Cube cube;
 
     /**
@@ -40,29 +49,7 @@ public class CubeEdit {
         this.cube = cube;
     }
 
-    // dimension
-
-    public void insertDimension() {
-
-    }
-
-    public void editDimension() {
-
-    }
-
-    public void deleteDimension() {
-
-    }
-
     // filtro
-
-    public void insertFilter() {
-
-    }
-
-    public void editFilter() {
-
-    }
 
     public void deleteFilter() {
 
@@ -70,20 +57,9 @@ public class CubeEdit {
 
     // métrica
 
-    public void insertMeasure() {
-
-    }
-
-    public void editMeasure() {
-
-    }
-
     public void deleteMeasure() {
 
     }
-
-    // ==============
-
 
     /**
      * Retorna uma lista de itens de seleção com os esquemas do banco de dados.
@@ -131,5 +107,17 @@ public class CubeEdit {
      */
     public String cancel() {
         return CubeCad.CUBE_CAD_ACTION;
+    }
+
+    static CubeLevel getSelectedCubeLevel() {
+        return null;
+    }
+
+    public void setTblCubeLevel(RichTable tblCubeLevel) {
+        this.tblCubeLevel = tblCubeLevel;
+    }
+
+    public RichTable getTblCubeLevel() {
+        return tblCubeLevel;
     }
 }

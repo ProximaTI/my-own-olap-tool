@@ -9,6 +9,9 @@ import javax.el.ValueExpression;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.myfaces.trinidad.render.ExtendedRenderKitService;
+import org.apache.myfaces.trinidad.util.Service;
+
 
 public class Util {
     private static ValueExpression createExpression(String varName,
@@ -32,5 +35,29 @@ public class Util {
         PropertyResourceBundle prb =
             (PropertyResourceBundle)getELVar("biwebBundle");
         return prb.getString(key);
+    }
+
+    public static void showPopup(String clientId) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        String popupId = clientId;
+        StringBuilder script = new StringBuilder();
+        script.append("AdfPage.PAGE.findComponent('").append(popupId).append("').show();");
+        ExtendedRenderKitService erks =
+
+            Service.getService(context.getRenderKit(),
+                               ExtendedRenderKitService.class);
+
+        erks.addScript(context, script.toString());
+    }
+
+    public static void closePopup(String popupId) {
+        StringBuilder script = new StringBuilder();
+        FacesContext context = FacesContext.getCurrentInstance();
+        script.append("AdfPage.PAGE.findComponent('").append(popupId).append("').hide();");
+
+        ExtendedRenderKitService erks =
+            Service.getService(context.getRenderKit(),
+                               ExtendedRenderKitService.class);
+        erks.addScript(context, script.toString());
     }
 }
