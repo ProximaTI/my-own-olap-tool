@@ -112,7 +112,7 @@
                                       <af:selectOneChoice label="#{biwebBundle.COLUNA_DE_JUNCAO}"
                                                           id="soc2"
                                                           value="#{cubeLevelEdit.cubeLevel.joinColumn}">
-                                        <f:selectItems value="" id="si2"/>
+                                        <f:selectItems value="#{cubeLevelEdit.columns}" id="si2"/>
                                       </af:selectOneChoice>
                                     </af:panelFormLayout>
                                   </af:panelWindow>

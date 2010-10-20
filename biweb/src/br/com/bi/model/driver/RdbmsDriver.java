@@ -16,4 +16,12 @@ public interface RdbmsDriver {
      * @return
      */
     public List<String> getTables(String schema);
+
+    /**
+     * Retorna as colunas de uma tabela.
+     * @param schema
+     * @param table
+     * @return
+     */
+    public List<String> getColumns(String schema, String table);
 }
