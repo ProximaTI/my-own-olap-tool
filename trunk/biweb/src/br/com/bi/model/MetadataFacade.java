@@ -131,6 +131,13 @@ public class MetadataFacade {
         return driver.getTables(schema);
     }
 
+    public List<String> findColumnsByTable(String schema, String table) {
+        RdbmsDriver driver =
+            (RdbmsDriver)Application.getContext().getBean(RDBMS_DRIVER);
+
+        return driver.getColumns(schema, table);
+    }
+
     // =======================
     // = Data access objects =
     // =======================

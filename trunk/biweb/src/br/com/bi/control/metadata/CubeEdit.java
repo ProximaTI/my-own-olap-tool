@@ -26,8 +26,8 @@ public class CubeEdit {
     public static final String BTN_INSERT = "btnInsert";
     public static final String BTN_EDIT = "btnEdit";
 
-  private RichTable tblCubeLevel;
-  
+    private RichTable tblCubeLevel;
+
     private Cube cube;
 
     /**
@@ -109,8 +109,8 @@ public class CubeEdit {
         return CubeCad.CUBE_CAD_ACTION;
     }
 
-    static CubeLevel getSelectedCubeLevel() {
-        return null;
+    public CubeLevel getSelectedCubeLevel() {
+        return (CubeLevel)tblCubeLevel.getSelectedRowData();
     }
 
     public void setTblCubeLevel(RichTable tblCubeLevel) {

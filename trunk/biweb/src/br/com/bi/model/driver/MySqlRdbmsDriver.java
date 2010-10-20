@@ -38,4 +38,20 @@ public class MySqlRdbmsDriver extends JdbcDaoSupport implements RdbmsDriver {
         else
             return Collections.emptyList();
     }
+
+    /**
+     * Retorna as colunas de uma tabela.
+     * @param schema
+     * @param table
+     * @return
+     */
+    public List<String> getColumns(String schema, String table) {
+        if (schema != null && table != null)
+            return getJdbcTemplate().queryForList("SELECT COLUMN_NAME\n" +
+                    "  FROM INFORMATION_SCHEMA.COLUMNS\n" +
+                    " WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
+                    new Object[] { schema, table }, String.class);
+        else
+            return Collections.emptyList();
+    }
 }
