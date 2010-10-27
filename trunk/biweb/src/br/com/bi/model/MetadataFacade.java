@@ -109,6 +109,10 @@ public class MetadataFacade {
         return getDimensionDao().findByLevelId(id);
     }
 
+    public List<Level> findAllLevels() {
+        return getDimensionDao().findAllLevels();
+    }
+
     // ============
     // = Metadata =
     // ============

@@ -105,14 +105,16 @@
                                     <af:panelFormLayout id="pfl1"
                                                         labelWidth="95">
                                       <f:facet name="footer"/>
-                                      <af:inputComboboxListOfValues label="#{biwebBundle.NIVEL}"
-                                                                    popupTitle="Search and Result Dialog"
-                                                                    id="iclov1"
-                                                                    value="#{cubeLevelEdit.cubeLevel.level}"/>
+                                      <af:inputListOfValues label="#{biwebBundle.NIVEL}"
+                                                            popupTitle="Search and Result Dialog"
+                                                            id="iclov1"
+                                                            value="#{cubeLevelEdit.cubeLevel.level}"
+                                                            model="#{cubeLevelEdit.levelsLovModel}"/>
                                       <af:selectOneChoice label="#{biwebBundle.COLUNA_DE_JUNCAO}"
                                                           id="soc2"
                                                           value="#{cubeLevelEdit.cubeLevel.joinColumn}">
-                                        <f:selectItems value="#{cubeLevelEdit.columns}" id="si2"/>
+                                        <f:selectItems value="#{cubeLevelEdit.columns}"
+                                                       id="si2"/>
                                       </af:selectOneChoice>
                                     </af:panelFormLayout>
                                   </af:panelWindow>
@@ -265,15 +267,16 @@
                         <af:panelLabelAndMessage label="#{biwebBundle.DESCRICAO_DO_CUBO}"
                                                  id="panelLabelAndMessage1">
                           <af:inputText id="inputText1" maximumLength="255"
-                                        value="#{cubeEdit.cube.description}" columns="50"
-                                        simple="true" rows="3"/>
+                                        value="#{cubeEdit.cube.description}"
+                                        columns="50" simple="true" rows="3"/>
                         </af:panelLabelAndMessage>
                         <af:panelLabelAndMessage label="#{biwebBundle.ESQUEMA}"
                                                  id="plam1" showRequired="true">
                           <af:selectOneChoice id="soc1" simple="true"
                                               value="#{cubeEdit.cube.schema}"
                                               autoSubmit="true" required="true">
-                            <f:selectItems value="#{cubeEdit.schemas}" id="si1"/>
+                            <f:selectItems value="#{cubeEdit.schemas}"
+                                           id="si1"/>
                           </af:selectOneChoice>
                         </af:panelLabelAndMessage>
                         <af:panelLabelAndMessage label="#{biwebBundle.TABELA}"
@@ -284,7 +287,8 @@
                                               value="#{cubeEdit.cube.table}"
                                               partialTriggers="soc1"
                                               required="true">
-                            <f:selectItems value="#{cubeEdit.tables}" id="selectItems1"/>
+                            <f:selectItems value="#{cubeEdit.tables}"
+                                           id="selectItems1"/>
                           </af:selectOneChoice>
                         </af:panelLabelAndMessage>
                       </af:panelFormLayout>
@@ -295,9 +299,7 @@
                   <af:panelGroupLayout layout="scroll"
                                        xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
                                        id="pgl5">
-                    <af:separator id="s11">
-                      \aaaaaaaaaaaaaaaa
-                    </af:separator>
+                    <af:separator id="s11">\aaaaaaaaaaaaaaaa</af:separator>
                     <af:toolbar id="t3">
                       <af:commandToolbarButton text="#{biwebBundle.SALVAR}"
                                                id="commandToolbarButton2"
