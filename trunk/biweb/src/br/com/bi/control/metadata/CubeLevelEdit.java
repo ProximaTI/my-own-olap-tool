@@ -70,8 +70,13 @@ public class CubeLevelEdit {
     public CubeEdit getCubeEdit() {
         return (CubeEdit)Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
     }
-    
+
+    private AnnotationBasedLovModel levelsLovModel;
+
     public AnnotationBasedLovModel getLevelsLovModel() {
-      return new AnnotationBasedLovModel(Level.class, MetadataFacade.getInstance().findAllLevels());
+        if (levelsLovModel == null)
+            levelsLovModel =
+                    new AnnotationBasedLovModel(Level.class, MetadataFacade.getInstance().findAllLevels());
+        return levelsLovModel;
     }
 }
