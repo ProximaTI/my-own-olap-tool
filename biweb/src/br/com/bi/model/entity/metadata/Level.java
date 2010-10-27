@@ -4,6 +4,10 @@
  */
 package br.com.bi.model.entity.metadata;
 
+
+import br.com.bi.model.entity.annotation.Key;
+import br.com.bi.view.annotation.TableViewColumn;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +38,17 @@ public class Level extends IdentifiedEntity {
     }
 
     /**
+     * @return the id
+     */
+    @Key
+    public Integer getId() {
+        return super.getId();
+    }
+
+    /**
      * @return the table
      */
+    @TableViewColumn(bundleKey = "TABELA")
     public String getTable() {
         return table;
     }
@@ -64,6 +77,7 @@ public class Level extends IdentifiedEntity {
     /**
      * @return the schema
      */
+    @TableViewColumn(bundleKey = "ESQUEMA")
     public String getSchema() {
         return schema;
     }
@@ -119,5 +133,11 @@ public class Level extends IdentifiedEntity {
      */
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    @TableViewColumn(bundleKey = "NOME")
+    public String getName() {
+        return super.getName();
     }
 }

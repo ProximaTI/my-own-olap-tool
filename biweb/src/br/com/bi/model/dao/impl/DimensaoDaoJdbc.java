@@ -259,6 +259,11 @@ public class DimensaoDaoJdbc extends AbstractDaoJdbc implements DimensionDao {
                                                 new DimensaoDeepMapper());
     }
 
+    public List<Level> findAllLevels() {
+        return getJdbcTemplate().query("select * from nivel order by nome",
+                                       new LevelMapper());
+    }
+
     class DimensaoShallowMapper implements RowMapper<Dimension> {
 
         public Dimension mapRow(ResultSet rs, int i) throws SQLException {

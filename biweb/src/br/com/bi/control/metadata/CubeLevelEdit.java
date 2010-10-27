@@ -3,6 +3,8 @@ package br.com.bi.control.metadata;
 
 import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.CubeLevel;
+import br.com.bi.model.entity.metadata.Level;
+import br.com.bi.view.adf.lov.AnnotationBasedLovModel;
 import br.com.bi.view.jsf.Util;
 
 import java.util.ArrayList;
@@ -67,5 +69,9 @@ public class CubeLevelEdit {
 
     public CubeEdit getCubeEdit() {
         return (CubeEdit)Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
+    }
+    
+    public AnnotationBasedLovModel getLevelsLovModel() {
+      return new AnnotationBasedLovModel(Level.class, MetadataFacade.getInstance().findAllLevels());
     }
 }

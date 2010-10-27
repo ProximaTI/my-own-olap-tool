@@ -39,4 +39,6 @@ public interface DimensionDao {
     public Dimension findByLevelId(int idnivel);
 
     public Level findLevelById(int i);
+
+    public List<Level> findAllLevels();
 }
