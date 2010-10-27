@@ -9,21 +9,34 @@ import javax.el.ValueExpression;
 
 import javax.faces.context.FacesContext;
 
-import org.apache.myfaces.trinidad.render.ExtendedRenderKitService;
-import org.apache.myfaces.trinidad.util.Service;
 
-
+/**
+ * Classe com métodos utilitários auxiliar no provimento de serviços relacionados
+ * ao framework JSF.
+ *
+ * @author Luiz Augusto
+ */
 public class Util {
+    public static final String BIWEB_BUNDLE = "biwebBundle";
+
     private static ValueExpression createExpression(String varName,
                                                     Class clazz) {
         FacesContext ctx = FacesContext.getCurrentInstance();
         ExpressionFactory expf = ctx.getApplication().getExpressionFactory();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("#{").append(varName).append("}");
         ValueExpression ve =
-            expf.createValueExpression(ctx.getELContext(), "#{" + varName +
-                                       "}", clazz);
+            expf.createValueExpression(ctx.getELContext(), sb.toString(),
+                                       clazz);
         return ve;
     }
 
+    /**
+     * Retorna o valor de uma expressão.
+     * @param varName
+     * @return
+     */
     public static Object getELVar(String varName) {
         FacesContext ctx = FacesContext.getCurrentInstance();
         ELContext el = ctx.getELContext();
@@ -31,33 +44,14 @@ public class Util {
         return ve.getValue(el);
     }
 
+    /**
+     * Retorna o valor traduzido do bundle dada sua chave.
+     * @param key
+     * @return
+     */
     public static String getBundleValue(String key) {
         PropertyResourceBundle prb =
-            (PropertyResourceBundle)getELVar("biwebBundle");
+            (PropertyResourceBundle)getELVar(BIWEB_BUNDLE);
         return prb.getString(key);
-    }
-
-    public static void showPopup(String clientId) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        String popupId = clientId;
-        StringBuilder script = new StringBuilder();
-        script.append("AdfPage.PAGE.findComponent('").append(popupId).append("').show();");
-        ExtendedRenderKitService erks =
-
-            Service.getService(context.getRenderKit(),
-                               ExtendedRenderKitService.class);
-
-        erks.addScript(context, script.toString());
-    }
-
-    public static void closePopup(String popupId) {
-        StringBuilder script = new StringBuilder();
-        FacesContext context = FacesContext.getCurrentInstance();
-        script.append("AdfPage.PAGE.findComponent('").append(popupId).append("').hide();");
-
-        ExtendedRenderKitService erks =
-            Service.getService(context.getRenderKit(),
-                               ExtendedRenderKitService.class);
-        erks.addScript(context, script.toString());
     }
 }
