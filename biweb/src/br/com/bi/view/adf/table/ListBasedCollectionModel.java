@@ -7,7 +7,6 @@ import org.apache.myfaces.trinidad.model.SortableModel;
 
 
 public class ListBasedCollectionModel extends SortableModel {
-    private Object rowKey;
     private int rowIndex;
     private List data;
 
@@ -16,15 +15,16 @@ public class ListBasedCollectionModel extends SortableModel {
     }
 
     public Object getRowKey() {
-        return rowKey;
+        return Integer.valueOf(rowIndex);
     }
 
     public void setRowKey(Object object) {
-        this.rowKey = object;
+        if (object instanceof Integer)
+            this.rowIndex = (Integer)object;
     }
 
     public boolean isRowAvailable() {
-        return rowIndex > -1;
+        return rowIndex > -1 && rowIndex < data.size();
     }
 
     public int getRowCount() {
