@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <jpr:project xmlns:jpr="http://xmlns.oracle.com/ide/project">
-   <value n="ADFComponentWizard.LAST_TAG_NS_PREF" v="component"/>
-   <value n="ADFComponentWizard.LAST_TAGLIB_URI_PREF"/>
+   <value n="ADFComponentWizard.LAST_TAG_NS_PREF" v="br.com.bi.view.jsf.component"/>
+   <value n="ADFComponentWizard.LAST_TAGLIB_URI_PREF" v="http://www.bi.com.br"/>
    <hash n="component-versions">
       <value n="oracle.adfdt.controller.adfc.source.migration.AdfControllerSchemaMigrator" v="11.1.1.1.0"/>
       <value n="oracle.adfdt.controller.common.migrator.ProjectMigrator" v="11.1.1.1.0"/>
@@ -264,9 +264,25 @@
             <url n="id" protocol="file" path="/Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Dbcp.library"/>
             <value n="isJDK" v="false"/>
          </hash>
+         <hash>
+            <url n="id" path="../../Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/biComponents.jar.library"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="ADF Common Web Runtime"/>
+            <value n="isJDK" v="false"/>
+         </hash>
       </list>
       <hash n="internalDefinitions">
-         <list n="libraryDefinitions"/>
+         <list n="libraryDefinitions">
+            <hash>
+               <list n="classPath">
+                  <url path="components/deploy/biComponents.jar" jar-entry=""/>
+               </list>
+               <value n="description" v="Library1"/>
+               <value n="id" v="Library1"/>
+            </hash>
+         </list>
       </hash>
       <list n="libraryReferences">
          <hash>
@@ -339,6 +355,14 @@
          </hash>
          <hash>
             <url n="id" protocol="file" path="/Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Dbcp.library"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <url n="id" path="../../Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/biComponents.jar.library"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="ADF Common Web Runtime"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>
@@ -504,6 +528,18 @@
             <value n="tldURL" v="@oracle.home@../modules/glassfish.jstl_1.2.0.1.jar!/META-INF/x.tld"/>
             <value n="URI" v="http://java.sun.com/jsp/jstl/xml"/>
             <value n="version" v="1.2"/>
+         </hash>
+         <hash>
+            <hash n="baseLibrary">
+               <value n="name" v="bi"/>
+               <value n="version" v="1.0"/>
+            </hash>
+            <value n="jspVersion" v="2.1"/>
+            <value n="name" v="bi"/>
+            <value n="runInEditor" v="true"/>
+            <value n="tldURL" v="jar:file:/C:/my-own-olap-tool/biweb/components/deploy/biComponents.jar!/META-INF/bi.tld"/>
+            <value n="URI" v="http://www.bi.com.br"/>
+            <value n="version" v="1.0"/>
          </hash>
       </list>
    </hash>

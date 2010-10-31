@@ -4,11 +4,13 @@ package br.com.bi.control.metadata;
 import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.CubeLevel;
-import br.com.bi.view.jsf.Util;
+import br.com.bi.util.view.jsf.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.event.ActionEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
 import oracle.adf.view.rich.component.rich.data.RichTable;
@@ -26,9 +28,21 @@ public class CubeEdit {
     public static final String BTN_INSERT = "btnInsert";
     public static final String BTN_EDIT = "btnEdit";
 
-    private RichTable tblCubeLevel;
-
     private Cube cube;
+
+    /**
+     * @return
+     */
+    public Cube getCube() {
+        return cube;
+    }
+
+    /**
+     * @param cube
+     */
+    public void setCube(Cube cube) {
+        this.cube = cube;
+    }
 
     /**
      * Retorna o título da apresentação.
@@ -41,56 +55,72 @@ public class CubeEdit {
             return Util.getBundleValue("NOVO_CUBO");
     }
 
-    public Cube getCube() {
-        return cube;
+    private RichTable tblCubeLevel;
+
+    /**
+     * @return
+     */
+    public CubeLevel getSelectedCubeLevel() {
+        return (CubeLevel)tblCubeLevel.getSelectedRowData();
     }
 
-    public void setCube(Cube cube) {
-        this.cube = cube;
+    /**
+     * @param tblCubeLevel
+     */
+    public void setTblCubeLevel(RichTable tblCubeLevel) {
+        this.tblCubeLevel = tblCubeLevel;
     }
 
-    // filtro
-
-    public void deleteFilter() {
-
+    /**
+     * @return
+     */
+    public RichTable getTblCubeLevel() {
+        return tblCubeLevel;
     }
 
-    // métrica
-
-    public void deleteMeasure() {
-
-    }
+    private List<SelectItem> schemas;
 
     /**
      * Retorna uma lista de itens de seleção com os esquemas do banco de dados.
      * @return
      */
     public List<SelectItem> getSchemas() {
-        List<SelectItem> itens = new ArrayList<SelectItem>();
+        if (schemas == null) {
+            schemas = new ArrayList<SelectItem>();
 
-        List<String> schemas = MetadataFacade.getInstance().findAllSchemas();
+            List<String> _schemas =
+                MetadataFacade.getInstance().findAllSchemas();
 
-        for (String schema : schemas) {
-            itens.add(new SelectItem(schema, schema));
+            for (String schema : _schemas) {
+                schemas.add(new SelectItem(schema, schema));
+            }
         }
-        return itens;
+        return schemas;
     }
+
+    private List<SelectItem> tables;
 
     /**
      * Retorna uma lista de itens de seleção com as tabelas de um dados esquema.
      * @return
      */
     public List<SelectItem> getTables() {
-        List<SelectItem> itens = new ArrayList<SelectItem>();
+        if (tables == null) {
+            tables = new ArrayList<SelectItem>();
 
-        List<String> tables =
-            MetadataFacade.getInstance().findTablesBySchema(cube.getSchema());
+            List<String> _tables =
+                MetadataFacade.getInstance().findTablesBySchema(cube.getSchema());
 
-        for (String table : tables) {
-            itens.add(new SelectItem(table, table));
+            for (String table : _tables) {
+                tables.add(new SelectItem(table, table));
+            }
         }
-        return itens;
+        return tables;
     }
+
+    // ===============
+    // ==== Ações ====
+    // ===============
 
     /**
      * Salva o cubo no banco de dados.
@@ -109,15 +139,25 @@ public class CubeEdit {
         return CubeCad.CUBE_CAD_ACTION;
     }
 
-    public CubeLevel getSelectedCubeLevel() {
-        return (CubeLevel)tblCubeLevel.getSelectedRowData();
+    // filtro
+
+    public void deleteFilter() {
+
     }
 
-    public void setTblCubeLevel(RichTable tblCubeLevel) {
-        this.tblCubeLevel = tblCubeLevel;
+    // métrica
+
+    public void deleteMeasure() {
+
     }
 
-    public RichTable getTblCubeLevel() {
-        return tblCubeLevel;
+    public void deleteCubeLevel(ActionEvent actionEvent) {
+        cube.getCubeLevels().remove(getSelectedCubeLevel());
+    }
+
+    public void cubeLevelChanged(ValueChangeEvent valueChangeEvent) {
+        cube.setSchema((String)valueChangeEvent.getNewValue());
+        cube.setTable(null);
+        tables = null;
     }
 }

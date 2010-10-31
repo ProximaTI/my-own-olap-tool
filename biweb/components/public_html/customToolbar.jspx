@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.1"
+          xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:h="http://java.sun.com/jsf/html"
+          xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
+          xmlns:trh="http://myfaces.apache.org/trinidad/html">
+  <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+  <af:componentDef var="attrs" componentVar="component">
+    <trh:tableLayout id="dc_tl1" width="100%">
+      <trh:rowLayout id="dc_rl1" width="100%" halign="right">
+        <af:facetRef facetName="buttons"/>
+      </trh:rowLayout>
+    </trh:tableLayout>
+    <af:xmlContent>
+      <component xmlns="http://xmlns.oracle.com/adf/faces/rich/component">
+        <display-name>customToolbar</display-name>
+        <facet>
+          <facet-name>buttons</facet-name>
+        </facet>
+        <component-extension>
+          <component-tag-namespace>br.com.bi.component</component-tag-namespace>
+          <component-taglib-uri>http://www.bi.com.br</component-taglib-uri>
+        </component-extension>
+      </component>
+    </af:xmlContent>
+  </af:componentDef>
+</jsp:root>
