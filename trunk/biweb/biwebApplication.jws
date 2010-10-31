@@ -16,5 +16,6 @@
    </hash>
    <list n="listOfChildren">
       <hash><url n="URL" path="biweb.jpr"/></hash>
+      <hash><url n="URL" path="components/components.jpr"/></hash>
    </list>
 </jws:workspace>

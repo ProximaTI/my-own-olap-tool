@@ -5,8 +5,8 @@
 package br.com.bi.model.entity.metadata;
 
 
-import br.com.bi.model.entity.annotation.Key;
-import br.com.bi.view.annotation.TableViewColumn;
+import br.com.bi.util.view.annotation.DisplayProperty;
+import br.com.bi.util.view.annotation.TableViewColumn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +17,10 @@ import java.util.List;
  */
 public class Level extends IdentifiedEntity {
 
+    private List<Property> properties = new ArrayList<Property>();
+    private String joinColumnUpperLevel;
     private String schema;
     private String table;
-    private String joinColumnUpperLevel;
-    private List<Property> properties = new ArrayList<Property>();
     private int index;
 
     public Level() {
@@ -38,17 +38,9 @@ public class Level extends IdentifiedEntity {
     }
 
     /**
-     * @return the id
-     */
-    @Key
-    public Integer getId() {
-        return super.getId();
-    }
-
-    /**
      * @return the table
      */
-    @TableViewColumn(bundleKey = "TABELA")
+    @TableViewColumn(bundleKey = "TABELA", index = 2)
     public String getTable() {
         return table;
     }
@@ -77,7 +69,7 @@ public class Level extends IdentifiedEntity {
     /**
      * @return the schema
      */
-    @TableViewColumn(bundleKey = "ESQUEMA")
+    @TableViewColumn(bundleKey = "ESQUEMA", index = 1)
     public String getSchema() {
         return schema;
     }
@@ -136,8 +128,15 @@ public class Level extends IdentifiedEntity {
     }
 
     @Override
-    @TableViewColumn(bundleKey = "NOME")
+    @TableViewColumn(bundleKey = "NOME", index = 0)
     public String getName() {
         return super.getName();
+    }
+
+    @DisplayProperty
+    public String getDisplay() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[").append(getName()).append("]");
+        return sb.toString();
     }
 }

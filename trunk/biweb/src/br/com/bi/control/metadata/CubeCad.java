@@ -3,7 +3,7 @@ package br.com.bi.control.metadata;
 
 import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.Cube;
-import br.com.bi.view.jsf.Util;
+import br.com.bi.util.view.jsf.Util;
 
 import java.util.List;
 

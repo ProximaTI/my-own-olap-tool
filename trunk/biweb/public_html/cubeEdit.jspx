@@ -2,7 +2,9 @@
 <jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.1"
           xmlns:f="http://java.sun.com/jsf/core"
           xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
-          xmlns:c="http://java.sun.com/jsp/jstl/core">
+          xmlns:c="http://java.sun.com/jsp/jstl/core"
+          xmlns:bi="http://www.bi.com.br"
+          xmlns:trh="http://myfaces.apache.org/trinidad/html">
   <c:set var="biwebBundle" value="#{adfBundle['br.com.bi.biwebBundle']}"/>
   <jsp:directive.page contentType="text/html;charset=UTF-8"/>
   <f:view>
@@ -36,7 +38,8 @@
                                         id="table1"
                                         value="#{cubeEdit.cube.cubeLevels}"
                                         binding="#{cubeEdit.tblCubeLevel}"
-                                        rowSelection="single">
+                                        rowSelection="single"
+                                        partialTriggers="::pw1 ::ctb3">
                                 <af:column sortable="false"
                                            headerText="#{biwebBundle.NOME}"
                                            id="column1">
@@ -90,26 +93,32 @@
                                   <af:commandToolbarButton id="btnEdit"
                                                            text="#{biwebBundle.ALTERAR}"
                                                            icon="/images/edit.png"
-                                                           action="#{cubeCad.edit}"/>
+                                                           immediate="true">
+                                    <af:showPopupBehavior popupId="cubeLevelPopup"
+                                                          triggerType="action"/>
+                                  </af:commandToolbarButton>
                                   <af:commandToolbarButton text="#{biwebBundle.EXCLUIR}"
                                                            id="ctb3"
                                                            icon="/images/editclear_16.png"
-                                                           action="#{cubeCad.delete}"/>
+                                                           immediate="true"
+                                                           actionListener="#{cubeEdit.deleteCubeLevel}"/>
                                 </af:toolbar>
                                 <af:popup id="cubeLevelPopup"
                                           contentDelivery="lazyUncached"
                                           popupFetchListener="#{cubeLevelEdit.popupFetched}">
-                                  <af:panelWindow id="pw1"
-                                                  title="#{cubeLevelEdit.title}"
-                                                  modal="true">
+                                  <af:dialog id="pw1"
+                                             title="#{cubeLevelEdit.title}"
+                                             modal="true" resize="on"
+                                             dialogListener="#{cubeLevelEdit.dialogListener}">
                                     <af:panelFormLayout id="pfl1"
-                                                        labelWidth="95">
-                                      <f:facet name="footer"/>
-                                      <af:inputListOfValues label="#{biwebBundle.NIVEL}"
-                                                            popupTitle="Search and Result Dialog"
+                                                        labelWidth="95"
+                                                        styleClass="AFStretchWidth">
+                                      <af:inputListOfValues popupTitle="Search and Result Dialog"
                                                             id="iclov1"
-                                                            value="#{cubeLevelEdit.cubeLevel.level}"
-                                                            model="#{cubeLevelEdit.levelsLovModel}"/>
+                                                            value="#{cubeLevelEdit.levelsLovModel.display}"
+                                                            model="#{cubeLevelEdit.levelsLovModel}"
+                                                            columns="20"
+                                                            label="#{biwebBundle.NIVEL}"/>
                                       <af:selectOneChoice label="#{biwebBundle.COLUNA_DE_JUNCAO}"
                                                           id="soc2"
                                                           value="#{cubeLevelEdit.cubeLevel.joinColumn}">
@@ -117,7 +126,7 @@
                                                        id="si2"/>
                                       </af:selectOneChoice>
                                     </af:panelFormLayout>
-                                  </af:panelWindow>
+                                  </af:dialog>
                                 </af:popup>
                               </af:panelGroupLayout>
                             </f:facet>
@@ -260,8 +269,7 @@
                         <af:panelLabelAndMessage label="#{biwebBundle.NOME_DO_CUBO}"
                                                  id="plam2" showRequired="true">
                           <af:inputText id="it2" maximumLength="255"
-                                        value="#{cubeEdit.cube.name}"
-                                        required="true" columns="50"
+                                        value="#{cubeEdit.cube.name}" columns="50"
                                         simple="true"/>
                         </af:panelLabelAndMessage>
                         <af:panelLabelAndMessage label="#{biwebBundle.DESCRICAO_DO_CUBO}"
@@ -274,7 +282,8 @@
                                                  id="plam1" showRequired="true">
                           <af:selectOneChoice id="soc1" simple="true"
                                               value="#{cubeEdit.cube.schema}"
-                                              autoSubmit="true" required="true">
+                                              autoSubmit="true" required="true"
+                                              valueChangeListener="#{cubeEdit.cubeLevelChanged}">
                             <f:selectItems value="#{cubeEdit.schemas}"
                                            id="si1"/>
                           </af:selectOneChoice>
@@ -285,8 +294,7 @@
                           <af:selectOneChoice id="selectOneChoice1"
                                               simple="true"
                                               value="#{cubeEdit.cube.table}"
-                                              partialTriggers="soc1"
-                                              required="true">
+                                              partialTriggers="soc1">
                             <f:selectItems value="#{cubeEdit.tables}"
                                            id="selectItems1"/>
                           </af:selectOneChoice>
@@ -299,7 +307,7 @@
                   <af:panelGroupLayout layout="scroll"
                                        xmlns:af="http://xmlns.oracle.com/adf/faces/rich"
                                        id="pgl5">
-                    <af:separator id="s11">\aaaaaaaaaaaaaaaa</af:separator>
+                    <af:separator id="s11"/>
                     <af:toolbar id="t3">
                       <af:commandToolbarButton text="#{biwebBundle.SALVAR}"
                                                id="commandToolbarButton2"
