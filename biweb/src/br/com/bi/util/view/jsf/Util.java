@@ -1,4 +1,4 @@
-package br.com.bi.view.jsf;
+package br.com.bi.util.view.jsf;
 
 
 import java.util.PropertyResourceBundle;
@@ -7,7 +7,12 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.myfaces.trinidad.component.UIXEditableValue;
 
 
 /**
@@ -53,5 +58,26 @@ public class Util {
         PropertyResourceBundle prb =
             (PropertyResourceBundle)getELVar(BIWEB_BUNDLE);
         return prb.getString(key);
+    }
+
+    public static void setSessionValue(String attribute, Object value) {
+        HttpSession session =
+            (HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+
+        session.setAttribute(attribute, value);
+    }
+
+    public static void discardSubmittedValues() {
+        for (UIComponent component :
+             FacesContext.getCurrentInstance().getViewRoot().getChildren())
+            discardSubmittedValues(component);
+    }
+
+    private static void discardSubmittedValues(UIComponent component) {
+        if (component instanceof UIXEditableValue)
+            ((UIXEditableValue)component).setSubmittedValue(null);
+
+        for (UIComponent c : component.getChildren())
+            discardSubmittedValues(c);
     }
 }
