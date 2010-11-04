@@ -44,6 +44,9 @@ public class CubeLevel extends Entity {
         this.joinColumn = joinColumn;
     }
 
+    /**
+     * @return
+     */
     public CubeLevel clone() {
         CubeLevel clone = new CubeLevel();
         clone.setLevel(this.level);

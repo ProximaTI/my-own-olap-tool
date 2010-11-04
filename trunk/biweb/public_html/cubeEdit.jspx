@@ -144,8 +144,11 @@
                             </f:facet>
                             <f:facet name="center">
                               <af:table var="row" rowBandingInterval="0"
-                                        id="table3"
-                                        value="#{cubeEdit.cube.filters}">
+                                        id="tblFilter"
+                                        value="#{cubeEdit.cube.filters}"
+                                        binding="#{cubeEdit.tblFilter}"
+                                        partialTriggers="::dialog1 ::commandToolbarButton4"
+                                        rowSelection="single">
                                 <af:column sortable="false"
                                            headerText="#{biwebBundle.NOME}"
                                            id="column11">
@@ -161,7 +164,7 @@
                                 <af:column sortable="false"
                                            headerText="#{biwebBundle.EXPRESSAO}"
                                            id="column13">
-                                  <af:outputText value="#{row.schema}"
+                                  <af:outputText value="#{row.expression}"
                                                  id="outputText13"/>
                                 </af:column>
                               </af:table>
@@ -174,18 +177,47 @@
                             </f:facet>
                             <f:facet name="top">
                               <af:toolbar id="toolbar1">
-                                <af:commandToolbarButton id="commandToolbarButton3"
+                                <af:commandToolbarButton id="btnInsertFilter"
                                                          icon="/images/tiny_new_doc.png"
                                                          text="#{biwebBundle.NOVO}"
-                                                         action="#{cubeCad.insert}"/>
-                                <af:commandToolbarButton id="commandToolbarButton4"
+                                                         immediate="true">
+                                  <af:showPopupBehavior popupId="popup1"
+                                                        triggerType="action"/>
+                                </af:commandToolbarButton>
+                                <af:commandToolbarButton id="commandToolbarButton3"
                                                          text="#{biwebBundle.ALTERAR}"
                                                          icon="/images/edit.png"
-                                                         action="#{cubeCad.edit}"/>
+                                                         immediate="true">
+                                  <af:showPopupBehavior popupId="popup1"
+                                                        triggerType="action"/>
+                                </af:commandToolbarButton>
                                 <af:commandToolbarButton text="#{biwebBundle.EXCLUIR}"
-                                                         id="commandToolbarButton5"
+                                                         id="commandToolbarButton4"
                                                          icon="/images/editclear_16.png"
-                                                         action="#{cubeCad.delete}"/>
+                                                         immediate="true"
+                                                         actionListener="#{cubeEdit.deleteFilter}"/>
+                                <af:popup id="popup1"
+                                          contentDelivery="lazyUncached"
+                                          popupFetchListener="#{filterEdit.popupFetched}">
+                                  <af:dialog id="dialog1"
+                                             title="#{filterEdit.title}"
+                                             modal="true" resize="on"
+                                             dialogListener="#{filterEdit.dialogListener}">
+                                    <af:panelFormLayout id="panelFormLayout1"
+                                                        labelWidth="95"
+                                                        styleClass="AFStretchWidth">
+                                      <af:inputText label="#{biwebBundle.NOME}" id="it1"
+                                                    columns="30"
+                                                    value="#{filterEdit.filter.name}"/>
+                                      <af:inputText label="#{biwebBundle.DESCRICAO}" id="it4"
+                                                    value="#{filterEdit.filter.description}"
+                                                    columns="50"/>
+                                      <af:inputText label="#{biwebBundle.EXPRESSAO}" id="it3"
+                                                    rows="10" columns="50"
+                                                    value="#{filterEdit.filter.expression}"/>
+                                    </af:panelFormLayout>
+                                  </af:dialog>
+                                </af:popup>
                               </af:toolbar>
                             </f:facet>
                           </af:panelStretchLayout>
@@ -283,7 +315,7 @@
                           <af:selectOneChoice id="soc1" simple="true"
                                               value="#{cubeEdit.cube.schema}"
                                               autoSubmit="true" required="true"
-                                              valueChangeListener="#{cubeEdit.cubeLevelChanged}">
+                                              valueChangeListener="#{cubeEdit.schemaChanged}">
                             <f:selectItems value="#{cubeEdit.schemas}"
                                            id="si1"/>
                           </af:selectOneChoice>
@@ -294,7 +326,9 @@
                           <af:selectOneChoice id="selectOneChoice1"
                                               simple="true"
                                               value="#{cubeEdit.cube.table}"
-                                              partialTriggers="soc1">
+                                              partialTriggers="soc1"
+                                              valueChangeListener="#{cubeEdit.tableChanged}"
+                                              autoSubmit="true">
                             <f:selectItems value="#{cubeEdit.tables}"
                                            id="selectItems1"/>
                           </af:selectOneChoice>

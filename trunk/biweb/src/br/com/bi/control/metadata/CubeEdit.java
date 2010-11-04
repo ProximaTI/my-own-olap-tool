@@ -4,6 +4,7 @@ package br.com.bi.control.metadata;
 import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.CubeLevel;
+import br.com.bi.model.entity.metadata.Filter;
 import br.com.bi.util.view.jsf.Util;
 
 import java.util.ArrayList;
@@ -24,9 +25,7 @@ import oracle.adf.view.rich.component.rich.data.RichTable;
 public class CubeEdit {
     public static final String CUBE_EDIT_BEAN_NAME = "cubeEdit";
     public static final String CUBE_EDIT_ACTION = "cubeEdit";
-    public static final String CUBE_LEVEL_POPUP = "cubeLevelPopup";
     public static final String BTN_INSERT = "btnInsert";
-    public static final String BTN_EDIT = "btnEdit";
 
     private Cube cube;
 
@@ -58,13 +57,6 @@ public class CubeEdit {
     private RichTable tblCubeLevel;
 
     /**
-     * @return
-     */
-    public CubeLevel getSelectedCubeLevel() {
-        return (CubeLevel)tblCubeLevel.getSelectedRowData();
-    }
-
-    /**
      * @param tblCubeLevel
      */
     public void setTblCubeLevel(RichTable tblCubeLevel) {
@@ -76,6 +68,36 @@ public class CubeEdit {
      */
     public RichTable getTblCubeLevel() {
         return tblCubeLevel;
+    }
+
+    /**
+     * @return
+     */
+    public CubeLevel getSelectedCubeLevel() {
+        return (CubeLevel)tblCubeLevel.getSelectedRowData();
+    }
+
+    private RichTable tblFilter;
+
+    /**
+     * @return
+     */
+    public RichTable getTblFilter() {
+        return tblFilter;
+    }
+
+    /**
+     * @param tblFilter
+     */
+    public void setTblFilter(RichTable tblFilter) {
+        this.tblFilter = tblFilter;
+    }
+
+    /**
+     * @return
+     */
+    public Filter getSelectedFilter() {
+        return (Filter)getTblFilter().getSelectedRowData();
     }
 
     private List<SelectItem> schemas;
@@ -139,25 +161,34 @@ public class CubeEdit {
         return CubeCad.CUBE_CAD_ACTION;
     }
 
-    // filtro
-
-    public void deleteFilter() {
-
-    }
-
-    // métrica
-
-    public void deleteMeasure() {
-
-    }
-
-    public void deleteCubeLevel(ActionEvent actionEvent) {
+    /**
+     *
+     */
+    public void deleteCubeLevel() {
         cube.getCubeLevels().remove(getSelectedCubeLevel());
     }
 
-    public void cubeLevelChanged(ValueChangeEvent valueChangeEvent) {
+    /**
+     * @param valueChangeEvent
+     */
+    public void schemaChanged(ValueChangeEvent valueChangeEvent) {
         cube.setSchema((String)valueChangeEvent.getNewValue());
         cube.setTable(null);
         tables = null;
+    }
+
+    /**
+     * @param valueChangeEvent
+     */
+    public void tableChanged(ValueChangeEvent valueChangeEvent) {
+        cube.setTable((String)valueChangeEvent.getNewValue());
+        tables = null;
+    }
+
+    /**
+     * @param actionEvent
+     */
+    public void deleteFilter(ActionEvent actionEvent) {
+        cube.getFilters().remove(getSelectedFilter());
     }
 }

@@ -1,13 +1,15 @@
-package br.com.bi.view.adf.table;
+package br.com.bi.util.view.adf.table;
 
 
-import br.com.bi.view.annotation.TableViewColumn;
-import br.com.bi.view.jsf.Util;
+import br.com.bi.util.Closure;
+import br.com.bi.util.view.annotation.TableViewColumn;
+import br.com.bi.util.view.jsf.Util;
 
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -28,11 +30,12 @@ import org.springframework.util.StringUtils;
 public class AnnotationBasedTableModel<T> extends TableModel {
     private List<ColumnDescriptor> descriptors;
     private CollectionModel collectionModel;
-    private Class clazz;
+    private Class<T> listType;
 
-    public AnnotationBasedTableModel(Class<T> clazz, List<T> data) {
-        this.collectionModel = new ListBasedCollectionModel(data);
-        this.clazz = clazz;
+    public AnnotationBasedTableModel(Class<T> listType,
+                                     Closure<List<T>> lazyList) {
+        this.collectionModel = new LazyListBasedCollectionModel<T>(lazyList);
+        this.listType = listType;
     }
 
     public CollectionModel getCollectionModel() {
@@ -47,24 +50,28 @@ public class AnnotationBasedTableModel<T> extends TableModel {
         if (descriptors == null) {
             descriptors = new ArrayList<ColumnDescriptor>();
 
-            for (Method method : clazz.getMethods()) {
+            for (Method method : listType.getMethods()) {
                 if (method.isAnnotationPresent(TableViewColumn.class)) {
-                    ColumnDescriptor descriptor =
+                    ColumnDescriptorImpl descriptor =
                         new ColumnDescriptorImpl(method);
 
                     descriptors.add(descriptor);
                 }
             }
         }
+
+        Collections.sort(descriptors, new Comparator() {
+
+                public int compare(Object o1, Object o2) {
+                    ColumnDescriptorImpl cd1 =
+                        (AnnotationBasedTableModel.ColumnDescriptorImpl)o1;
+                    ColumnDescriptorImpl cd2 =
+                        (AnnotationBasedTableModel.ColumnDescriptorImpl)o2;
+                    return cd1.getIndex().compareTo(cd2.getIndex());
+                }
+            });
+
         return descriptors;
-    }
-
-    public Class getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(Class clazz) {
-        this.clazz = clazz;
     }
 
     class ColumnDescriptorImpl extends ColumnDescriptor {
@@ -121,7 +128,7 @@ public class AnnotationBasedTableModel<T> extends TableModel {
         }
 
         public Class getType() {
-            return clazz;
+            return listType;
         }
 
         public boolean isReadOnly() {
@@ -130,6 +137,10 @@ public class AnnotationBasedTableModel<T> extends TableModel {
 
         public boolean isRequired() {
             return false;
+        }
+
+        public Integer getIndex() {
+            return method.getAnnotation(TableViewColumn.class).index();
         }
     }
 }

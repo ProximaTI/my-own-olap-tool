@@ -44,4 +44,9 @@
     <managed-bean-class>br.com.bi.control.metadata.CubeLevelEdit</managed-bean-class>
     <managed-bean-scope>session</managed-bean-scope>
   </managed-bean>
+  <managed-bean>
+    <managed-bean-name>filterEdit</managed-bean-name>
+    <managed-bean-class>br.com.bi.control.metadata.FilterEdit</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
 </faces-config>
