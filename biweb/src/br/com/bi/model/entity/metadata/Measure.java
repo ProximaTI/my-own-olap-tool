@@ -1,112 +1,120 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.bi.model.entity.metadata;
 
-/**
- *
- * @author Luiz
- */
-public class Measure extends IdentifiedEntity {
+import br.com.bi.model.entity.Piece;
 
-    private Funcao function;
-    private String column;
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
+@Entity
+@NamedQueries({
+  @NamedQuery(name = "Measure.findAll", query = "select o from Measure o")
+})
+@Table(name = "\"measure\"")
+public class Measure extends Piece implements Serializable {
+    @Column(name="aggregateFunction")
+    private Integer aggregateFunction;
+    @Column(name="columnName")
+    private String columnName;
+    @Column(name="defaultMeasure")
+    private String defaultMeasure;
+    @Column(name="description")
+    private String description;
+    @Column(name="filterExpression")
     private String filterExpression;
-    private boolean defaultMeasure;
+    @Id
+    @Column(name="id", nullable = false)
+    private Integer id;
+    @Column(name="name")
+    private String name;
+    @ManyToOne
+    @JoinColumn(name = "cubeId")
+    private Cube cube;
 
     public Measure() {
     }
 
-    public Measure(Funcao function, String coluna) {
-        this.function = function;
-        this.column = coluna;
+    public Measure(Integer aggregateFunction, String columnName, Cube cube, String defaultMeasure, String description,
+                   String filterExpression, Integer id, String name) {
+        this.aggregateFunction = aggregateFunction;
+        this.columnName = columnName;
+        this.cube = cube;
+        this.defaultMeasure = defaultMeasure;
+        this.description = description;
+        this.filterExpression = filterExpression;
+        this.id = id;
+        this.name = name;
     }
 
-    /**
-     * @return the funcao
-     */
-    public Funcao getFunction() {
-        return function;
+    public Integer getAggregateFunction() {
+        return aggregateFunction;
     }
 
-    /**
-     * @param function the funcao to set
-     */
-    public void setFunction(Funcao function) {
-        this.function = function;
+    public void setAggregateFunction(Integer aggregateFunction) {
+        this.aggregateFunction = aggregateFunction;
     }
 
-    /**
-     * @return the coluna
-     */
-    public String getColumn() {
-        return column;
+    public String getColumnName() {
+        return columnName;
     }
 
-    /**
-     * @param column the coluna to set
-     */
-    public void setColumn(String column) {
-        this.column = column;
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
     }
 
-    /**
-     * @return the expressaoFiltro
-     */
+
+    public String getDefaultMeasure() {
+        return defaultMeasure;
+    }
+
+    public void setDefaultMeasure(String defaultMeasure) {
+        this.defaultMeasure = defaultMeasure;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getFilterExpression() {
         return filterExpression;
     }
 
-    /**
-     * @param filterExpression the expressaoFiltro to set
-     */
     public void setFilterExpression(String filterExpression) {
         this.filterExpression = filterExpression;
     }
 
-    /**
-     * @return the metricaPadrao
-     */
-    public boolean isDefaultMeasure() {
-        return defaultMeasure;
+    public Integer getId() {
+        return id;
     }
 
-    /**
-     * @param defaultMeasure the metricaPadrao to set
-     */
-    public void setDefaultMeasure(boolean defaultMeasure) {
-        this.defaultMeasure = defaultMeasure;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setCodigoFuncao(int funcao) {
-        setFunction(codigoToFuncao(funcao));
+    public String getName() {
+        return name;
     }
 
-    public int getCodigoFuncao() {
-        if (function == Funcao.SUM) {
-            return 1;
-        } else if (function == Funcao.COUNT) {
-            return 2;
-        } else {
-            return 3;
-        }
+    public void setName(String name) {
+        this.name = name;
     }
 
-    private Funcao codigoToFuncao(int funcao) {
-        switch (funcao) {
-            case 1:
-                return Funcao.SUM;
-            case 2:
-                return Funcao.COUNT;
-            case 3:
-                return Funcao.AVG;
-            default:
-                return null;
-        }
+    public Cube getCube() {
+        return cube;
     }
 
-    public enum Funcao {
-        SUM, COUNT, AVG
+    public void setCube(Cube cube) {
+        this.cube = cube;
     }
 }

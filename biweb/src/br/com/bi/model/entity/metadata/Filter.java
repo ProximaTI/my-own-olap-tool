@@ -1,39 +1,100 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.bi.model.entity.metadata;
 
-/**
- *
- * @author Luiz
- */
-public class Filter extends IdentifiedEntity {
 
+import br.com.bi.model.entity.Piece;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
+
+@Entity
+@NamedQueries( { @NamedQuery(name = "Filter.findAll",
+                             query = "select o from Filter o") })
+@Table(name = "\"filter\"")
+public class Filter extends Piece implements Serializable {
+    @Column(name = "description")
+    private String description;
+    @Column(name = "expression")
     private String expression;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Integer id;
+    @Column(name = "name")
+    private String name;
+    @ManyToOne
+    @JoinColumn(name = "cubeId")
+    private Cube cube;
 
-    /**
-     * @return the expressao
-     */
+    public Filter() {
+    }
+
+    public Filter(Cube cube, String description, String expression, Integer id,
+                  String name) {
+        this.cube = cube;
+        this.description = description;
+        this.expression = expression;
+        this.id = id;
+        this.name = name;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getExpression() {
         return expression;
     }
 
-    /**
-     * @param expression the expressao to set
-     */
     public void setExpression(String expression) {
         this.expression = expression;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Cube getCube() {
+        return cube;
+    }
+
+    public void setCube(Cube cube) {
+        this.cube = cube;
+    }
+
+    @Override
     public Filter clone() {
         Filter clone = new Filter();
+        clone.setCube(this.getCube());
         clone.setDescription(this.getDescription());
-        clone.setExpression(this.expression);
+        clone.setExpression(this.getExpression());
         clone.setId(this.getId());
         clone.setName(this.getName());
         clone.setParentIndex(this.getParentIndex());
-        clone.setPersisted(this.isPersisted());
 
         return clone;
     }

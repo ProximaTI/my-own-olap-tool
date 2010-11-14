@@ -1,115 +1,166 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.bi.model.entity.metadata;
+
+import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Luiz
- */
-public class Cube extends IdentifiedEntity {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-    private String schema;
-    private String table;
-    private List<CubeLevel> levels = new ArrayList<CubeLevel>();
-    private List<Measure> measures = new ArrayList<Measure>();
-    private List<Filter> filters = new ArrayList<Filter>();
+
+@Entity
+@NamedQueries( { @NamedQuery(name = "Cube.findAll",
+                             query = "select o from Cube o") })
+@Table(name = "\"cube\"")
+public class Cube implements Serializable {
+    @Column(name = "description")
+    private String description;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Integer id;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "schemaName")
+    private String schemaName;
+    @Column(name = "tableName")
+    private String tableName;
+    @OneToMany(mappedBy = "cube")
+    private List<Filter> filterList;
+    @OneToMany(mappedBy = "cube")
+    private List<Measure> measureList;
+    @OneToMany(mappedBy = "cube")
+    private List<CubeLevel> cubeLevelList;
 
     public Cube() {
     }
 
-    public Cube(String schema, String table) {
-        this.schema = schema;
-        this.table = table;
+    public Cube(String description, Integer id, String name, String schema,
+                String table) {
+        this.description = description;
+        this.id = id;
+        this.name = name;
+        this.schemaName = schema;
+        this.tableName = table;
     }
 
-    /**
-     * @return the filtros
-     */
-    public List<Filter> getFilters() {
-        return filters;
+    public String getDescription() {
+        return description;
     }
 
-    /**
-     * @param filters the filtros to set
-     */
-    public void setFilters(List<Filter> filters) {
-        this.filters = filters;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    /**
-     * @return the metricas
-     */
-    public List<Measure> getMeasures() {
-        return measures;
+    public Integer getId() {
+        return id;
     }
 
-    /**
-     * @param metricas the metricas to set
-     */
-    public void setMeasures(List<Measure> metricas) {
-        this.measures = metricas;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    /**
-     * @return the esquema
-     */
-    public String getSchema() {
-        return schema;
+    public String getName() {
+        return name;
     }
 
-    /**
-     * @param schema the esquema to set
-     */
-    public void setSchema(String schema) {
-        this.schema = schema;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    /**
-     * @return the tabela
-     */
-    public String getTable() {
-        return table;
+    public String getSchemaName() {
+        return schemaName;
     }
 
-    /**
-     * @param table the tabela to set
-     */
-    public void setTable(String table) {
-        this.table = table;
+    public void setSchemaName(String schema) {
+        this.schemaName = schema;
     }
 
-    /**
-     * @return the niveis
-     */
-    public List<CubeLevel> getCubeLevels() {
-        return levels;
+    public String getTableName() {
+        return tableName;
     }
 
-    /**
-     * @param levels the niveis to set
-     */
-    public void setCubeLevels(List<CubeLevel> levels) {
-        this.levels = levels;
+    public void setTableName(String table) {
+        this.tableName = table;
     }
 
-    @Override
-    public Object clone() {
+    public List<Filter> getFilterList() {
+        return filterList;
+    }
+
+    public void setFilterList(List<Filter> filterList) {
+        this.filterList = filterList;
+    }
+
+    public Filter addFilter(Filter filter) {
+        getFilterList().add(filter);
+        filter.setCube(this);
+        return filter;
+    }
+
+    public Filter removeFilter(Filter filter) {
+        getFilterList().remove(filter);
+        filter.setCube(null);
+        return filter;
+    }
+
+    public List<Measure> getMeasureList() {
+        return measureList;
+    }
+
+    public void setMeasureList(List<Measure> measureList) {
+        this.measureList = measureList;
+    }
+
+    public Measure addMeasure(Measure measure) {
+        getMeasureList().add(measure);
+        measure.setCube(this);
+        return measure;
+    }
+
+    public Measure removeMeasure(Measure measure) {
+        getMeasureList().remove(measure);
+        measure.setCube(null);
+        return measure;
+    }
+
+    public List<CubeLevel> getCubeLevelList() {
+        return cubeLevelList;
+    }
+
+    public void setCubeLevelList(List<CubeLevel> cubeLevelList) {
+        this.cubeLevelList = cubeLevelList;
+    }
+
+    public CubeLevel addCubeLevel(CubeLevel cubeLevel) {
+        getCubeLevelList().add(cubeLevel);
+        cubeLevel.setCube(this);
+        return cubeLevel;
+    }
+
+    public CubeLevel removeCubeLevel(CubeLevel cubeLevel) {
+        getCubeLevelList().remove(cubeLevel);
+        cubeLevel.setCube(null);
+        return cubeLevel;
+    }
+
+    public Cube clone() {
         Cube clone = new Cube();
 
-        clone.setCubeLevels(new ArrayList<CubeLevel>(this.getCubeLevels()));
+        clone.setCubeLevelList(new ArrayList<CubeLevel>(this.getCubeLevelList()));
         clone.setDescription(this.getDescription());
-        clone.setFilters(new ArrayList<Filter>(this.getFilters()));
-        clone.setMeasures(new ArrayList<Measure>(this.getMeasures()));
-        clone.setName(this.getName());
-        clone.setPersisted(this.isPersisted());
-        clone.setSchema(this.getSchema());
-        clone.setTable(this.getTable());
+        clone.setFilterList(new ArrayList<Filter>(this.getFilterList()));
         clone.setId(this.getId());
+        clone.setMeasureList(new ArrayList<Measure>(this.getMeasureList()));
+        clone.setName(this.getName());
+        clone.setSchemaName(this.getSchemaName());
+        clone.setTableName(this.getTableName());
+
         return clone;
     }
 }
