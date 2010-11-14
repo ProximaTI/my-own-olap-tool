@@ -47,7 +47,7 @@ public class FilterEdit extends AbstractController {
     public CubeEdit getCubeEdit() {
         return (CubeEdit)Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
     }
-    
+
     // ===============
     // ==== Ações ====
     // ===============
@@ -61,11 +61,11 @@ public class FilterEdit extends AbstractController {
 
         if (dialogEvent.getOutcome() == DialogEvent.Outcome.ok)
             if (filter.getParentIndex() == -1) {
-                filter.setParentIndex(getCubeEdit().getCube().getFilters().size());
-                getCubeEdit().getCube().getFilters().add(filter);
+                filter.setParentIndex(getCubeEdit().getCube().getFilterList().size());
+                getCubeEdit().getCube().addFilter(filter);
             } else {
-                getCubeEdit().getCube().getFilters().set(filter.getParentIndex(),
-                                                         filter);
+                getCubeEdit().getCube().getFilterList().set(filter.getParentIndex(),
+                                                            filter);
             }
 
         popup.hide();

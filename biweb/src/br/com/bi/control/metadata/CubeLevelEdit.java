@@ -51,8 +51,8 @@ public class CubeLevelEdit extends AbstractController {
         List<SelectItem> itens = new ArrayList<SelectItem>();
 
         List<String> columns =
-            MetadataFacade.getInstance().findColumnsByTable(getCubeEdit().getCube().getSchema(),
-                                                            getCubeEdit().getCube().getTable());
+            MetadataFacade.getInstance().findColumnsByTable(getCubeEdit().getCube().getSchemaName(),
+                                                            getCubeEdit().getCube().getTableName());
 
         for (String column : columns)
             itens.add(new SelectItem(column, column));
@@ -117,11 +117,11 @@ public class CubeLevelEdit extends AbstractController {
 
         if (dialogEvent.getOutcome() == DialogEvent.Outcome.ok)
             if (cubeLevel.getParentIndex() == -1) {
-                cubeLevel.setParentIndex(getCubeEdit().getCube().getCubeLevels().size());
-                getCubeEdit().getCube().getCubeLevels().add(cubeLevel);
+                cubeLevel.setParentIndex(getCubeEdit().getCube().getCubeLevelList().size());
+                getCubeEdit().getCube().addCubeLevel(cubeLevel);
             } else {
-                getCubeEdit().getCube().getCubeLevels().set(cubeLevel.getParentIndex(),
-                                                            cubeLevel);
+                getCubeEdit().getCube().getCubeLevelList().set(cubeLevel.getParentIndex(),
+                                                               cubeLevel);
             }
 
         popup.hide();

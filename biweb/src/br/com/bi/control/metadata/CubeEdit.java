@@ -48,7 +48,7 @@ public class CubeEdit {
      * @return
      */
     public String getTitle() {
-        if (cube.isPersisted())
+        if (cube.getId() != null)
             return Util.getBundleValue("ALTERAR_CUBO");
         else
             return Util.getBundleValue("NOVO_CUBO");
@@ -131,7 +131,7 @@ public class CubeEdit {
             tables = new ArrayList<SelectItem>();
 
             List<String> _tables =
-                MetadataFacade.getInstance().findTablesBySchema(cube.getSchema());
+                MetadataFacade.getInstance().findTablesBySchema(cube.getSchemaName());
 
             for (String table : _tables) {
                 tables.add(new SelectItem(table, table));
@@ -149,7 +149,7 @@ public class CubeEdit {
      * @return
      */
     public String save() {
-        MetadataFacade.getInstance().save(cube);
+        MetadataFacade.getInstance().saveCube(cube);
         return CubeCad.CUBE_CAD_ACTION;
     }
 
@@ -165,15 +165,15 @@ public class CubeEdit {
      *
      */
     public void deleteCubeLevel() {
-        cube.getCubeLevels().remove(getSelectedCubeLevel());
+        cube.removeCubeLevel(getSelectedCubeLevel());
     }
 
     /**
      * @param valueChangeEvent
      */
     public void schemaChanged(ValueChangeEvent valueChangeEvent) {
-        cube.setSchema((String)valueChangeEvent.getNewValue());
-        cube.setTable(null);
+        cube.setSchemaName((String)valueChangeEvent.getNewValue());
+        cube.setTableName(null);
         tables = null;
     }
 
@@ -181,7 +181,7 @@ public class CubeEdit {
      * @param valueChangeEvent
      */
     public void tableChanged(ValueChangeEvent valueChangeEvent) {
-        cube.setTable((String)valueChangeEvent.getNewValue());
+        cube.setTableName((String)valueChangeEvent.getNewValue());
         tables = null;
     }
 
@@ -189,6 +189,6 @@ public class CubeEdit {
      * @param actionEvent
      */
     public void deleteFilter(ActionEvent actionEvent) {
-        cube.getFilters().remove(getSelectedFilter());
+        cube.removeFilter(getSelectedFilter());
     }
 }
