@@ -5,8 +5,9 @@
 package br.com.bi.model;
 
 
-import br.com.bi.model.dao.CuboDao;
+import br.com.bi.model.dao.CubeDao;
 import br.com.bi.model.dao.DimensionDao;
+import br.com.bi.model.dao.LevelDao;
 import br.com.bi.model.driver.RdbmsDriver;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.model.entity.metadata.Dimension;
@@ -24,7 +25,9 @@ import java.util.List;
 public class MetadataFacade {
 
     private static final String CUBE_DAO = "cubeDao";
+    private static final String LEVEL_DAO = "levelDao";
     private static final String DIMENSION_DAO = "dimensionDao";
+
     private static final String RDBMS_DRIVER = "rdbmsDriver";
 
     private static MetadataFacade instance;
@@ -52,7 +55,7 @@ public class MetadataFacade {
      * Salva no banco de dados o cubo informado.
      * @param cube
      */
-    public void save(Cube cube) {
+    public void saveCube(Cube cube) {
         getCubeDao().save(cube);
     }
 
@@ -61,7 +64,7 @@ public class MetadataFacade {
      * @param id
      * @return
      */
-    public Cube findCubeById(int id) {
+    public Cube findCubeById(Integer id) {
         return getCubeDao().findById(id);
     }
 
@@ -69,7 +72,7 @@ public class MetadataFacade {
      * Retorna referência para todos os cubos.
      * @return
      */
-    public List<Cube> findAllCubos() {
+    public List<Cube> findAllCubes() {
         return getCubeDao().findAll();
     }
 
@@ -77,7 +80,7 @@ public class MetadataFacade {
      * Apagar um cubo do banco de dados.
      * @param id
      */
-    public void deleteCube(int id) {
+    public void deleteCube(Integer id) {
         getCubeDao().delete(id);
     }
 
@@ -85,32 +88,74 @@ public class MetadataFacade {
     // = Dimensão =
     // ============
 
-    public void save(Dimension dimension) {
-        getDimensionDao().salvar(dimension);
-    }
-
-    public Dimension findDimensionById(int id) {
-        return getDimensionDao().findById(id);
-    }
-
+    /**
+     * Retorna lista com todos as dimensões persistidas.
+     * @return
+     */
     public List<Dimension> findAllDimensions() {
         return getDimensionDao().findAll();
     }
 
-    public void deleteDimension(int id) {
+    /**
+     * Retorna referência para uma dimensão dado o seu identificador.
+     * @param id
+     * @return
+     */
+    public Dimension findDimensionById(Integer id) {
+        return getDimensionDao().findById(id);
+    }
+
+    /**
+     * Salva uma dimensão no banco de dados.
+     * @param dimension
+     */
+    public void saveDimension(Dimension dimension) {
+        getDimensionDao().save(dimension);
+    }
+
+    /**
+     * Apaga uma dimensão do banco de dados, dado seu identificador.
+     * @param id
+     */
+    public void deleteDimension(Integer id) {
         getDimensionDao().delete(id);
     }
 
-    public List<Level> lowerLevels(int id) {
-        return getDimensionDao().lowerLevels(id);
-    }
+    // =========
+    // = Nível =
+    // =========
 
-    public Dimension findByLevelId(int id) {
-        return getDimensionDao().findByLevelId(id);
-    }
-
+    /**
+     * Retorna lista com todos os níveis persistidos.
+     * @return
+     */
     public List<Level> findAllLevels() {
-        return getDimensionDao().findAllLevels();
+        return getLevelDao().findAll();
+    }
+
+    /**
+     * Retorna referência para um nível dado o seu identificador.
+     * @param id
+     * @return
+     */
+    public Level findLevelById(Integer id) {
+        return getLevelDao().findById(id);
+    }
+
+    /**
+     * Salva um nível no banco de dados.
+     * @param level
+     */
+    public void saveLevel(Level level) {
+        getLevelDao().save(level);
+    }
+
+    /**
+     * Apaga um nível do banco de dados, dado seu identificador.
+     * @param id
+     */
+    public void deleteLevel(Integer id) {
+        getLevelDao().delete(id);
     }
 
     // ============
@@ -146,8 +191,12 @@ public class MetadataFacade {
     // = Data access objects =
     // =======================
 
-    private CuboDao getCubeDao() {
-        return (CuboDao)Application.getContext().getBean(CUBE_DAO);
+    private CubeDao getCubeDao() {
+        return (CubeDao)Application.getContext().getBean(CUBE_DAO);
+    }
+
+    private LevelDao getLevelDao() {
+        return (LevelDao)Application.getContext().getBean(LEVEL_DAO);
     }
 
     private DimensionDao getDimensionDao() {

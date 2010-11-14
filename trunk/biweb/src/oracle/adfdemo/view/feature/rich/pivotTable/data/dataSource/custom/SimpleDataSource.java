@@ -58,9 +58,9 @@ import oracle.dss.util.RowOutOfRangeException;
  *
  * <p>
  * The data for this data source is stored in a two dimensional array that looks
- * like denormalized data from a relational table.
+ * like denormalized data from a relational tableName.
  * The data array in this class contains more data than is necessary because it
- *  also provides data for the following two data source samples that extend
+ * also provides data for the following two data source samples that extend
  * this class:
  * <ul>
  * <li> <code>PagingDataSource</code>

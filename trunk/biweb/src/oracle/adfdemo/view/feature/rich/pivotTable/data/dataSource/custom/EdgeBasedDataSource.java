@@ -62,7 +62,7 @@ import oracle.dss.util.SliceOutOfRangeException;
  * listeners.
  * </ul>
  * <p>
- ******************************************************************</p>
+ * </p>
  * <p> All data source samples in the <code>oracle.adfdemo.view.feature.rich.pivotTable.data.dataSource.custom</code>
  * package extend <code>EdgeBasedDataSource</code>. In these samples,
  * each edge is independent to illustrate the
@@ -91,26 +91,26 @@ import oracle.dss.util.SliceOutOfRangeException;
  * asymmetric layers on a row, column, or page edge. </li> </ul> </p>
  * <p>
  * Definition - Symmetric Edge is an edge that consists of unrelated layers
- * as shown in the following table.
+ * as shown in the following tableName.
  * <p> <pre>
- *             ____________________________________________________________
+ * ____________________________________________________________
  * geography  | Massachusetts | Massachusetts | Rhode Island | Rhode Island|
- *            |---------------|---------------|--------------|-------------|
+ * |---------------|---------------|--------------|-------------|
  * product    | Audio         | Video         | Audio        | Video       |
- *             ------------------------------------------------------------
+ * ------------------------------------------------------------
  * </pre> </p>
  * <p>
  * Definition - Asymmetric Edge is an edge that consists of related and
- * unrelated layers as shown in the table below.
+ * unrelated layers as shown in the tableName below.
  * <p> <pre>
- *          ________________________________________________________________
+ * ________________________________________________________________
  * state   |Mass.   | Mass.     | Rhode Island | Rhode Island | Connecticut |
- *         |--------|-----------|--------------|--------------|             |
+ * |--------|-----------|--------------|--------------|             |
  * city    |Boston  | Worcester | Providence   | Kingston     |             |
- *         ------------------------------------------------------------------
+ * ------------------------------------------------------------------
  * </pre> </p>
  *
- *<p>
+ * <p>
  * The sample data sources can be found in the
  * <code>oracle.adfdemo.view.feature.rich.pivotTable.data.dataSource.custom</code> package. Edges for the sample
  * data sources are found in the
@@ -118,24 +118,24 @@ import oracle.dss.util.SliceOutOfRangeException;
  * A list of the sample data sources and their edges follows:
  * <ul> <li>
  * <code>SimpleDataSource</code> <pre>
- *      row edge    = SingleLayerEdge
- *      column edge = SingleLayerEdge </pre>
+ * row edge    = SingleLayerEdge
+ * column edge = SingleLayerEdge </pre>
  *
  * <li> <code>PagingDataSource</code> <pre>
- *      row edge    = SingleLayerEdge
- *      column edge = SingleLayerEdge
- *      page edge   = SymmetricPageEdge </pre>
+ * row edge    = SingleLayerEdge
+ * column edge = SingleLayerEdge
+ * page edge   = SymmetricPageEdge </pre>
  *
  * <li> <code>DrillablePagingDataSource</code> <pre>
- *      row edge    = SingleLayerEdge
- *      column edge = SingleLayerEdge
- *      page edge   = SymmetricPageEdge </pre>
+ * row edge    = SingleLayerEdge
+ * column edge = SingleLayerEdge
+ * page edge   = SymmetricPageEdge </pre>
  *
  * <li> <code>AsymmetricDrillablePagingDataSource</code> <pre>
- *      row edge    = AsymmetricEdge
- *      column edge = AsymmetricEdge
- *      page edge   = AsymmetricPageEdge </pre> </ul>
- * 
+ * row edge    = AsymmetricEdge
+ * column edge = AsymmetricEdge
+ * page edge   = AsymmetricPageEdge </pre> </ul>
+ *
  * <p>
  *
  * The following is the mapping between the methods of this class and the
@@ -143,37 +143,37 @@ import oracle.dss.util.SliceOutOfRangeException;
  * <code>oracle.adfdemo.view.feature.rich.pivotTable.data.dataSource.custom.edge</code> package.
  * <p><pre>
  * EdgeBasedDataSource.getEdgeExtent(edge)
- *       == Edge.getExtent()</pre>
+ * == Edge.getExtent()</pre>
  * <p><pre>
  * EdgeBasedDataSource.getLayerMetadata(edge,layer,type)
- *       == Edge.getLayerMetadata(layer,type) </pre>
+ * == Edge.getLayerMetadata(layer,type) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getSliceLabel(edge,slice)
- *       == Edge.getSliceLabel(slice)</pre>
+ * == Edge.getSliceLabel(slice)</pre>
  * <p><pre>
  * EdgeBasedDataSource.getLayerCount(edge)
- *       == Edge.getLayerCount()</pre>
+ * == Edge.getLayerCount()</pre>
  * <p><pre>
  * EdgeBasedDataSource.getSliceMemberCount(edge,slice)
- *       == Edge.getSliceMemberCount(slice)</pre>
+ * == Edge.getSliceMemberCount(slice)</pre>
  * <p><pre>
  * EdgeBasedDataSource.getMemberDepth(edge,layer,slice)
- *       == Edge.getMemberDepth(layer,slice) </pre>
+ * == Edge.getMemberDepth(layer,slice) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getMemberStartLayer(edge,layer,slice)
- *       == Edge.getMemberStartLayer(layer,slice) </pre>
+ * == Edge.getMemberStartLayer(layer,slice) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getLayerMetadata(edge,layer,type)
- *       == Edge.getLayerMetadata(layer,type) </pre>
+ * == Edge.getLayerMetadata(layer,type) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getMemberExtent(edge,layer,slice)
- *       == Edge.getMemberExtent(layer,slice) </pre>
+ * == Edge.getMemberExtent(layer,slice) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getMemberStartSlice(edge,layer,slice)
- *       == Edge.getMemberStartSlice(layer,slice) </pre>
+ * == Edge.getMemberStartSlice(layer,slice) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getMemberMetadata(edge,layer,slice,type)
- *       == Edge.getMemberMetadata(layer,slice,type) </pre>
+ * == Edge.getMemberMetadata(layer,slice,type) </pre>
  *
  * <p>
  * The following is the mapping between the methods of this class and the
@@ -182,31 +182,31 @@ import oracle.dss.util.SliceOutOfRangeException;
  *
  * <p><pre>
  * EdgeBasedDataSource.getLayerMetadata(edge,layer,type)
- *       == Edge.getLayerMetadata(layer,type) </pre>
+ * == Edge.getLayerMetadata(layer,type) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getMemberSiblingCount(edge,hPos,memberLayer)
- *       == Edge.getMemberSiblingCount(hPos,memberLayer) </pre>
+ * == Edge.getMemberSiblingCount(hPos,memberLayer) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getMemberMetadata(edge,hPos,memberLayer,hIndex,type)
- *       == Edge.getMemberMetadata(hPos,memberLayer,hIndex,type) </pre>
+ * == Edge.getMemberMetadata(hPos,memberLayer,hIndex,type) </pre>
  * <p><pre>
  * EdgeBasedDataSource.getEdgeCurrentHPos(edge)
- *       == Edge.getEdgeCurrentHPos() </pre>
+ * == Edge.getEdgeCurrentHPos() </pre>
  * <p><pre>
  * EdgeBasedDataSource.getNextHPos(edge)
- *       == Edge.getNextHPos() </pre>
+ * == Edge.getNextHPos() </pre>
  * <p><pre>
  * EdgeBasedDataSource.getPrevHPos(edge)
- *       == Edge.getPrevHPos() </pre>
+ * == Edge.getPrevHPos() </pre>
  * <p><pre>
  * EdgeBasedDataSource.getFirstHPos(edge)
- *       == Edge.getFirstHPos() </pre>
+ * == Edge.getFirstHPos() </pre>
  * <p><pre>
  * EdgeBasedDataSource.getLastHPos(edge)
- *       == Edge.getLastHPos() </pre>
+ * == Edge.getLastHPos() </pre>
  * <p><pre>
  * EdgeBasedDataSource.changeEdgeCurrentSlice(edge,hPos,maxLayerSpecified)
- *       == Edge.getLastHPos() </pre>
+ * == Edge.getLastHPos() </pre>
  *
  * <p>
  * Note: This class uses an edge-based model where all edge logic is performed
@@ -221,7 +221,7 @@ import oracle.dss.util.SliceOutOfRangeException;
  * <li>Any other coding structure that you find useful
  * </ul>
  *
- * 
+ *
  * @hidden
  */
 public class EdgeBasedDataSource extends DataAccessAdapter implements DataSource, CubeDataAccess, CubeDataDirector, RelationalDataDirector {
