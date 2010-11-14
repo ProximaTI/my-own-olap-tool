@@ -59,6 +59,7 @@
    <value n="defaultPackage" v="br.com.bi"/>
    <hash n="ejbModuleContainer">
       <value n="cmpProvider" v="EJB 3.0"/>
+      <value n="dbConnection" v="bi"/>
       <value n="ejbVersion" v="3.0"/>
    </hash>
    <hash n="oracle.ide.model.TechnologyScopeConfiguration">
@@ -70,7 +71,6 @@
          <string v="EJB"/>
          <string v="HTML"/>
          <string v="TopLink"/>
-         <string v="Database"/>
          <string v="XML"/>
       </list>
    </hash>
@@ -245,10 +245,6 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" protocol="file" path="/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
-            <value n="isJDK" v="false"/>
-         </hash>
-         <hash>
             <value n="id" v="Commons Logging 1.0.4"/>
             <value n="isJDK" v="false"/>
          </hash>
@@ -265,11 +261,19 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" path="../../Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/biComponents.jar.library"/>
+            <value n="id" v="ADF Common Web Runtime"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <value n="id" v="ADF Common Web Runtime"/>
+            <value n="id" v="Eclipselink"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Spring 2.5"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="TopLink"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>
@@ -281,6 +285,16 @@
                </list>
                <value n="description" v="Library1"/>
                <value n="id" v="Library1"/>
+            </hash>
+            <hash>
+               <list n="classPath">
+                  <url path="../../javalib/eclipselink/jlib/jpa/eclipselink-jpa-modelgen_2.0.2.v20100323-r6872.jar" jar-entry=""/>
+                  <url path="../../javalib/eclipselink/jlib/jpa/javax.persistence_2.0.0.v201002051058.jar" jar-entry=""/>
+                  <url path="../../javalib/eclipselink/jlib/eclipselink.jar" jar-entry=""/>
+               </list>
+               <value n="deployedByDefault" v="true"/>
+               <value n="description" v="Eclipselink"/>
+               <value n="id" v="Eclipselink"/>
             </hash>
          </list>
       </hash>
@@ -338,10 +352,6 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" protocol="file" path="/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/Spring 3.0.4.library"/>
-            <value n="isJDK" v="false"/>
-         </hash>
-         <hash>
             <value n="id" v="Commons Logging 1.0.4"/>
             <value n="isJDK" v="false"/>
          </hash>
@@ -358,11 +368,19 @@
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <url n="id" path="../../Users/Luiz/AppData/Roaming/JDeveloper/system11.1.1.3.37.56.60/o.jdeveloper/biComponents.jar.library"/>
+            <value n="id" v="ADF Common Web Runtime"/>
             <value n="isJDK" v="false"/>
          </hash>
          <hash>
-            <value n="id" v="ADF Common Web Runtime"/>
+            <value n="id" v="Eclipselink"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Spring 2.5"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="TopLink"/>
             <value n="isJDK" v="false"/>
          </hash>
       </list>
@@ -529,21 +547,13 @@
             <value n="URI" v="http://java.sun.com/jsp/jstl/xml"/>
             <value n="version" v="1.2"/>
          </hash>
-         <hash>
-            <hash n="baseLibrary">
-               <value n="name" v="bi"/>
-               <value n="version" v="1.0"/>
-            </hash>
-            <value n="jspVersion" v="2.1"/>
-            <value n="name" v="bi"/>
-            <value n="runInEditor" v="true"/>
-            <value n="tldURL" v="jar:file:/C:/my-own-olap-tool/biweb/components/deploy/biComponents.jar!/META-INF/bi.tld"/>
-            <value n="URI" v="http://www.bi.com.br"/>
-            <value n="version" v="1.0"/>
-         </hash>
       </list>
    </hash>
    <hash n="oracle.toplink.workbench.addin">
-      <hash n="persistence-list"/>
+      <hash n="persistence-list">
+         <hash n="src$META-INF$persistence.xml">
+            <value n="development-database" v="bi"/>
+         </hash>
+      </hash>
    </hash>
 </jpr:project>
