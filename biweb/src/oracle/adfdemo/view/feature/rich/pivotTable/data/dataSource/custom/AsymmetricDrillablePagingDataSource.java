@@ -65,8 +65,8 @@ import oracle.dss.util.SliceOutOfRangeException;
  * disappear.
  *
  * <p> The data for this sample is stored in a two dimensional array that
- * looks like denormalized data from a relational table.
- * 
+ * looks like denormalized data from a relational tableName.
+ *
  * @hidden
  */
 public class AsymmetricDrillablePagingDataSource extends EdgeBasedDataSource {

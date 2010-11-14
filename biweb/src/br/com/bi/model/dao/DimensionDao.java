@@ -6,7 +6,6 @@ package br.com.bi.model.dao;
 
 
 import br.com.bi.model.entity.metadata.Dimension;
-import br.com.bi.model.entity.metadata.Level;
 
 import java.util.List;
 
@@ -15,30 +14,28 @@ import java.util.List;
  * @author Luiz
  */
 public interface DimensionDao {
-
+    /**
+     * Retorna lista com todos as dimensões persistidas.
+     * @return
+     */
     public List<Dimension> findAll();
 
-    public Dimension findById(int id);
-
-    public void salvar(Dimension dimensao);
-
-    public void delete(int id);
-
     /**
-     * Retorna os níveis que estão hierarquicamente abaixo do nível denotado por idnivel.
-     * @param idnivel
+     * Retorna referência para uma dimensão dado o seu identificador.
+     * @param id
      * @return
      */
-    public List<Level> lowerLevels(int idnivel);
+    public Dimension findById(Integer id);
 
     /**
-     * Retorna a dimensão à qual pertence o nível denotado por idnivel.
-     * @param idnivel
-     * @return
+     * Salva uma dimensão no banco de dados.
+     * @param dimension
      */
-    public Dimension findByLevelId(int idnivel);
+    public void save(Dimension dimension);
 
-    public Level findLevelById(int i);
-
-    public List<Level> findAllLevels();
+    /**
+     * Apaga uma dimensão do banco de dados, dado seu identificador.
+     * @param id
+     */
+    public void delete(Integer id);
 }

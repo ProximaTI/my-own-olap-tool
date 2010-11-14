@@ -9,13 +9,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Application {
 
-    static private ApplicationContext context =
-            new ClassPathXmlApplicationContext("/beans.xml");
+    static private ApplicationContext context;
 
     /**
      * @return the context
      */
     public static ApplicationContext getContext() {
+        if (context == null)
+            context = new ClassPathXmlApplicationContext("/beans.xml");
         return context;
     }
 }
