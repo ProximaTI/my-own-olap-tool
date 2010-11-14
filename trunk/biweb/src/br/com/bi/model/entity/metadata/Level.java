@@ -1,142 +1,181 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package br.com.bi.model.entity.metadata;
 
+import br.com.bi.model.entity.Piece;
 
-import br.com.bi.util.view.annotation.DisplayProperty;
-import br.com.bi.util.view.annotation.TableViewColumn;
+import java.io.Serializable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Luiz
- */
-public class Level extends IdentifiedEntity {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-    private List<Property> properties = new ArrayList<Property>();
-    private String joinColumnUpperLevel;
-    private String schema;
-    private String table;
-    private int index;
+
+@Entity
+@NamedQueries( { @NamedQuery(name = "Level.findAll",
+                             query = "select o from Level o") })
+@Table(name = "\"level\"")
+public class Level extends Piece implements Serializable {
+    @Column(name = "description")
+    private String description;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Integer id;
+    @Column(name = "indice")
+    private Integer indice;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "schemaName")
+    private String schemaName;
+    @Column(name = "tableName")
+    private String tableName;
+    @Column(name = "upperLevelJoinColumn")
+    private String upperLevelJoinColumn;
+    @ManyToOne
+    @JoinColumn(name = "dimensionId")
+    private Dimension dimension;
+    @OneToMany(mappedBy = "level")
+    private List<Property> propertyList;
+    @OneToMany(mappedBy = "level")
+    private List<CubeLevel> cubeLevelList;
 
     public Level() {
     }
 
-    public Level(String schema, String table) {
-        this.schema = schema;
-        this.table = table;
+    public Level(String description, Dimension dimension, Integer id,
+                 Integer indice, String name, String schemaName,
+                 String tableName, String upperLevelJoinColumn) {
+        this.description = description;
+        this.dimension = dimension;
+        this.id = id;
+        this.indice = indice;
+        this.name = name;
+        this.schemaName = schemaName;
+        this.tableName = tableName;
+        this.upperLevelJoinColumn = upperLevelJoinColumn;
     }
 
-    public Level(String schema, String table, String joinColumn) {
-        this.schema = schema;
-        this.table = table;
-        this.joinColumnUpperLevel = joinColumn;
+    public String getDescription() {
+        return description;
     }
 
-    /**
-     * @return the table
-     */
-    @TableViewColumn(bundleKey = "TABELA", index = 2)
-    public String getTable() {
-        return table;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    /**
-     * @param table the table to set
-     */
-    public void setTable(String table) {
-        this.table = table;
+
+    public Integer getId() {
+        return id;
     }
 
-    /**
-     * @return the properties
-     */
-    public List<Property> getProperties() {
-        return properties;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    /**
-     * @param properties the properties to set
-     */
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
+    public Integer getIndice() {
+        return indice;
     }
 
-    /**
-     * @return the schema
-     */
-    @TableViewColumn(bundleKey = "ESQUEMA", index = 1)
-    public String getSchema() {
-        return schema;
+    public void setIndice(Integer indice) {
+        this.indice = indice;
     }
 
-    /**
-     * @param schema the schema to set
-     */
-    public void setSchema(String schema) {
-        this.schema = schema;
+    public String getName() {
+        return name;
     }
 
-    /**
-     * @return the joinColumnUpperLevel
-     */
-    public String getJoinColumnUpperLevel() {
-        return joinColumnUpperLevel;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    /**
-     * @param joinColumnUpperLevel the joinColumn to set
-     */
-    public void setJoinColumnUpperLevel(String joinColumnUpperLevel) {
-        this.joinColumnUpperLevel = joinColumnUpperLevel;
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    public String getUpperLevelJoinColumn() {
+        return upperLevelJoinColumn;
+    }
+
+    public void setUpperLevelJoinColumn(String upperLevelJoinColumn) {
+        this.upperLevelJoinColumn = upperLevelJoinColumn;
+    }
+
+    public Dimension getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(Dimension dimension) {
+        this.dimension = dimension;
+    }
+
+    public List<Property> getPropertyList() {
+        return propertyList;
+    }
+
+    public void setPropertyList(List<Property> propertyList) {
+        this.propertyList = propertyList;
+    }
+
+    public Property addProperty(Property property) {
+        getPropertyList().add(property);
+        property.setLevel(this);
+        return property;
+    }
+
+    public Property removeProperty(Property property) {
+        getPropertyList().remove(property);
+        property.setLevel(null);
+        return property;
+    }
+
+    public List<CubeLevel> getCubeLevelList() {
+        return cubeLevelList;
+    }
+
+    public void setCubeLevelList(List<CubeLevel> cubeLevelList) {
+        this.cubeLevelList = cubeLevelList;
+    }
+
+    public CubeLevel addCubeLevel(CubeLevel cubeLevel) {
+        getCubeLevelList().add(cubeLevel);
+        cubeLevel.setLevel(this);
+        return cubeLevel;
+    }
+
+    public CubeLevel removeCubeLevel(CubeLevel cubeLevel) {
+        getCubeLevelList().remove(cubeLevel);
+        cubeLevel.setLevel(null);
+        return cubeLevel;
     }
 
     public Property getCodeProperty() {
-        for (Property p : properties) {
-            if (p.isCodeProperty()) {
+        for (Property p : propertyList)
+            if (p.getCodeProperty().equals("1"))
                 return p;
-            }
-        }
         return null;
     }
 
-    public Property getNameProperty() {
-        for (Property p : properties) {
-            if (p.isNameProperty()) {
-                return p;
-            }
-        }
-        return null;
-    }
+    public List<Level> getLowerLevels() {
+        List<Level> levels = this.getDimension().getLevelList();
 
-    /**
-     * @return the indice
-     */
-    public int getIndex() {
-        return index;
-    }
-
-    /**
-     * @param index the indice to set
-     */
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    @Override
-    @TableViewColumn(bundleKey = "NOME", index = 0)
-    public String getName() {
-        return super.getName();
-    }
-
-    @DisplayProperty
-    public String getDisplay() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[").append(getName()).append("]");
-        return sb.toString();
+        return levels.subList(levels.indexOf(this), levels.size() - 1);
     }
 }
