@@ -26,7 +26,7 @@ public class CubeCad {
      * @return
      */
     public List<Cube> getCubes() {
-        return MetadataFacade.getInstance().findAllCubos();
+        return MetadataFacade.getInstance().findAllCubes();
     }
 
     /**
