@@ -313,7 +313,7 @@
                         <af:panelLabelAndMessage label="#{biwebBundle.ESQUEMA}"
                                                  id="plam1" showRequired="true">
                           <af:selectOneChoice id="soc1" simple="true"
-                                              value="#{cubeEdit.cube.schema}"
+                                              value="#{cubeEdit.cube.schemaName}"
                                               autoSubmit="true" required="true"
                                               valueChangeListener="#{cubeEdit.schemaChanged}">
                             <f:selectItems value="#{cubeEdit.schemas}"
@@ -325,7 +325,7 @@
                                                  showRequired="true">
                           <af:selectOneChoice id="selectOneChoice1"
                                               simple="true"
-                                              value="#{cubeEdit.cube.table}"
+                                              value="#{cubeEdit.cube.tableName}"
                                               partialTriggers="soc1"
                                               valueChangeListener="#{cubeEdit.tableChanged}"
                                               autoSubmit="true">

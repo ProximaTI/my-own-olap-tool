@@ -62,13 +62,13 @@
                         <af:column sortable="true"
                                    headerText="#{biwebBundle.ESQUEMA}"
                                    id="column1" width="106">
-                          <af:outputText value="#{row.schema}"
+                          <af:outputText value="#{row.schemaName}"
                                          id="outputText1"/>
                         </af:column>
                         <af:column sortable="true"
                                    headerText="#{biwebBundle.TABELA}" id="c1"
                                    width="106">
-                          <af:outputText value="#{row.table}" id="ot6"/>
+                          <af:outputText value="#{row.tableName}" id="ot6"/>
                         </af:column>
                       </af:table>
                     </f:facet>
