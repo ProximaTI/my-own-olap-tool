@@ -1,19 +1,14 @@
 package br.com.bi.util.view.jsf;
 
-
 import java.util.PropertyResourceBundle;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 import javax.servlet.http.HttpSession;
-
-import org.apache.myfaces.trinidad.component.UIXEditableValue;
-
 
 /**
  * Classe com métodos utilitários auxiliar no provimento de serviços relacionados
@@ -22,18 +17,18 @@ import org.apache.myfaces.trinidad.component.UIXEditableValue;
  * @author Luiz Augusto
  */
 public class Util {
+
     public static final String BIWEB_BUNDLE = "biwebBundle";
 
-    private static ValueExpression createExpression(String varName,
-                                                    Class clazz) {
+    private static ValueExpression createExpression(String varName, Class clazz) {
         FacesContext ctx = FacesContext.getCurrentInstance();
         ExpressionFactory expf = ctx.getApplication().getExpressionFactory();
 
         StringBuilder sb = new StringBuilder();
         sb.append("#{").append(varName).append("}");
-        ValueExpression ve =
-            expf.createValueExpression(ctx.getELContext(), sb.toString(),
-                                       clazz);
+        
+        ValueExpression ve = expf.createValueExpression(ctx.getELContext(), sb.toString(), clazz);
+        
         return ve;
     }
 
@@ -55,29 +50,13 @@ public class Util {
      * @return
      */
     public static String getBundleValue(String key) {
-        PropertyResourceBundle prb =
-            (PropertyResourceBundle)getELVar(BIWEB_BUNDLE);
+        PropertyResourceBundle prb = (PropertyResourceBundle) getELVar(BIWEB_BUNDLE);
         return prb.getString(key);
     }
 
     public static void setSessionValue(String attribute, Object value) {
-        HttpSession session =
-            (HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(true);
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true);
 
         session.setAttribute(attribute, value);
-    }
-
-    public static void discardSubmittedValues() {
-        for (UIComponent component :
-             FacesContext.getCurrentInstance().getViewRoot().getChildren())
-            discardSubmittedValues(component);
-    }
-
-    private static void discardSubmittedValues(UIComponent component) {
-        if (component instanceof UIXEditableValue)
-            ((UIXEditableValue)component).setSubmittedValue(null);
-
-        for (UIComponent c : component.getChildren())
-            discardSubmittedValues(c);
     }
 }

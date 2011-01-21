@@ -1,25 +1,25 @@
-package br.com.bi.control.metadata;
-
+package br.com.bi.controller.metadata;
 
 import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.util.view.jsf.Util;
 
 import java.util.List;
-
-import oracle.adf.view.rich.component.rich.data.RichTable;
-
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
 /**
  * Controle para tela com listagem dos cubos.
  *
  * @author Luiz Augusto Garcia da Silva
  */
+@ManagedBean
+@SessionScoped
 public class CubeCad {
+
     public static final String CUBE_CAD_BEAN_NAME = "cubeCad";
     public static final String CUBE_CAD_ACTION = "cubeCad";
-
-    private RichTable table;
+    private Cube selectedCube;
 
     /**
      * Retorna uma lista com os cubos persistidos.
@@ -34,15 +34,11 @@ public class CubeCad {
      * @return
      */
     public String edit() {
-        Cube selectedCube = (Cube)table.getSelectedRowData();
-
         // realiza a carga completa do cubo
-        selectedCube =
-                MetadataFacade.getInstance().findCubeById(selectedCube.getId());
+        setSelectedCube(MetadataFacade.getInstance().findCubeById(getSelectedCube().getId()));
 
-        CubeEdit cubeEdit =
-            (CubeEdit)Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
-        cubeEdit.setCube((Cube)selectedCube.clone());
+        CubeEdit cubeEdit = (CubeEdit) Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
+        cubeEdit.setCube((Cube) getSelectedCube().clone());
         return CubeEdit.CUBE_EDIT_ACTION;
     }
 
@@ -51,8 +47,7 @@ public class CubeCad {
      * @return
      */
     public String insert() {
-        CubeEdit cubeEdit =
-            (CubeEdit)Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
+        CubeEdit cubeEdit = (CubeEdit) Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
         cubeEdit.setCube(new Cube());
         return CubeEdit.CUBE_EDIT_ACTION;
     }
@@ -62,17 +57,21 @@ public class CubeCad {
      * @return
      */
     public String delete() {
-        Cube cube = (Cube)table.getSelectedRowData();
-
-        MetadataFacade.getInstance().deleteCube(cube.getId());
+        MetadataFacade.getInstance().deleteCube(getSelectedCube().getId());
         return null;
     }
 
-    public void setTable(RichTable table) {
-        this.table = table;
+    /**
+     * @return the selectedCube
+     */
+    public Cube getSelectedCube() {
+        return selectedCube;
     }
 
-    public RichTable getTable() {
-        return table;
+    /**
+     * @param selectedCube the selectedCube to set
+     */
+    public void setSelectedCube(Cube selectedCube) {
+        this.selectedCube = selectedCube;
     }
 }

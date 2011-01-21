@@ -13,12 +13,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 @Entity
-@NamedQueries( { @NamedQuery(name = "Cube.findAll",
-                             query = "select o from Cube o") })
+@NamedQueries({
+    @NamedQuery(name = "Cube.findAll",
+    query = "select o from Cube o")})
 @Table(name = "\"cube\"")
 public class Cube implements Serializable {
+
     @Column(name = "description")
     private String description;
     @Id
@@ -41,7 +42,7 @@ public class Cube implements Serializable {
     }
 
     public Cube(String description, Integer id, String name, String schema,
-                String table) {
+            String table) {
         this.description = description;
         this.id = id;
         this.name = name;
