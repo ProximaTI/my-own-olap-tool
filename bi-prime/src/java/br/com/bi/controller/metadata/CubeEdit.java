@@ -1,21 +1,16 @@
-package br.com.bi.control.metadata;
-
+package br.com.bi.controller.metadata;
 
 import br.com.bi.model.MetadataFacade;
 import br.com.bi.model.entity.metadata.Cube;
-import br.com.bi.model.entity.metadata.CubeLevel;
-import br.com.bi.model.entity.metadata.Filter;
 import br.com.bi.util.view.jsf.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
-import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-
-import oracle.adf.view.rich.component.rich.data.RichTable;
-
 
 /**
  * Controle para a edição de um cubo.
@@ -23,10 +18,10 @@ import oracle.adf.view.rich.component.rich.data.RichTable;
  * @author Luiz Augusto
  */
 public class CubeEdit {
+
     public static final String CUBE_EDIT_BEAN_NAME = "cubeEdit";
     public static final String CUBE_EDIT_ACTION = "cubeEdit";
     public static final String BTN_INSERT = "btnInsert";
-
     private Cube cube;
 
     /**
@@ -48,58 +43,12 @@ public class CubeEdit {
      * @return
      */
     public String getTitle() {
-        if (cube.getId() != null)
+        if (cube.getId() != null) {
             return Util.getBundleValue("ALTERAR_CUBO");
-        else
+        } else {
             return Util.getBundleValue("NOVO_CUBO");
+        }
     }
-
-    private RichTable tblCubeLevel;
-
-    /**
-     * @param tblCubeLevel
-     */
-    public void setTblCubeLevel(RichTable tblCubeLevel) {
-        this.tblCubeLevel = tblCubeLevel;
-    }
-
-    /**
-     * @return
-     */
-    public RichTable getTblCubeLevel() {
-        return tblCubeLevel;
-    }
-
-    /**
-     * @return
-     */
-    public CubeLevel getSelectedCubeLevel() {
-        return (CubeLevel)tblCubeLevel.getSelectedRowData();
-    }
-
-    private RichTable tblFilter;
-
-    /**
-     * @return
-     */
-    public RichTable getTblFilter() {
-        return tblFilter;
-    }
-
-    /**
-     * @param tblFilter
-     */
-    public void setTblFilter(RichTable tblFilter) {
-        this.tblFilter = tblFilter;
-    }
-
-    /**
-     * @return
-     */
-    public Filter getSelectedFilter() {
-        return (Filter)getTblFilter().getSelectedRowData();
-    }
-
     private List<SelectItem> schemas;
 
     /**
@@ -111,7 +60,7 @@ public class CubeEdit {
             schemas = new ArrayList<SelectItem>();
 
             List<String> _schemas =
-                MetadataFacade.getInstance().findAllSchemas();
+                    MetadataFacade.getInstance().findAllSchemas();
 
             for (String schema : _schemas) {
                 schemas.add(new SelectItem(schema, schema));
@@ -119,7 +68,6 @@ public class CubeEdit {
         }
         return schemas;
     }
-
     private List<SelectItem> tables;
 
     /**
@@ -131,7 +79,7 @@ public class CubeEdit {
             tables = new ArrayList<SelectItem>();
 
             List<String> _tables =
-                MetadataFacade.getInstance().findTablesBySchema(cube.getSchemaName());
+                    MetadataFacade.getInstance().findTablesBySchema(cube.getSchemaName());
 
             for (String table : _tables) {
                 tables.add(new SelectItem(table, table));
@@ -143,7 +91,6 @@ public class CubeEdit {
     // ===============
     // ==== Ações ====
     // ===============
-
     /**
      * Salva o cubo no banco de dados.
      * @return
@@ -162,17 +109,10 @@ public class CubeEdit {
     }
 
     /**
-     *
-     */
-    public void deleteCubeLevel() {
-        cube.removeCubeLevel(getSelectedCubeLevel());
-    }
-
-    /**
      * @param valueChangeEvent
      */
     public void schemaChanged(ValueChangeEvent valueChangeEvent) {
-        cube.setSchemaName((String)valueChangeEvent.getNewValue());
+        cube.setSchemaName((String) valueChangeEvent.getNewValue());
         cube.setTableName(null);
         tables = null;
     }
@@ -181,14 +121,7 @@ public class CubeEdit {
      * @param valueChangeEvent
      */
     public void tableChanged(ValueChangeEvent valueChangeEvent) {
-        cube.setTableName((String)valueChangeEvent.getNewValue());
+        cube.setTableName((String) valueChangeEvent.getNewValue());
         tables = null;
-    }
-
-    /**
-     * @param actionEvent
-     */
-    public void deleteFilter(ActionEvent actionEvent) {
-        cube.removeFilter(getSelectedFilter());
     }
 }

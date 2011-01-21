@@ -30,7 +30,7 @@ public class Class1 implements FilterParserConstants {
             match(IDENTIFIER); match(RELATIONAL_OPERATOR); match(DECIMAL_LITERAL);
             break;
         default:
-            throw new Error("Esperado um ( n„o ou identificador");
+            throw new Error("Esperado um n√≥ ou identificador");
         }
     }
 
