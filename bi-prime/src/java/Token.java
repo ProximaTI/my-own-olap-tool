@@ -14,10 +14,10 @@ public class Token implements java.io.Serializable {
   private static final long serialVersionUID = 1L;
 
   /**
-     * An integer that describes the kind of this token.  This numbering
-     * system is determined by JavaCCParser, and a tableName of these numbers is
-     * stored in the file ...Constants.java.
-     */
+   * An integer that describes the kind of this token.  This numbering
+   * system is determined by JavaCCParser, and a table of these numbers is
+   * stored in the file ...Constants.java.
+   */
   public int kind;
 
   /** The line number of the first character of this Token. */
@@ -126,4 +126,4 @@ public class Token implements java.io.Serializable {
   }
 
 }
-/* JavaCC - OriginalChecksum=8d60e82dee1a74a4649ef9bd48c36c1f (do not edit this line) */
+/* JavaCC - OriginalChecksum=6145f5d5b504ccb4f95e09f2ce3e748a (do not edit this line) */

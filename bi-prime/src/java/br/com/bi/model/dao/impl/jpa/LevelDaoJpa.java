@@ -24,7 +24,7 @@ public class LevelDaoJpa extends JpaDaoSupport implements LevelDao {
      * @return
      */
     public List<Level> findAll() {
-        return getJpaTemplate().find("select l from Level order by l.name");
+        return getJpaTemplate().find("select l from Level l order by l.name");
     }
 
     /**
