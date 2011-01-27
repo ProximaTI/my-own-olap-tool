@@ -9,19 +9,53 @@ public interface FilterParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int BINARY_LOGIC_OPERATOR = 6;
+  int RELATIONAL_OPERATOR = 6;
   /** RegularExpression Id. */
-  int RELATIONAL_OPERATOR = 7;
+  int NOT = 7;
   /** RegularExpression Id. */
-  int NOT = 8;
+  int AND = 8;
   /** RegularExpression Id. */
-  int LPAR = 9;
+  int OR = 9;
   /** RegularExpression Id. */
-  int RPAR = 10;
+  int DOT = 10;
   /** RegularExpression Id. */
-  int DECIMAL_LITERAL = 11;
+  int LPAR = 11;
   /** RegularExpression Id. */
-  int IDENTIFIER = 12;
+  int RPAR = 12;
+  /** RegularExpression Id. */
+  int LBRA = 13;
+  /** RegularExpression Id. */
+  int RBRA = 14;
+  /** RegularExpression Id. */
+  int COMMA = 15;
+  /** RegularExpression Id. */
+  int NODE_SEPARATOR = 16;
+  /** RegularExpression Id. */
+  int DATE = 17;
+  /** RegularExpression Id. */
+  int SELECT = 18;
+  /** RegularExpression Id. */
+  int ON = 19;
+  /** RegularExpression Id. */
+  int ROWS = 20;
+  /** RegularExpression Id. */
+  int COLUMNS = 21;
+  /** RegularExpression Id. */
+  int FROM = 22;
+  /** RegularExpression Id. */
+  int WHERE = 23;
+  /** RegularExpression Id. */
+  int METADATA_OBJECT_NAME = 24;
+  /** RegularExpression Id. */
+  int FLOATING_POINT_LITERAL = 25;
+  /** RegularExpression Id. */
+  int EXPONENT = 26;
+  /** RegularExpression Id. */
+  int INTEGER_LITERAL = 27;
+  /** RegularExpression Id. */
+  int STRING_LITERAL = 28;
+  /** RegularExpression Id. */
+  int CHAR = 29;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -34,13 +68,30 @@ public interface FilterParserConstants {
     "\"\\n\"",
     "\"\\r\"",
     "\"\\f\"",
-    "<BINARY_LOGIC_OPERATOR>",
     "<RELATIONAL_OPERATOR>",
-    "\"n\\u00e3o\"",
+    "\"not\"",
+    "\"and\"",
+    "\"or\"",
+    "\".\"",
     "\"(\"",
     "\")\"",
-    "<DECIMAL_LITERAL>",
-    "<IDENTIFIER>",
+    "\"[\"",
+    "\"]\"",
+    "\",\"",
+    "\";\"",
+    "<DATE>",
+    "\"select\"",
+    "\"on\"",
+    "\"rows\"",
+    "\"columns\"",
+    "\"from\"",
+    "\"where\"",
+    "<METADATA_OBJECT_NAME>",
+    "<FLOATING_POINT_LITERAL>",
+    "<EXPONENT>",
+    "<INTEGER_LITERAL>",
+    "<STRING_LITERAL>",
+    "<CHAR>",
   };
 
 }

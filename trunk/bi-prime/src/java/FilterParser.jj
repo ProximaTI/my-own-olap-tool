@@ -2,15 +2,21 @@ PARSER_BEGIN(FilterParser)
 
 public class FilterParser {
   public static void main(String args[]) {
+        InputStream in = new ByteArrayInputStream(("select [teste];[teste];([teste], [teste])"
+                + " on columns, [teste] on rows "
+                + "from [teste] "
+                + "where [teste] > 1 and ([teste] or [teste])").getBytes());
+
+        FilterParser parser = new FilterParser(in);
+        try {
+            parser.query();
+            System.out.print("expressão válida");
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
   }
 }
 PARSER_END(FilterParser)
-
-/* ======================= */
-/* = Defini��o de tokens = */
-/* ======================= */
-
-/* Pular espa�os em branco */
 
 SKIP :
 {
@@ -21,15 +27,88 @@ SKIP :
 | "\f"
 }
 
-/* Operadores e parentesis */
-
 TOKEN [IGNORE_CASE] :
 {
-  < BINARY_LOGIC_OPERATOR: "ou" | "e" >
-| < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
-| < NOT: "n�o" >
+  < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
+| < NOT: "not" >
+| < AND: "and" >
+| < OR: "or" >
+| < DOT: "." >
 | < LPAR: "(" >
 | < RPAR: ")" >
-| < DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
-| < IDENTIFIER: "[" (["a"-"z"])* "]" >
+| < LBRA: "[" >
+| < RBRA: "]" >
+| < COMMA: "," >
+| < NODE_SEPARATOR: ";" >
+| < DATE: ((["0"-"9"])+ "/" (["0"-"9"])+ "/" (["0"-"9"])+) >
+| < SELECT: "select" >
+| < ON: "on" >
+| < ROWS: "rows" >
+| < COLUMNS: "columns" >
+| < FROM: "from" >
+| < WHERE: "where" >
+| < METADATA_OBJECT_NAME: <LBRA> (~["[","]"])+ <RBRA> >
+| < FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])? 
+                             | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])? 
+                             | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+                             | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
+| < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+| < INTEGER_LITERAL : "0" | ["1"-"9"] (["0"-"9"])* >
+| <STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
+| <#CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
+
+/* Produções da linguagem de consulta */
+
+void query() : {} {<SELECT> yAxis() <ON> <COLUMNS> <COMMA> xAxis() <ON> <ROWS>
+                     <FROM> cube() <WHERE> queryFilter() <EOF> }
+
+void yAxis() : {} { nodeExpression() }
+
+void xAxis() : {} { nodeExpression() }
+
+void nodeExpression() : {} { leftNode() [ rightNode() ] }
+
+void rightNode()      : {} { <NODE_SEPARATOR> nodeExpression() }
+
+void leftNode()       : {} { cubeMetadataNode() | crossJoin() }
+
+/*
+ * Um metadado pode ser um nível 
+ * (quando ocorrer <METADATA_OBJECT_NAME> <DOT> <METADATA_OBJECT_NAME>),
+ * um filtro, ou uma métrica (quando apenas <METADATA_OBJECT_NAME>).
+ */
+void cubeMetadataNode() : {} { <METADATA_OBJECT_NAME> [ <DOT> <METADATA_OBJECT_NAME> ] }
+
+void crossJoin()        : {} { <LPAR> nodeExpression() <COMMA> nodeExpression() <RPAR> }
+
+void cube()             : {} { <METADATA_OBJECT_NAME> }
+
+void queryFilter()        : {} { leftExpression() [ rightExpression() ] | <LPAR> queryFilter() <RPAR> }
+
+void rightExpression()    : {} { disjunction()  
+                               | conjunction()  
+                               | negation() }
+
+void disjunction()        : {} { <OR> queryFilter() }
+
+void conjunction()        : {} { <AND> queryFilter() }
+
+void negation()           : {} { <NOT> queryFilter() }
+
+void leftExpression()     : {} { comparison() }
+
+/* 
+ * O segundo caso desta regra de produção ocorre um metadado
+ * e eventualmente um operador relacional e um operando.
+ * Se ocorrer apenas um metadado, então este deve ser um filtro,
+ * senão é uma métrica seguida de um operador e um operando. 
+ */
+void comparison()         : {} { <METADATA_OBJECT_NAME> [<DOT> <METADATA_OBJECT_NAME> <DOT> <METADATA_OBJECT_NAME>] [ <RELATIONAL_OPERATOR> operating() ] } 
+
+void operating()          : {} { <DATE> | <STRING_LITERAL> | number() | arithmeticExpression() }
+
+void number()             : {} { <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> }
+
+/* TODO implementar esta produção */
+void arithmeticExpression() : {} { <METADATA_OBJECT_NAME> } 
