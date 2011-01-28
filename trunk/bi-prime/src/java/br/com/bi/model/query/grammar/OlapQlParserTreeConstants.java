@@ -9,13 +9,17 @@ public interface OlapQlParserTreeConstants
   public int JJTVOID = 3;
   public int JJTMETADATAOBJECT = 4;
   public int JJTCROSSJOIN = 5;
-  public int JJTCROSSJOINFIRSTPARAM = 6;
-  public int JJTCROSSJOINSECONDPARAM = 7;
+  public int JJTFIRSTSET = 6;
+  public int JJTSECONDSET = 7;
   public int JJTCUBE = 8;
   public int JJTFILTER = 9;
   public int JJTDISJUNCTION = 10;
   public int JJTCONJUNCTION = 11;
   public int JJTNEGATION = 12;
+  public int JJTCOMPARISON = 13;
+  public int JJTRELATIONALOPERATOR = 14;
+  public int JJTMULTIPLICATON = 15;
+  public int JJTNUMBER = 16;
 
 
   public String[] jjtNodeName = {
@@ -25,13 +29,17 @@ public interface OlapQlParserTreeConstants
     "void",
     "MetadataObject",
     "Crossjoin",
-    "CrossjoinFirstParam",
-    "CrossjoinSecondParam",
+    "FirstSet",
+    "SecondSet",
     "Cube",
     "Filter",
     "Disjunction",
     "Conjunction",
     "Negation",
+    "Comparison",
+    "RelationalOperator",
+    "Multiplicaton",
+    "Number",
   };
 }
-/* JavaCC - OriginalChecksum=6ed3c371f3f46acf91a7c9fd9a4ced66 (do not edit this line) */
+/* JavaCC - OriginalChecksum=9a09330bcdc20ab058451ca5408912e6 (do not edit this line) */
