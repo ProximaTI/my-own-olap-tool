@@ -4,7 +4,6 @@
  */
 package br.com.bi.model.query.sql;
 
-
 import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.Filter;
@@ -83,11 +82,11 @@ public class QueryTranslator implements Constants {
             stack.push(node.getParent().getChildren().indexOf(node));
 
             if (node.getMetadataEntity() instanceof Level) {
-                sb.append(translateLevel((Level)node.getMetadataEntity()));
+                sb.append(translateLevel((Level) node.getMetadataEntity()));
             } else if (node.getMetadataEntity() instanceof Measure) {
-                sb.append(translateMeasure((Measure)node.getMetadataEntity()));
+                sb.append(translateMeasure((Measure) node.getMetadataEntity()));
             } else if (node.getMetadataEntity() instanceof Filter) {
-                sb.append(translateFilter((Filter)node.getMetadataEntity()));
+                sb.append(translateFilter((Filter) node.getMetadataEntity()));
             }
 
             sb.append(" AS ").append(columnAlias(axisPrefix));
@@ -134,11 +133,11 @@ public class QueryTranslator implements Constants {
             sb.append(translateExpression(measure.getFilterExpression()));
             sb.append(" THEN ");
             sb.append(columnExpression(query.getCube().getTableName(),
-                                       measure.getColumnName()));
+                    measure.getColumnName()));
             sb.append(" ELSE null END");
         } else {
             sb.append(columnExpression(query.getCube().getTableName(),
-                                       measure.getColumnName()));
+                    measure.getColumnName()));
         }
 
         sb.append(")");
@@ -168,7 +167,7 @@ public class QueryTranslator implements Constants {
         StringBuilder sb = new StringBuilder();
 
         sb.append(columnExpression(level.getTableName(),
-                                   level.getCodeProperty().getColumnName()));
+                level.getCodeProperty().getColumnName()));
 
         return sb.toString();
     }
@@ -176,7 +175,6 @@ public class QueryTranslator implements Constants {
     // =================
     // = Gramática SQL =
     // =================
-
     /**
      * Retorna uma string do tipo tabela + . + coluna.
      * @param table
@@ -223,12 +221,12 @@ public class QueryTranslator implements Constants {
         List<String> tables = new ArrayList<String>();
 
         tables.add(tableExpression(query.getCube().getSchemaName(),
-                                   query.getCube().getTableName()));
+                query.getCube().getTableName()));
 
         for (Level topLevel : topLevels()) {
             for (Level lowerLevel : topLevel.getLowerLevels()) {
                 tables.add(tableExpression(lowerLevel.getSchemaName(),
-                                           lowerLevel.getTableName()));
+                        lowerLevel.getTableName()));
             }
         }
 
@@ -280,13 +278,13 @@ public class QueryTranslator implements Constants {
                 // de duas em duas colunas, coloca o join na lista
                 if (i > 0 & (i + 1) % 2 == 0) {
                     String upperColumn =
-                        columnExpression(lowerLevels.get(i - 1).getTableName(),
-                                         lowerLevels.get(i -
-                                                         1).getCodeProperty().getColumnName());
+                            columnExpression(lowerLevels.get(i - 1).getTableName(),
+                            lowerLevels.get(i
+                            - 1).getCodeProperty().getColumnName());
 
                     String thisColumn =
-                        columnExpression(lowerLevels.get(i).getTableName(),
-                                         lowerLevels.get(i).getUpperLevelJoinColumn());
+                            columnExpression(lowerLevels.get(i).getTableName(),
+                            lowerLevels.get(i).getUpperLevelJoinColumn());
 
                     joins.add(thisColumn + " = " + upperColumn);
                 }
@@ -294,21 +292,21 @@ public class QueryTranslator implements Constants {
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
-            Collections.sort(lowerLevels, new Comparator<Level>() {
+            Collections.sort(lowerLevels, new Comparator<Level>()  {
 
-                    public int compare(Level level1, Level level2) {
-                        return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
-                    }
-                });
+                public int compare(Level level1, Level level2) {
+                    return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
+                }
+            });
 
             Level lowestLevel = lowerLevels.get(lowerLevels.size() - 1);
 
             for (CubeLevel level : query.getCube().getCubeLevelList()) {
                 if (level.getLevel().getId() == lowestLevel.getId()) {
                     joins.add(columnExpression(query.getCube().getTableName(),
-                                               level.getJoinColumn()) + " = " +
-                              columnExpression(lowestLevel.getTableName(),
-                                               lowestLevel.getCodeProperty().getColumnName()));
+                            level.getJoinColumn()) + " = "
+                            + columnExpression(lowestLevel.getTableName(),
+                            lowestLevel.getCodeProperty().getColumnName()));
                 }
             }
         }
@@ -343,7 +341,7 @@ public class QueryTranslator implements Constants {
             Level level = levelsPresent.get(i);
 
             sb.append(columnExpression(level.getTableName(),
-                                       level.getCodeProperty().getColumnName()));
+                    level.getCodeProperty().getColumnName()));
 
             if (i < levelsPresent.size() - 1) {
                 sb.append(", ");
@@ -356,7 +354,6 @@ public class QueryTranslator implements Constants {
     // ===============
     // = Utilitários =
     // ===============
-
     /**
      * Traduz uma expressão de filtro em um fragmento SQL.
      * @param expression
@@ -380,9 +377,9 @@ public class QueryTranslator implements Constants {
             Dimension dimension = level.getDimension();
 
             // se o nível está acima do que já está no mapa então ele é um "top level".
-            if (!topLevels.containsKey(dimension.getId()) ||
-                level.getIndice() <
-                topLevels.get(dimension.getId()).getIndice()) {
+            if (!topLevels.containsKey(dimension.getId())
+                    || level.getIndice()
+                    < topLevels.get(dimension.getId()).getIndice()) {
                 topLevels.put(dimension.getId(), level);
             }
         }
@@ -409,16 +406,16 @@ public class QueryTranslator implements Constants {
      * Extrai os níveis referenciados numa consulta, seja explicitamente em um nó,
      * os através de um filtro.
      *
-     * @param bucket
+     * @param levelsBucket
      * @param node
      */
-    private void extractLevels(List<Level> bucket, Node node) {
+    private void extractLevels(List<Level> levelsBucket, Node node) {
         if (node.getMetadataEntity() instanceof Level) {
-            bucket.add((Level)node.getMetadataEntity());
+            levelsBucket.add((Level) node.getMetadataEntity());
         }
 
         for (Node child : node.getChildren()) {
-            extractLevels(bucket, child);
+            extractLevels(levelsBucket, child);
         }
     }
 }
