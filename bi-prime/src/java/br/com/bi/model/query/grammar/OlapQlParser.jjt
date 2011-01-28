@@ -37,12 +37,9 @@ TOKEN [IGNORE_CASE] :
 | < MINUS: "-" >
 | < MULT: "*" >
 | < DIV: "/" >
-| < LPAR: "(" >
-| < RPAR: ")" >
 | < LBRA: "[" >
 | < RBRA: "]" >
 | < COMMA: "," >
-| < NODE_SEPARATOR: ";" >
 | < DATE: ((["0"-"9"])+ "/" (["0"-"9"])+ "/" (["0"-"9"])+) >
 | < SELECT: "select" >
 | < ON: "on" >
@@ -68,22 +65,22 @@ TOKEN [IGNORE_CASE] :
 SimpleNode query() #Query : 
 {}
 {
-    <SELECT> columns() <ON> <COLUMNS> <COMMA> rows() <ON> <ROWS> <FROM> cube() <WHERE> filterExpression() <EOF> 
+    <SELECT> columns() <ON> <COLUMNS> "," rows() <ON> <ROWS> <FROM> cube() <WHERE> filterExpression() <EOF> 
     
     {
         return jjtThis;
     }
 }
 
-void columns() #Columns     : {} { nodeExp() }
+void columns() #Columns     : {} { nodeSet() }
 
-void rows() #Rows           : {} { nodeExp() }
+void rows() #Rows           : {} { nodeSet() }
 
-void nodeExp()              : {} { node() (<NODE_SEPARATOR> node())* }
+void nodeSet()              : {} { node() | "{" node() ( "," node() )+ "}" }
 
-void node()                 : {} { (<METADATA_OBJECT_NAME>) #MetadataObject | crossJoin() #Crossjoin } // [filter], [level], [measure] or a crossjoin
+void node()                 : {} { <METADATA_OBJECT_NAME> #MetadataObject | crossJoin() #Crossjoin }
 
-void crossJoin()            : {} { <LPAR> nodeExp() #CrossjoinFirstParam <COMMA> nodeExp() #CrossjoinSecondParam <RPAR> }
+void crossJoin()            : {} { "(" nodeSet() #FirstSet "," nodeSet() #SecondSet ")" }
 
 void cube() #Cube           : {} { <METADATA_OBJECT_NAME> }
 
@@ -99,11 +96,11 @@ void conjunction()              : {} { ( term() ( <AND> term() )* ) #Conjunction
 
 void term()                     : {} { atom() | negation() }
 
-void atom()                     : {} { comparison() | <LPAR> filterExpression() <RPAR>  }
+void atom()                     : {} { comparison() | "(" filterExpression() ")"  }
 
 void negation() #Negation       : {} { <NOT> ( term() ) }
 
-void comparison()               : {} { <METADATA_OBJECT_NAME> [ <DOT> <METADATA_OBJECT_NAME> ] [ <RELATIONAL_OPERATOR> operating() ] } // [measure] > 1 or [level].[property] = "foo"
+void comparison() #Comparison   : {} { ( <METADATA_OBJECT_NAME> ) #MetadataObject [ <DOT> <METADATA_OBJECT_NAME> ] [ <RELATIONAL_OPERATOR> #RelationalOperator operating() ]  } // [measure] > 1 or [level].[property] = "foo"
 
 void operating()                : {} { <DATE> | <STRING_LITERAL> | arithmeticExpression() }
 
@@ -115,8 +112,8 @@ void arithmeticExpression()     : {} { additiveExpression() }
 
 void additiveExpression()       : {} { multiplicativeExpression() ( ( <PLUS> | <MINUS> ) multiplicativeExpression() )* }
 
-void multiplicativeExpression() : {} { unaryExpression() ( ( <MULT> | <DIV> ) unaryExpression() )* }
+void multiplicativeExpression() : {} { unaryExpression() ( ( <MULT> | <DIV> ) unaryExpression() )* #Multiplicaton(>1) }
 
-void unaryExpression()          : {} { <LPAR> arithmeticExpression() <RPAR> | <METADATA_OBJECT_NAME> | number() }
+void unaryExpression()          : {} { "(" arithmeticExpression() ")" | <METADATA_OBJECT_NAME> | number() }
 
-void number()                   : {} { [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> )  }
+void number() #Number           : {} { [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> )  }
