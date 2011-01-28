@@ -5,7 +5,7 @@ public class FilterParser {
         InputStream in = new ByteArrayInputStream(("select [teste];[teste];([teste], [teste])"
                 + " on columns, [teste] on rows "
                 + "from [teste] "
-                + "where [teste] > 1 and ([teste] or [teste])").getBytes());
+                + "where ([teste] > 1 and ([teste] = 1 * ([yyyyy] + [uuuu]) or [yyyy]))").getBytes());
 
         FilterParser parser = new FilterParser(in);
         try {
@@ -34,6 +34,10 @@ TOKEN [IGNORE_CASE] :
 | < AND: "and" >
 | < OR: "or" >
 | < DOT: "." >
+| < PLUS: "+" >
+| < MINUS: "-" >
+| < MULT: "*" >
+| < DIV: "/" >
 | < LPAR: "(" >
 | < RPAR: ")" >
 | < LBRA: "[" >
@@ -63,13 +67,13 @@ TOKEN [IGNORE_CASE] :
 void query() : {} {<SELECT> yAxis() <ON> <COLUMNS> <COMMA> xAxis() <ON> <ROWS>
                      <FROM> cube() <WHERE> queryFilter() <EOF> }
 
-void yAxis() : {} { nodeExpression() }
+void yAxis() : {} { nodeExp() }
 
-void xAxis() : {} { nodeExpression() }
+void xAxis() : {} { nodeExp() }
 
-void nodeExpression() : {} { leftNode() [ rightNode() ] }
+void nodeExp() : {} { leftNode() [ rightNode() ] }
 
-void rightNode()      : {} { <NODE_SEPARATOR> nodeExpression() }
+void rightNode()      : {} { <NODE_SEPARATOR> nodeExp() }
 
 void leftNode()       : {} { cubeMetadataNode() | crossJoin() }
 
@@ -80,23 +84,21 @@ void leftNode()       : {} { cubeMetadataNode() | crossJoin() }
  */
 void cubeMetadataNode() : {} { <METADATA_OBJECT_NAME> [ <DOT> <METADATA_OBJECT_NAME> ] }
 
-void crossJoin()        : {} { <LPAR> nodeExpression() <COMMA> nodeExpression() <RPAR> }
+void crossJoin()        : {} { <LPAR> nodeExp() <COMMA> nodeExp() <RPAR> }
 
 void cube()             : {} { <METADATA_OBJECT_NAME> }
 
-void queryFilter()        : {} { leftExpression() [ rightExpression() ] | <LPAR> queryFilter() <RPAR> }
+void queryFilter()      : {} { queryLeftExp() [ queryRightExp() ] }
 
-void rightExpression()    : {} { disjunction()  
-                               | conjunction()  
-                               | negation() }
+void queryRightExp()    : {} { disjunction() | conjunction() | negation() }
 
-void disjunction()        : {} { <OR> queryFilter() }
+void disjunction()      : {} { <OR> queryFilter() }
 
-void conjunction()        : {} { <AND> queryFilter() }
+void conjunction()      : {} { <AND> queryFilter() }
 
-void negation()           : {} { <NOT> queryFilter() }
+void negation()         : {} { <NOT> queryFilter() }
 
-void leftExpression()     : {} { comparison() }
+void queryLeftExp()     : {} { comparison() | <LPAR> queryFilter() <RPAR>}
 
 /* 
  * O segundo caso desta regra de produção ocorre um metadado
@@ -106,9 +108,19 @@ void leftExpression()     : {} { comparison() }
  */
 void comparison()         : {} { <METADATA_OBJECT_NAME> [<DOT> <METADATA_OBJECT_NAME> <DOT> <METADATA_OBJECT_NAME>] [ <RELATIONAL_OPERATOR> operating() ] } 
 
-void operating()          : {} { <DATE> | <STRING_LITERAL> | number() | arithmeticExpression() }
+void operating()          : {} { <DATE> | <STRING_LITERAL> | arithExp() }
 
-void number()             : {} { <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> }
+void number()             : {} { [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> )  }
 
-/* TODO implementar esta produção */
-void arithmeticExpression() : {} { <METADATA_OBJECT_NAME> } 
+void arithExp()           : {} { arithLeftExp() [ arithRightExp() ] } 
+
+void arithRightExp()      : {} { ( <PLUS> | <MINUS> ) arithExp() }
+
+void arithLeftExp()       : {} { factor() [ arithMultExp() ] }
+
+void arithMultExp()       : {} { ( <MULT> | <DIV> ) arithLeftExp() }
+
+/*
+ * O metadado nesta produção só pode ser uma métrica.
+ */
+void factor()             : {} { number() | <METADATA_OBJECT_NAME> | <LPAR> arithExp() <RPAR> } 

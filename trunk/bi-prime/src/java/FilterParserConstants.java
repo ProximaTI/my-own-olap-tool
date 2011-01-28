@@ -19,43 +19,51 @@ public interface FilterParserConstants {
   /** RegularExpression Id. */
   int DOT = 10;
   /** RegularExpression Id. */
-  int LPAR = 11;
+  int PLUS = 11;
   /** RegularExpression Id. */
-  int RPAR = 12;
+  int MINUS = 12;
   /** RegularExpression Id. */
-  int LBRA = 13;
+  int MULT = 13;
   /** RegularExpression Id. */
-  int RBRA = 14;
+  int DIV = 14;
   /** RegularExpression Id. */
-  int COMMA = 15;
+  int LPAR = 15;
   /** RegularExpression Id. */
-  int NODE_SEPARATOR = 16;
+  int RPAR = 16;
   /** RegularExpression Id. */
-  int DATE = 17;
+  int LBRA = 17;
   /** RegularExpression Id. */
-  int SELECT = 18;
+  int RBRA = 18;
   /** RegularExpression Id. */
-  int ON = 19;
+  int COMMA = 19;
   /** RegularExpression Id. */
-  int ROWS = 20;
+  int NODE_SEPARATOR = 20;
   /** RegularExpression Id. */
-  int COLUMNS = 21;
+  int DATE = 21;
   /** RegularExpression Id. */
-  int FROM = 22;
+  int SELECT = 22;
   /** RegularExpression Id. */
-  int WHERE = 23;
+  int ON = 23;
   /** RegularExpression Id. */
-  int METADATA_OBJECT_NAME = 24;
+  int ROWS = 24;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 25;
+  int COLUMNS = 25;
   /** RegularExpression Id. */
-  int EXPONENT = 26;
+  int FROM = 26;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 27;
+  int WHERE = 27;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 28;
+  int METADATA_OBJECT_NAME = 28;
   /** RegularExpression Id. */
-  int CHAR = 29;
+  int FLOATING_POINT_LITERAL = 29;
+  /** RegularExpression Id. */
+  int EXPONENT = 30;
+  /** RegularExpression Id. */
+  int INTEGER_LITERAL = 31;
+  /** RegularExpression Id. */
+  int STRING_LITERAL = 32;
+  /** RegularExpression Id. */
+  int CHAR = 33;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -73,6 +81,10 @@ public interface FilterParserConstants {
     "\"and\"",
     "\"or\"",
     "\".\"",
+    "\"+\"",
+    "\"-\"",
+    "\"*\"",
+    "\"/\"",
     "\"(\"",
     "\")\"",
     "\"[\"",
