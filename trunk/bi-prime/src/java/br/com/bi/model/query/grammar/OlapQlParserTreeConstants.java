@@ -4,50 +4,34 @@ package br.com.bi.model.query.grammar;
 public interface OlapQlParserTreeConstants
 {
   public int JJTQUERY = 0;
-  public int JJTYAXIS = 1;
-  public int JJTXAXIS = 2;
-  public int JJTNODEEXP = 3;
-  public int JJTNODE = 4;
-  public int JJTCUBEMETADATANODE = 5;
-  public int JJTCROSSJOIN = 6;
-  public int JJTCUBE = 7;
-  public int JJTFILTEREXPRESSION = 8;
-  public int JJTDISJUNCTION = 9;
-  public int JJTCONJUNCTION = 10;
-  public int JJTTERM = 11;
-  public int JJTATOM = 12;
-  public int JJTNEGATION = 13;
-  public int JJTCOMPARISON = 14;
-  public int JJTOPERATING = 15;
-  public int JJTARITHMETICEXPRESSION = 16;
-  public int JJTADDITIVEEXPRESSION = 17;
-  public int JJTMULTIPLICATIVEEXPRESSION = 18;
-  public int JJTUNARYEXPRESSION = 19;
-  public int JJTNUMBER = 20;
+  public int JJTCOLUMNS = 1;
+  public int JJTROWS = 2;
+  public int JJTVOID = 3;
+  public int JJTMETADATAOBJECT = 4;
+  public int JJTCROSSJOIN = 5;
+  public int JJTCROSSJOINFIRSTPARAM = 6;
+  public int JJTCROSSJOINSECONDPARAM = 7;
+  public int JJTCUBE = 8;
+  public int JJTFILTER = 9;
+  public int JJTDISJUNCTION = 10;
+  public int JJTCONJUNCTION = 11;
+  public int JJTNEGATION = 12;
 
 
   public String[] jjtNodeName = {
-    "query",
-    "yAxis",
-    "xAxis",
-    "nodeExp",
-    "node",
-    "cubeMetadataNode",
-    "crossJoin",
-    "cube",
-    "filterExpression",
-    "disjunction",
-    "conjunction",
-    "term",
-    "atom",
-    "negation",
-    "comparison",
-    "operating",
-    "arithmeticExpression",
-    "additiveExpression",
-    "multiplicativeExpression",
-    "unaryExpression",
-    "number",
+    "Query",
+    "Columns",
+    "Rows",
+    "void",
+    "MetadataObject",
+    "Crossjoin",
+    "CrossjoinFirstParam",
+    "CrossjoinSecondParam",
+    "Cube",
+    "Filter",
+    "Disjunction",
+    "Conjunction",
+    "Negation",
   };
 }
-/* JavaCC - OriginalChecksum=0fb15297c9cf9849d91594e729976260 (do not edit this line) */
+/* JavaCC - OriginalChecksum=6ed3c371f3f46acf91a7c9fd9a4ced66 (do not edit this line) */

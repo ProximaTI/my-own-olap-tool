@@ -1,3 +1,5 @@
+options { NODE_DEFAULT_VOID = true; NODE_PREFIX = ""; }
+
 PARSER_BEGIN(OlapQlParser)
 package br.com.bi.model.query.grammar;
 
@@ -9,7 +11,7 @@ public class OlapQlParser {
         InputStream in = new ByteArrayInputStream(("select [teste];([teste], [teste])"
                 + " on columns, [teste] on rows "
                 + "from [teste] "
-                + "where not [teste] > (1 + 2 * 5)").getBytes());
+                + "where [teste] = 1 or [teste] and not [teste] > (1 + 2 * 5)").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
         try {
@@ -59,57 +61,55 @@ TOKEN [IGNORE_CASE] :
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
-/* ====================== */
-/* = Regras de produção = */
-/* ====================== */
+/* ==================== */
+/* = Production rules = */
+/* ==================== */
 
-SimpleNode query() : 
+SimpleNode query() #Query : 
 {}
 {
-    <SELECT> yAxis() <ON> <COLUMNS> <COMMA> xAxis() <ON> <ROWS> <FROM> cube() <WHERE> filterExpression() <EOF> 
+    <SELECT> columns() <ON> <COLUMNS> <COMMA> rows() <ON> <ROWS> <FROM> cube() <WHERE> filterExpression() <EOF> 
     
     {
         return jjtThis;
     }
 }
 
-void yAxis()      : {} { nodeExp() }
+void columns() #Columns     : {} { nodeExp() }
 
-void xAxis()      : {} { nodeExp() }
+void rows() #Rows           : {} { nodeExp() }
 
-void nodeExp()    : {} { node() ( <NODE_SEPARATOR> node() )* }
+void nodeExp()              : {} { node() (<NODE_SEPARATOR> node())* }
 
-void node()       : {} { cubeMetadataNode() | crossJoin() }
+void node()                 : {} { (<METADATA_OBJECT_NAME>) #MetadataObject | crossJoin() #Crossjoin } // [filter], [level], [measure] or a crossjoin
 
-// Um metadado pode ser um nível (quando ocorrer <METADATA_OBJECT_NAME> <DOT> <METADATA_OBJECT_NAME>), 
-// um filtro, ou uma métrica (quando apenas <METADATA_OBJECT_NAME>). 
-void cubeMetadataNode() : {} { <METADATA_OBJECT_NAME> [ <DOT> <METADATA_OBJECT_NAME> ] }
+void crossJoin()            : {} { <LPAR> nodeExp() #CrossjoinFirstParam <COMMA> nodeExp() #CrossjoinSecondParam <RPAR> }
 
-void crossJoin()        : {} { <LPAR> nodeExp() <COMMA> nodeExp() <RPAR> }
-
-void cube()             : {} { <METADATA_OBJECT_NAME> }
+void cube() #Cube           : {} { <METADATA_OBJECT_NAME> }
 
 /* ===================== */
 /* = filter expression = */
 /* ===================== */
 
-void filterExpression() : {} { disjunction() }
+void filterExpression() #Filter : {} { disjunction() }
 
-void disjunction()      : {} { conjunction() ( <OR> conjunction() )* }
+void disjunction()              : {} { ( conjunction() ( <OR> conjunction() )* ) #Disjunction(>1)}
 
-void conjunction()      : {} { term() ( <AND> term() )* }
+void conjunction()              : {} { ( term() ( <AND> term() )* ) #Conjunction(>1)}
 
-void term()             : {} { atom()| negation() }
+void term()                     : {} { atom() | negation() }
 
-void atom()             : {} { comparison() | <LPAR> filterExpression() <RPAR> }
+void atom()                     : {} { comparison() | <LPAR> filterExpression() <RPAR>  }
 
-void negation()         : {} { <NOT> term() }
+void negation() #Negation       : {} { <NOT> ( term() ) }
 
-// O segundo caso desta regra de produção ocorre um metadado e eventualmente um operador relacional e um operando.
-// Se ocorrer apenas um metadado, então este deve ser um filtro, senão é uma métrica seguida de um operador e um operando.
-void comparison()               : {} { <METADATA_OBJECT_NAME> [ <DOT> <METADATA_OBJECT_NAME> <DOT> <METADATA_OBJECT_NAME> ] [ <RELATIONAL_OPERATOR> operating() ] } 
+void comparison()               : {} { <METADATA_OBJECT_NAME> [ <DOT> <METADATA_OBJECT_NAME> ] [ <RELATIONAL_OPERATOR> operating() ] } // [measure] > 1 or [level].[property] = "foo"
 
 void operating()                : {} { <DATE> | <STRING_LITERAL> | arithmeticExpression() }
+
+/* ========================= */
+/* = arithmetic expression = */
+/* ========================= */
 
 void arithmeticExpression()     : {} { additiveExpression() }
 
