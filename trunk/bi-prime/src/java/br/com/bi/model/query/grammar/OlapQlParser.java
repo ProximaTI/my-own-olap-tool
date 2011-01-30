@@ -5,11 +5,11 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, OlapQlParserConstants {/*@bgen(jjtree)*/
-  protected static JJTOlapQlParserState jjtree = new JJTOlapQlParserState();
-  private static boolean rows = false;
-  private static boolean columns = false;
+  protected JJTOlapQlParserState jjtree = new JJTOlapQlParserState();
+    private boolean rows = false;
+    private boolean columns = false;
 
-  public static void main(String args[]) {
+    public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
               ("selecione {[teste], ([teste], [teste])}"
                 + " nas colunas, [teste] nas linhas "
@@ -17,20 +17,40 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
                 + "onde [teste] = 1 ou [teste] e n\u00e3o [teste] > (1 + 2 * 5)").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
+
         try {
             SimpleNode node = parser.query();
             node.dump("   ");
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
-  }
+    }
+
+    public static SimpleNode jjtCreate(int id) {
+        return new OlapQlNode(id);
+    }
+
+    static class OlapQlNode extends SimpleNode {
+
+        OlapQlNode(int i) {
+            super(i);
+        }
+
+        @Override
+        public String toString() {
+            if (value != null)
+                return OlapQlParserTreeConstants.jjtNodeName[id] + "-" + value;
+            else
+                return OlapQlParserTreeConstants.jjtNodeName[id];
+        }
+    }
 
 /* ==================== */
 /* = Production rules = */
 /* ==================== */
-  static final public SimpleNode query() throws ParseException {
+  final public SimpleNode query() throws ParseException {
  /*@bgen(jjtree) Query */
-  SimpleNode jjtn000 = new SimpleNode(JJTQUERY);
+  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTQUERY);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
@@ -69,26 +89,29 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     throw new Error("Missing return statement in function");
   }
 
-  static final public void axisSpecification() throws ParseException {
- /*@bgen(jjtree) AxisSpecification */
-  SimpleNode jjtn000 = new SimpleNode(JJTAXISSPECIFICATION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+  final public void axisSpecification() throws ParseException {
+ /*@bgen(jjtree) Axis */
+    SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTAXIS);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);String axis;
     try {
       set();
       jj_consume_token(ON);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ROWS:
-        rows();
+        axis = rows();
         break;
       case COLUMNS:
-        columns();
+        axis = columns();
         break;
       default:
         jj_la1[0] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+      jjtn000.value = axis;
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -110,24 +133,27 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void rows() throws ParseException {
-    jj_consume_token(ROWS);
+  final public String rows() throws ParseException {
         if (rows)
             {if (true) throw new ParseException("O eixo das linhas foi duplicado");}
         else
             rows = true;
-      jjtn000.setName("ROWS");
+    jj_consume_token(ROWS);
+        {if (true) return "ROWS";}
+    throw new Error("Missing return statement in function");
   }
 
-  static final public void columns() throws ParseException {
-    jj_consume_token(COLUMNS);
+  final public String columns() throws ParseException {
         if (columns)
             {if (true) throw new ParseException("O eixo das colunas foi duplicado");}
         else
             columns = true;
+    jj_consume_token(COLUMNS);
+        {if (true) return "COLUMNS";}
+    throw new Error("Missing return statement in function");
   }
 
-  static final public void set() throws ParseException {
+  final public void set() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
     case 34:
@@ -158,10 +184,10 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void node() throws ParseException {
+  final public void node() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
-                                     SimpleNode jjtn001 = new SimpleNode(JJTMETADATAOBJECT);
+                                     SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
                                      boolean jjtc001 = true;
                                      jjtree.openNodeScope(jjtn001);
       try {
@@ -173,7 +199,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
       }
       break;
     case 34:
-                                                                              SimpleNode jjtn002 = new SimpleNode(JJTCROSSJOIN);
+                                                                              SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTCROSSJOIN);
                                                                               boolean jjtc002 = true;
                                                                               jjtree.openNodeScope(jjtn002);
       try {
@@ -205,9 +231,9 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void crossJoin() throws ParseException {
+  final public void crossJoin() throws ParseException {
     jj_consume_token(34);
-                                         SimpleNode jjtn001 = new SimpleNode(JJTFIRSTSET);
+                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTFIRSTSET);
                                          boolean jjtc001 = true;
                                          jjtree.openNodeScope(jjtn001);
     try {
@@ -232,7 +258,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
                                          }
     }
     jj_consume_token(31);
-                                                             SimpleNode jjtn002 = new SimpleNode(JJTSECONDSET);
+                                                             SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTSECONDSET);
                                                              boolean jjtc002 = true;
                                                              jjtree.openNodeScope(jjtn002);
     try {
@@ -259,9 +285,9 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     jj_consume_token(35);
   }
 
-  static final public void cube() throws ParseException {
+  final public void cube() throws ParseException {
                                /*@bgen(jjtree) Cube */
-  SimpleNode jjtn000 = new SimpleNode(JJTCUBE);
+  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTCUBE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
@@ -276,9 +302,9 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
 /* ===================== */
 /* = filter expression = */
 /* ===================== */
-  static final public void filterExpression() throws ParseException {
+  final public void filterExpression() throws ParseException {
                                    /*@bgen(jjtree) Filter */
-  SimpleNode jjtn000 = new SimpleNode(JJTFILTER);
+  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTFILTER);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
@@ -304,8 +330,8 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void disjunction() throws ParseException {
-                                         SimpleNode jjtn001 = new SimpleNode(JJTDISJUNCTION);
+  final public void disjunction() throws ParseException {
+                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTDISJUNCTION);
                                          boolean jjtc001 = true;
                                          jjtree.openNodeScope(jjtn001);
     try {
@@ -344,8 +370,8 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void conjunction() throws ParseException {
-                                         SimpleNode jjtn001 = new SimpleNode(JJTCONJUNCTION);
+  final public void conjunction() throws ParseException {
+                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTCONJUNCTION);
                                          boolean jjtc001 = true;
                                          jjtree.openNodeScope(jjtn001);
     try {
@@ -384,7 +410,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void term() throws ParseException {
+  final public void term() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
     case 34:
@@ -400,7 +426,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void atom() throws ParseException {
+  final public void atom() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
       comparison();
@@ -417,9 +443,9 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void negation() throws ParseException {
+  final public void negation() throws ParseException {
                                    /*@bgen(jjtree) Negation */
-  SimpleNode jjtn000 = new SimpleNode(JJTNEGATION);
+  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTNEGATION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
@@ -446,13 +472,13 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void comparison() throws ParseException {
+  final public void comparison() throws ParseException {
                                    /*@bgen(jjtree) Comparison */
-  SimpleNode jjtn000 = new SimpleNode(JJTCOMPARISON);
+  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTCOMPARISON);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-                                         SimpleNode jjtn001 = new SimpleNode(JJTMETADATAOBJECT);
+                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
                                          boolean jjtc001 = true;
                                          jjtree.openNodeScope(jjtn001);
       try {
@@ -473,7 +499,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case RELATIONAL_OPERATOR:
-                                                                                                                       SimpleNode jjtn002 = new SimpleNode(JJTRELATIONALOPERATOR);
+                                                                                                                       SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTRELATIONALOPERATOR);
                                                                                                                        boolean jjtc002 = true;
                                                                                                                        jjtree.openNodeScope(jjtn002);
         try {
@@ -511,7 +537,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   }
 
                                                                                                                                                                                 // [measure] > 1 or [level].[property] = "foo"
-  static final public void operating() throws ParseException {
+  final public void operating() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DATE:
       jj_consume_token(DATE);
@@ -536,11 +562,11 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
 /* ========================= */
 /* = arithmetic expression = */
 /* ========================= */
-  static final public void arithmeticExpression() throws ParseException {
+  final public void arithmeticExpression() throws ParseException {
     additiveExpression();
   }
 
-  static final public void additiveExpression() throws ParseException {
+  final public void additiveExpression() throws ParseException {
     multiplicativeExpression();
     label_4:
     while (true) {
@@ -569,9 +595,9 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void multiplicativeExpression() throws ParseException {
+  final public void multiplicativeExpression() throws ParseException {
     unaryExpression();
-                                                           SimpleNode jjtn001 = new SimpleNode(JJTMULTIPLICATON);
+                                                           SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMULTIPLICATON);
                                                            boolean jjtc001 = true;
                                                            jjtree.openNodeScope(jjtn001);
     try {
@@ -621,7 +647,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void unaryExpression() throws ParseException {
+  final public void unaryExpression() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case 34:
       jj_consume_token(34);
@@ -643,9 +669,9 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static final public void number() throws ParseException {
+  final public void number() throws ParseException {
                                    /*@bgen(jjtree) Number */
-  SimpleNode jjtn000 = new SimpleNode(JJTNUMBER);
+  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTNUMBER);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
@@ -676,17 +702,16 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     }
   }
 
-  static private boolean jj_initialized_once = false;
   /** Generated Token Manager. */
-  static public OlapQlParserTokenManager token_source;
-  static SimpleCharStream jj_input_stream;
+  public OlapQlParserTokenManager token_source;
+  SimpleCharStream jj_input_stream;
   /** Current token. */
-  static public Token token;
+  public Token token;
   /** Next token. */
-  static public Token jj_nt;
-  static private int jj_ntk;
-  static private int jj_gen;
-  static final private int[] jj_la1 = new int[18];
+  public Token jj_nt;
+  private int jj_ntk;
+  private int jj_gen;
+  final private int[] jj_la1 = new int[18];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -706,13 +731,6 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   }
   /** Constructor with InputStream and supplied encoding */
   public OlapQlParser(java.io.InputStream stream, String encoding) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new OlapQlParserTokenManager(jj_input_stream);
     token = new Token();
@@ -722,11 +740,11 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   }
 
   /** Reinitialise. */
-  static public void ReInit(java.io.InputStream stream) {
+  public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
   /** Reinitialise. */
-  static public void ReInit(java.io.InputStream stream, String encoding) {
+  public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
@@ -738,13 +756,6 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
 
   /** Constructor. */
   public OlapQlParser(java.io.Reader stream) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new OlapQlParserTokenManager(jj_input_stream);
     token = new Token();
@@ -754,7 +765,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   }
 
   /** Reinitialise. */
-  static public void ReInit(java.io.Reader stream) {
+  public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
     token = new Token();
@@ -766,13 +777,6 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
 
   /** Constructor with generated Token Manager. */
   public OlapQlParser(OlapQlParserTokenManager tm) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
@@ -790,7 +794,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
-  static private Token jj_consume_token(int kind) throws ParseException {
+  private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -806,7 +810,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
 
 
 /** Get the next Token. */
-  static final public Token getNextToken() {
+  final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
@@ -815,7 +819,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   }
 
 /** Get the specific Token. */
-  static final public Token getToken(int index) {
+  final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
@@ -824,19 +828,19 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     return t;
   }
 
-  static private int jj_ntk() {
+  private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  static private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
-  static private int[] jj_expentry;
-  static private int jj_kind = -1;
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private int[] jj_expentry;
+  private int jj_kind = -1;
 
   /** Generate ParseException. */
-  static public ParseException generateParseException() {
+  public ParseException generateParseException() {
     jj_expentries.clear();
     boolean[] la1tokens = new boolean[36];
     if (jj_kind >= 0) {
@@ -870,11 +874,11 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   }
 
   /** Enable tracing. */
-  static final public void enable_tracing() {
+  final public void enable_tracing() {
   }
 
   /** Disable tracing. */
-  static final public void disable_tracing() {
+  final public void disable_tracing() {
   }
 
 }

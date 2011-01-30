@@ -1,4 +1,10 @@
-options { NODE_DEFAULT_VOID = true; NODE_PREFIX = ""; }
+options 
+{ 
+    STATIC = false;
+    NODE_FACTORY="OlapQlParser";
+    NODE_DEFAULT_VOID = true;
+    NODE_PREFIX = ""; 
+}
 
 PARSER_BEGIN(OlapQlParser)
 package br.com.bi.model.query.grammar;
@@ -8,10 +14,10 @@ import java.io.InputStream;
 
 public class OlapQlParser {
 
-  private static boolean rows = false;
-  private static boolean columns = false;
+    private boolean rows = false;
+    private boolean columns = false;
 
-  public static void main(String args[]) {
+    public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
               ("selecione {[teste], ([teste], [teste])}"
                 + " nas colunas, [teste] nas linhas "
@@ -19,13 +25,33 @@ public class OlapQlParser {
                 + "onde [teste] = 1 ou [teste] e não [teste] > (1 + 2 * 5)").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
+        
         try {
             SimpleNode node = parser.query();
             node.dump("   ");
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
-  }
+    }
+
+    public static SimpleNode jjtCreate(int id) {
+        return new OlapQlNode(id);
+    }
+
+    static class OlapQlNode extends SimpleNode {
+
+        OlapQlNode(int i) {
+            super(i);
+        }
+
+        @Override
+        public String toString() {
+            if (value != null)
+                return OlapQlParserTreeConstants.jjtNodeName[id] + "-" + value;
+            else
+                return OlapQlParserTreeConstants.jjtNodeName[id];
+        }
+    }
 }
 PARSER_END(OlapQlParser)
 
@@ -78,49 +104,65 @@ SimpleNode query() #Query :
     }
 }
 
-void axisSpecification() #AxisSpecification: 
+void axisSpecification() #Axis :
 {
+    String axis;
 } 
 {
-    set() <ON>  ( rows() | columns() )
+    set() <ON>  ( axis = rows() | axis = columns() )
+    
+    { jjtThis.value = axis; }
 }
 
-void rows() : 
+String rows() : 
 {
 } 
 { 
-    <ROWS>
-
     { 
         if (rows) 
             throw new ParseException("O eixo das linhas foi duplicado"); 
         else 
             rows = true;
     }
+
+    <ROWS>
+
+    {
+        return "ROWS";
+    }
 }
 
-void columns() : 
+String columns() : 
 {
 } 
 { 
-    <COLUMNS>
-
     {
         if (columns) 
             throw new ParseException("O eixo das colunas foi duplicado"); 
         else 
             columns = true;
     }
+
+    <COLUMNS>
+
+    {
+        return "COLUMNS";
+    }
 }
 
-void set()              : {} { node() | "{" node() ( "," node() )+ "}" }
+void set() : 
+{
+}
+{
+    node() | "{" node() ( "," node() )+ "}" 
+}
 
 void node()                 : {} { <METADATA_OBJECT_NAME> #MetadataObject | crossJoin() #Crossjoin }
 
 void crossJoin()            : {} { "(" set() #FirstSet "," set() #SecondSet ")" }
 
 void cube() #Cube           : {} { <METADATA_OBJECT_NAME> }
-
+ 
 /* ===================== */
 /* = filter expression = */
 /* ===================== */
