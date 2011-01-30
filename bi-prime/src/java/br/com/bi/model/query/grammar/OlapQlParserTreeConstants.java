@@ -4,7 +4,7 @@ package br.com.bi.model.query.grammar;
 public interface OlapQlParserTreeConstants
 {
   public int JJTQUERY = 0;
-  public int JJTAXISSPECIFICATION = 1;
+  public int JJTAXIS = 1;
   public int JJTVOID = 2;
   public int JJTMETADATAOBJECT = 3;
   public int JJTCROSSJOIN = 4;
@@ -23,7 +23,7 @@ public interface OlapQlParserTreeConstants
 
   public String[] jjtNodeName = {
     "Query",
-    "AxisSpecification",
+    "Axis",
     "void",
     "MetadataObject",
     "Crossjoin",
@@ -40,4 +40,4 @@ public interface OlapQlParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=3241bccb28c7905ec7713d869b06a40a (do not edit this line) */
+/* JavaCC - OriginalChecksum=3e57e0da433c7596dc07d357304232d6 (do not edit this line) */
