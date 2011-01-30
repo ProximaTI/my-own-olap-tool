@@ -5,16 +5,21 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, OlapQlParserConstants {/*@bgen(jjtree)*/
-  protected static JJTOlapQlParserState jjtree = new JJTOlapQlParserState();public static void main(String args[]) {
-        InputStream in = new ByteArrayInputStream(("select ([teste], [teste])"
-                + " on columns, [teste] on rows "
-                + "from [teste] "
-                + "where [teste] = 1 or [teste] and not [teste] > (1 + 2 * 5)").getBytes());
+  protected static JJTOlapQlParserState jjtree = new JJTOlapQlParserState();
+  private static boolean rows = false;
+  private static boolean columns = false;
+
+  public static void main(String args[]) {
+        InputStream in = new ByteArrayInputStream(
+              ("selecione {[teste], ([teste], [teste])}"
+                + " nas colunas, [teste] nas linhas "
+                + "do cubo [teste] "
+                + "onde [teste] = 1 ou [teste] e n\u00e3o [teste] > (1 + 2 * 5)").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
         try {
             SimpleNode node = parser.query();
-            node.dump(" ");
+            node.dump("   ");
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
@@ -30,14 +35,11 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   jjtree.openNodeScope(jjtn000);
     try {
       jj_consume_token(SELECT);
-      columns();
-      jj_consume_token(ON);
-      jj_consume_token(COLUMNS);
-      jj_consume_token(COMMA);
-      rows();
-      jj_consume_token(ON);
-      jj_consume_token(ROWS);
+      axisSpecification();
+      jj_consume_token(31);
+      axisSpecification();
       jj_consume_token(FROM);
+      jj_consume_token(CUBE);
       cube();
       jj_consume_token(WHERE);
       filterExpression();
@@ -67,88 +69,90 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     throw new Error("Missing return statement in function");
   }
 
-  static final public void columns() throws ParseException {
-                               /*@bgen(jjtree) Columns */
-  SimpleNode jjtn000 = new SimpleNode(JJTCOLUMNS);
+  static final public void axisSpecification() throws ParseException {
+ /*@bgen(jjtree) AxisSpecification */
+  SimpleNode jjtn000 = new SimpleNode(JJTAXISSPECIFICATION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      nodeSet();
+      set();
+      jj_consume_token(ON);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ROWS:
+        rows();
+        break;
+      case COLUMNS:
+        columns();
+        break;
+      default:
+        jj_la1[0] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
     } catch (Throwable jjte000) {
-                                     if (jjtc000) {
-                                       jjtree.clearNodeScope(jjtn000);
-                                       jjtc000 = false;
-                                     } else {
-                                       jjtree.popNode();
-                                     }
-                                     if (jjte000 instanceof RuntimeException) {
-                                       {if (true) throw (RuntimeException)jjte000;}
-                                     }
-                                     if (jjte000 instanceof ParseException) {
-                                       {if (true) throw (ParseException)jjte000;}
-                                     }
-                                     {if (true) throw (Error)jjte000;}
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        {if (true) throw (RuntimeException)jjte000;}
+      }
+      if (jjte000 instanceof ParseException) {
+        {if (true) throw (ParseException)jjte000;}
+      }
+      {if (true) throw (Error)jjte000;}
     } finally {
-                                     if (jjtc000) {
-                                       jjtree.closeNodeScope(jjtn000, true);
-                                     }
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
     }
   }
 
   static final public void rows() throws ParseException {
-                               /*@bgen(jjtree) Rows */
-  SimpleNode jjtn000 = new SimpleNode(JJTROWS);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-    try {
-      nodeSet();
-    } catch (Throwable jjte000) {
-                                     if (jjtc000) {
-                                       jjtree.clearNodeScope(jjtn000);
-                                       jjtc000 = false;
-                                     } else {
-                                       jjtree.popNode();
-                                     }
-                                     if (jjte000 instanceof RuntimeException) {
-                                       {if (true) throw (RuntimeException)jjte000;}
-                                     }
-                                     if (jjte000 instanceof ParseException) {
-                                       {if (true) throw (ParseException)jjte000;}
-                                     }
-                                     {if (true) throw (Error)jjte000;}
-    } finally {
-                                     if (jjtc000) {
-                                       jjtree.closeNodeScope(jjtn000, true);
-                                     }
-    }
+    jj_consume_token(ROWS);
+        if (rows)
+            {if (true) throw new ParseException("O eixo das linhas foi duplicado");}
+        else
+            rows = true;
+      jjtn000.setName("ROWS");
   }
 
-  static final public void nodeSet() throws ParseException {
+  static final public void columns() throws ParseException {
+    jj_consume_token(COLUMNS);
+        if (columns)
+            {if (true) throw new ParseException("O eixo das colunas foi duplicado");}
+        else
+            columns = true;
+  }
+
+  static final public void set() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
-    case 33:
+    case 34:
       node();
       break;
-    case 31:
-      jj_consume_token(31);
+    case 32:
+      jj_consume_token(32);
       node();
       label_1:
       while (true) {
-        jj_consume_token(COMMA);
+        jj_consume_token(31);
         node();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case COMMA:
+        case 31:
           ;
           break;
         default:
-          jj_la1[0] = jj_gen;
+          jj_la1[1] = jj_gen;
           break label_1;
         }
       }
-      jj_consume_token(32);
+      jj_consume_token(33);
       break;
     default:
-      jj_la1[1] = jj_gen;
+      jj_la1[2] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -168,7 +172,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
                                      }
       }
       break;
-    case 33:
+    case 34:
                                                                               SimpleNode jjtn002 = new SimpleNode(JJTCROSSJOIN);
                                                                               boolean jjtc002 = true;
                                                                               jjtree.openNodeScope(jjtn002);
@@ -195,19 +199,19 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
       }
       break;
     default:
-      jj_la1[2] = jj_gen;
+      jj_la1[3] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
   }
 
   static final public void crossJoin() throws ParseException {
-    jj_consume_token(33);
+    jj_consume_token(34);
                                          SimpleNode jjtn001 = new SimpleNode(JJTFIRSTSET);
                                          boolean jjtc001 = true;
                                          jjtree.openNodeScope(jjtn001);
     try {
-      nodeSet();
+      set();
     } catch (Throwable jjte001) {
                                          if (jjtc001) {
                                            jjtree.clearNodeScope(jjtn001);
@@ -227,32 +231,32 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
                                            jjtree.closeNodeScope(jjtn001, true);
                                          }
     }
-    jj_consume_token(COMMA);
-                                                                     SimpleNode jjtn002 = new SimpleNode(JJTSECONDSET);
-                                                                     boolean jjtc002 = true;
-                                                                     jjtree.openNodeScope(jjtn002);
+    jj_consume_token(31);
+                                                             SimpleNode jjtn002 = new SimpleNode(JJTSECONDSET);
+                                                             boolean jjtc002 = true;
+                                                             jjtree.openNodeScope(jjtn002);
     try {
-      nodeSet();
+      set();
     } catch (Throwable jjte002) {
-                                                                     if (jjtc002) {
-                                                                       jjtree.clearNodeScope(jjtn002);
-                                                                       jjtc002 = false;
-                                                                     } else {
-                                                                       jjtree.popNode();
-                                                                     }
-                                                                     if (jjte002 instanceof RuntimeException) {
-                                                                       {if (true) throw (RuntimeException)jjte002;}
-                                                                     }
-                                                                     if (jjte002 instanceof ParseException) {
-                                                                       {if (true) throw (ParseException)jjte002;}
-                                                                     }
-                                                                     {if (true) throw (Error)jjte002;}
+                                                             if (jjtc002) {
+                                                               jjtree.clearNodeScope(jjtn002);
+                                                               jjtc002 = false;
+                                                             } else {
+                                                               jjtree.popNode();
+                                                             }
+                                                             if (jjte002 instanceof RuntimeException) {
+                                                               {if (true) throw (RuntimeException)jjte002;}
+                                                             }
+                                                             if (jjte002 instanceof ParseException) {
+                                                               {if (true) throw (ParseException)jjte002;}
+                                                             }
+                                                             {if (true) throw (Error)jjte002;}
     } finally {
-                                                                     if (jjtc002) {
-                                                                       jjtree.closeNodeScope(jjtn002, true);
-                                                                     }
+                                                             if (jjtc002) {
+                                                               jjtree.closeNodeScope(jjtn002, true);
+                                                             }
     }
-    jj_consume_token(34);
+    jj_consume_token(35);
   }
 
   static final public void cube() throws ParseException {
@@ -313,7 +317,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
           ;
           break;
         default:
-          jj_la1[3] = jj_gen;
+          jj_la1[4] = jj_gen;
           break label_2;
         }
         jj_consume_token(OR);
@@ -353,7 +357,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
           ;
           break;
         default:
-          jj_la1[4] = jj_gen;
+          jj_la1[5] = jj_gen;
           break label_3;
         }
         jj_consume_token(AND);
@@ -383,14 +387,14 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   static final public void term() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
-    case 33:
+    case 34:
       atom();
       break;
     case NOT:
       negation();
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[6] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -401,13 +405,13 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     case METADATA_OBJECT_NAME:
       comparison();
       break;
-    case 33:
-      jj_consume_token(33);
-      filterExpression();
+    case 34:
       jj_consume_token(34);
+      filterExpression();
+      jj_consume_token(35);
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[7] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -464,7 +468,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
         jj_consume_token(METADATA_OBJECT_NAME);
         break;
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[8] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -482,7 +486,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
         operating();
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[9] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -519,11 +523,11 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     case METADATA_OBJECT_NAME:
     case FLOATING_POINT_LITERAL:
     case INTEGER_LITERAL:
-    case 33:
+    case 34:
       arithmeticExpression();
       break;
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[10] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -546,7 +550,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
         ;
         break;
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[11] = jj_gen;
         break label_4;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -557,7 +561,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
         jj_consume_token(MINUS);
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[12] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -579,7 +583,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
           ;
           break;
         default:
-          jj_la1[12] = jj_gen;
+          jj_la1[13] = jj_gen;
           break label_5;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -590,7 +594,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
           jj_consume_token(DIV);
           break;
         default:
-          jj_la1[13] = jj_gen;
+          jj_la1[14] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -619,10 +623,10 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
 
   static final public void unaryExpression() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case 33:
-      jj_consume_token(33);
-      arithmeticExpression();
+    case 34:
       jj_consume_token(34);
+      arithmeticExpression();
+      jj_consume_token(35);
       break;
     case METADATA_OBJECT_NAME:
       jj_consume_token(METADATA_OBJECT_NAME);
@@ -633,7 +637,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
       number();
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[15] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -650,7 +654,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
         jj_consume_token(MINUS);
         break;
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[16] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -661,7 +665,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
         jj_consume_token(FLOATING_POINT_LITERAL);
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[17] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -682,7 +686,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   static public Token jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[17];
+  static final private int[] jj_la1 = new int[18];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -690,10 +694,10 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x20000,0x82000000,0x2000000,0x200,0x100,0x2000080,0x2000000,0x400,0x40,0x36041000,0x1800,0x1800,0x6000,0x6000,0x16001000,0x1000,0x14000000,};
+      jj_la1_0 = new int[] {0x300000,0x80000000,0x2000000,0x2000000,0x200,0x100,0x2000080,0x2000000,0x400,0x40,0x36021000,0x1800,0x1800,0x6000,0x6000,0x16001000,0x1000,0x14000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x2,0x2,0x0,0x0,0x2,0x2,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x2,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x5,0x4,0x0,0x0,0x4,0x4,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x4,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -714,7 +718,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -729,7 +733,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -746,7 +750,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -757,7 +761,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -773,7 +777,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -783,7 +787,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -834,12 +838,12 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[35];
+    boolean[] la1tokens = new boolean[36];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 17; i++) {
+    for (int i = 0; i < 18; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -851,7 +855,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants, 
         }
       }
     }
-    for (int i = 0; i < 35; i++) {
+    for (int i = 0; i < 36; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

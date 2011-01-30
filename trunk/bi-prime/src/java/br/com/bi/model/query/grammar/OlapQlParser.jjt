@@ -7,16 +7,21 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class OlapQlParser {
+
+  private static boolean rows = false;
+  private static boolean columns = false;
+
   public static void main(String args[]) {
-        InputStream in = new ByteArrayInputStream(("select [teste];([teste], [teste])"
-                + " on columns, [teste] on rows "
-                + "from [teste] "
-                + "where [teste] = 1 or [teste] and not [teste] > (1 + 2 * 5)").getBytes());
+        InputStream in = new ByteArrayInputStream(
+              ("selecione {[teste], ([teste], [teste])}"
+                + " nas colunas, [teste] nas linhas "
+                + "do cubo [teste] "
+                + "onde [teste] = 1 ou [teste] e não [teste] > (1 + 2 * 5)").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
         try {
             SimpleNode node = parser.query();
-            node.dump(" ");
+            node.dump("   ");
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
@@ -29,9 +34,9 @@ SKIP : { " " | "\t" | "\n" | "\r" | "\f" }
 TOKEN [IGNORE_CASE] :
 {
   < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
-| < NOT: "not" >
-| < AND: "and" >
-| < OR: "or" >
+| < NOT: "não" >
+| < AND: "e" >
+| < OR: "ou" >
 | < DOT: "." >
 | < PLUS: "+" >
 | < MINUS: "-" >
@@ -39,14 +44,14 @@ TOKEN [IGNORE_CASE] :
 | < DIV: "/" >
 | < LBRA: "[" >
 | < RBRA: "]" >
-| < COMMA: "," >
 | < DATE: ((["0"-"9"])+ "/" (["0"-"9"])+ "/" (["0"-"9"])+) >
-| < SELECT: "select" >
-| < ON: "on" >
-| < ROWS: "rows" >
-| < COLUMNS: "columns" >
-| < FROM: "from" >
-| < WHERE: "where" >
+| < SELECT: "selecione" >
+| < ON: "nas" >
+| < ROWS: "linhas" >
+| < COLUMNS: "colunas" >
+| < FROM: "do" >
+| < CUBE: "cubo" >
+| < WHERE: "onde" >
 | < METADATA_OBJECT_NAME: <LBRA> (~["[","]"])+ <RBRA> >
 | < FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])? 
                              | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])? 
@@ -63,24 +68,56 @@ TOKEN [IGNORE_CASE] :
 /* ==================== */
 
 SimpleNode query() #Query : 
-{}
 {
-    <SELECT> columns() <ON> <COLUMNS> "," rows() <ON> <ROWS> <FROM> cube() <WHERE> filterExpression() <EOF> 
+}
+{
+    <SELECT> axisSpecification() "," axisSpecification() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF> 
     
     {
         return jjtThis;
     }
 }
 
-void columns() #Columns     : {} { nodeSet() }
+void axisSpecification() #AxisSpecification: 
+{
+} 
+{
+    set() <ON>  ( rows() | columns() )
+}
 
-void rows() #Rows           : {} { nodeSet() }
+void rows() : 
+{
+} 
+{ 
+    <ROWS>
 
-void nodeSet()              : {} { node() | "{" node() ( "," node() )+ "}" }
+    { 
+        if (rows) 
+            throw new ParseException("O eixo das linhas foi duplicado"); 
+        else 
+            rows = true;
+    }
+}
+
+void columns() : 
+{
+} 
+{ 
+    <COLUMNS>
+
+    {
+        if (columns) 
+            throw new ParseException("O eixo das colunas foi duplicado"); 
+        else 
+            columns = true;
+    }
+}
+
+void set()              : {} { node() | "{" node() ( "," node() )+ "}" }
 
 void node()                 : {} { <METADATA_OBJECT_NAME> #MetadataObject | crossJoin() #Crossjoin }
 
-void crossJoin()            : {} { "(" nodeSet() #FirstSet "," nodeSet() #SecondSet ")" }
+void crossJoin()            : {} { "(" set() #FirstSet "," set() #SecondSet ")" }
 
 void cube() #Cube           : {} { <METADATA_OBJECT_NAME> }
 

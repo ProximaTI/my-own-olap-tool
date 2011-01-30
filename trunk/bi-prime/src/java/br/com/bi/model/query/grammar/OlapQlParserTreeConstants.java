@@ -4,28 +4,26 @@ package br.com.bi.model.query.grammar;
 public interface OlapQlParserTreeConstants
 {
   public int JJTQUERY = 0;
-  public int JJTCOLUMNS = 1;
-  public int JJTROWS = 2;
-  public int JJTVOID = 3;
-  public int JJTMETADATAOBJECT = 4;
-  public int JJTCROSSJOIN = 5;
-  public int JJTFIRSTSET = 6;
-  public int JJTSECONDSET = 7;
-  public int JJTCUBE = 8;
-  public int JJTFILTER = 9;
-  public int JJTDISJUNCTION = 10;
-  public int JJTCONJUNCTION = 11;
-  public int JJTNEGATION = 12;
-  public int JJTCOMPARISON = 13;
-  public int JJTRELATIONALOPERATOR = 14;
-  public int JJTMULTIPLICATON = 15;
-  public int JJTNUMBER = 16;
+  public int JJTAXISSPECIFICATION = 1;
+  public int JJTVOID = 2;
+  public int JJTMETADATAOBJECT = 3;
+  public int JJTCROSSJOIN = 4;
+  public int JJTFIRSTSET = 5;
+  public int JJTSECONDSET = 6;
+  public int JJTCUBE = 7;
+  public int JJTFILTER = 8;
+  public int JJTDISJUNCTION = 9;
+  public int JJTCONJUNCTION = 10;
+  public int JJTNEGATION = 11;
+  public int JJTCOMPARISON = 12;
+  public int JJTRELATIONALOPERATOR = 13;
+  public int JJTMULTIPLICATON = 14;
+  public int JJTNUMBER = 15;
 
 
   public String[] jjtNodeName = {
     "Query",
-    "Columns",
-    "Rows",
+    "AxisSpecification",
     "void",
     "MetadataObject",
     "Crossjoin",
@@ -42,4 +40,4 @@ public interface OlapQlParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=9a09330bcdc20ab058451ca5408912e6 (do not edit this line) */
+/* JavaCC - OriginalChecksum=3241bccb28c7905ec7713d869b06a40a (do not edit this line) */

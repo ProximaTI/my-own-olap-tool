@@ -33,19 +33,19 @@ public interface OlapQlParserConstants {
   /** RegularExpression Id. */
   int RBRA = 16;
   /** RegularExpression Id. */
-  int COMMA = 17;
+  int DATE = 17;
   /** RegularExpression Id. */
-  int DATE = 18;
+  int SELECT = 18;
   /** RegularExpression Id. */
-  int SELECT = 19;
+  int ON = 19;
   /** RegularExpression Id. */
-  int ON = 20;
+  int ROWS = 20;
   /** RegularExpression Id. */
-  int ROWS = 21;
+  int COLUMNS = 21;
   /** RegularExpression Id. */
-  int COLUMNS = 22;
+  int FROM = 22;
   /** RegularExpression Id. */
-  int FROM = 23;
+  int CUBE = 23;
   /** RegularExpression Id. */
   int WHERE = 24;
   /** RegularExpression Id. */
@@ -73,9 +73,9 @@ public interface OlapQlParserConstants {
     "\"\\r\"",
     "\"\\f\"",
     "<RELATIONAL_OPERATOR>",
-    "\"not\"",
-    "\"and\"",
-    "\"or\"",
+    "\"n\\u00e3o\"",
+    "\"e\"",
+    "\"ou\"",
     "\".\"",
     "\"+\"",
     "\"-\"",
@@ -83,20 +83,21 @@ public interface OlapQlParserConstants {
     "\"/\"",
     "\"[\"",
     "\"]\"",
-    "\",\"",
     "<DATE>",
-    "\"select\"",
-    "\"on\"",
-    "\"rows\"",
-    "\"columns\"",
-    "\"from\"",
-    "\"where\"",
+    "\"selecione\"",
+    "\"nas\"",
+    "\"linhas\"",
+    "\"colunas\"",
+    "\"do\"",
+    "\"cubo\"",
+    "\"onde\"",
     "<METADATA_OBJECT_NAME>",
     "<FLOATING_POINT_LITERAL>",
     "<EXPONENT>",
     "<INTEGER_LITERAL>",
     "<STRING_LITERAL>",
     "<CHAR>",
+    "\",\"",
     "\"{\"",
     "\"}\"",
     "\"(\"",
