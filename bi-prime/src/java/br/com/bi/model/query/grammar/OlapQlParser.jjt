@@ -22,7 +22,7 @@ public class OlapQlParser {
               ("selecione {[teste], ([teste], [teste])}"
                 + " nas colunas, [teste] nas linhas "
                 + "do cubo [teste] "
-                + "onde [teste] = 1 ou [teste] e não [teste] > (1 + 2 * 5)").getBytes());
+                + "onde [teste] = 1 ou [teste] e não [teste] > (1 / 1 + 2 * [teste])").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
         
@@ -89,10 +89,6 @@ TOKEN [IGNORE_CASE] :
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
-/* ==================== */
-/* = Production rules = */
-/* ==================== */
-
 SimpleNode query() #Query : 
 {
 }
@@ -157,42 +153,114 @@ void set() :
     node() | "{" node() ( "," node() )+ "}" 
 }
 
-void node()                 : {} { <METADATA_OBJECT_NAME> #MetadataObject | crossJoin() #Crossjoin }
+void node() :
+{
+}
+{
+    <METADATA_OBJECT_NAME> #MetadataObject | crossJoin() #Crossjoin 
+}
 
-void crossJoin()            : {} { "(" set() #FirstSet "," set() #SecondSet ")" }
+void crossJoin() :
+{
+}
+{
+    "(" set() #FirstSet "," set() #SecondSet ")" 
+}
 
-void cube() #Cube           : {} { <METADATA_OBJECT_NAME> }
+void cube() #Cube :
+{
+}
+{
+    <METADATA_OBJECT_NAME> 
+}
  
-/* ===================== */
-/* = filter expression = */
-/* ===================== */
+void filterExpression() #Filter :
+{
+}
+{
+    disjunction() 
+}
 
-void filterExpression() #Filter : {} { disjunction() }
+void disjunction() :
+{
+}
+{
+    ( conjunction() ( <OR> conjunction() )* ) #Disjunction(>1)
+}
 
-void disjunction()              : {} { ( conjunction() ( <OR> conjunction() )* ) #Disjunction(>1)}
+void conjunction() : 
+{
+}
+{
+    ( term() ( <AND> term() )* ) #Conjunction(>1)
+}
 
-void conjunction()              : {} { ( term() ( <AND> term() )* ) #Conjunction(>1)}
+void term() :
+{
+}
+{
+    atom() | negation() 
+}
 
-void term()                     : {} { atom() | negation() }
+void atom() :
+{
+}
+{
+    comparison() | "(" filterExpression() ")" 
+}
 
-void atom()                     : {} { comparison() | "(" filterExpression() ")"  }
+void negation() #Negation :
+{
+}
+{
+    <NOT> ( term() ) 
+}
 
-void negation() #Negation       : {} { <NOT> ( term() ) }
+void comparison() #Comparison : 
+{
+}
+{
+    ( <METADATA_OBJECT_NAME> ) #MetadataObject [ <DOT> <METADATA_OBJECT_NAME> ] [ <RELATIONAL_OPERATOR> #RelationalOperator operating() ]  // [measure] > 1 or [level].[property] = "foo"
+} 
 
-void comparison() #Comparison   : {} { ( <METADATA_OBJECT_NAME> ) #MetadataObject [ <DOT> <METADATA_OBJECT_NAME> ] [ <RELATIONAL_OPERATOR> #RelationalOperator operating() ]  } // [measure] > 1 or [level].[property] = "foo"
+void operating() :
+{
+}
+{
+    <DATE> #Date | <STRING_LITERAL> #StringLiteral | arithmeticExpression() #ArithmeticExpression 
+}
 
-void operating()                : {} { <DATE> | <STRING_LITERAL> | arithmeticExpression() }
+void arithmeticExpression() : 
+{
+}
+{
+    additiveExpression() 
+}
 
-/* ========================= */
-/* = arithmetic expression = */
-/* ========================= */
+void additiveExpression() :
+{
+}
+{
+    ( multiplicativeExpression() ( ( <PLUS> | <MINUS> ) multiplicativeExpression() )* ) #Addition(>1)
+}
 
-void arithmeticExpression()     : {} { additiveExpression() }
+void multiplicativeExpression() :
+{
+}
+{
+    ( arithmeticAtom() ( ( <MULT> | <DIV> ) arithmeticAtom() )* ) #Multiplication(>1)
+}
 
-void additiveExpression()       : {} { multiplicativeExpression() ( ( <PLUS> | <MINUS> ) multiplicativeExpression() )* }
+void arithmeticAtom() :
+{
+}
+{
+    "(" arithmeticExpression() ")" | <METADATA_OBJECT_NAME> #MetadataObject | number()
+}
 
-void multiplicativeExpression() : {} { unaryExpression() ( ( <MULT> | <DIV> ) unaryExpression() )* #Multiplicaton(>1) }
-
-void unaryExpression()          : {} { "(" arithmeticExpression() ")" | <METADATA_OBJECT_NAME> | number() }
-
-void number() #Number           : {} { [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> )  }
+void number() #Number :
+{
+}
+{
+    [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> ) 
+}

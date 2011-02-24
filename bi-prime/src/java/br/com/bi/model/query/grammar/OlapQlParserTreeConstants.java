@@ -17,8 +17,12 @@ public interface OlapQlParserTreeConstants
   public int JJTNEGATION = 11;
   public int JJTCOMPARISON = 12;
   public int JJTRELATIONALOPERATOR = 13;
-  public int JJTMULTIPLICATON = 14;
-  public int JJTNUMBER = 15;
+  public int JJTDATE = 14;
+  public int JJTSTRINGLITERAL = 15;
+  public int JJTARITHMETICEXPRESSION = 16;
+  public int JJTADDITION = 17;
+  public int JJTMULTIPLICATION = 18;
+  public int JJTNUMBER = 19;
 
 
   public String[] jjtNodeName = {
@@ -36,8 +40,12 @@ public interface OlapQlParserTreeConstants
     "Negation",
     "Comparison",
     "RelationalOperator",
-    "Multiplicaton",
+    "Date",
+    "StringLiteral",
+    "ArithmeticExpression",
+    "Addition",
+    "Multiplication",
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=3e57e0da433c7596dc07d357304232d6 (do not edit this line) */
+/* JavaCC - OriginalChecksum=7a2145cbc770640dcd44c992bf743589 (do not edit this line) */
