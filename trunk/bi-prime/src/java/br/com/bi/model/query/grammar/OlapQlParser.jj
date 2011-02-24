@@ -26,7 +26,7 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants/*
               ("selecione {[teste], ([teste], [teste])}"
                 + " nas colunas, [teste] nas linhas "
                 + "do cubo [teste] "
-                + "onde [teste] = 1 ou [teste] e n\u00e3o [teste] > (1 + 2 * 5)").getBytes());
+                + "onde [teste] = 1 ou [teste] e n\u00e3o [teste] > (1 / 1 + 2 * [teste])").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
         
@@ -92,10 +92,6 @@ TOKEN [IGNORE_CASE] :
 | < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
-
-/* ==================== */
-/* = Production rules = */
-/* ==================== */
 
 SimpleNode query()        : 
 {/*@bgen(jjtree) Query */
@@ -216,347 +212,517 @@ String columns() :
     }
 }
 
-void set()              : {} { node() | "{" node() ( "," node() )+ "}" }
+void set() : 
+{
+}
+{
+    node() | "{" node() ( "," node() )+ "}" 
+}
 
-void node()                 : {} {/*@bgen(jjtree) MetadataObject */
-                                   {
-                                     SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
-                                     boolean jjtc001 = true;
-                                     jjtree.openNodeScope(jjtn001);
-                                   }
-                                   try {
-/*@egen*/ <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
-                                   } finally {
-                                     if (jjtc001) {
-                                       jjtree.closeNodeScope(jjtn001, true);
-                                     }
-                                   }
+void node() :
+{
+}
+{/*@bgen(jjtree) MetadataObject */
+    {
+      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
+      boolean jjtc001 = true;
+      jjtree.openNodeScope(jjtn001);
+    }
+    try {
+/*@egen*/
+    <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc001) {
+        jjtree.closeNodeScope(jjtn001, true);
+      }
+    }
 /*@egen*/                 |/*@bgen(jjtree) Crossjoin */
-                                                                            {
-                                                                              SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTCROSSJOIN);
-                                                                              boolean jjtc002 = true;
-                                                                              jjtree.openNodeScope(jjtn002);
-                                                                            }
-                                                                            try {
+                                             {
+                                               SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTCROSSJOIN);
+                                               boolean jjtc002 = true;
+                                               jjtree.openNodeScope(jjtn002);
+                                             }
+                                             try {
 /*@egen*/ crossJoin()/*@bgen(jjtree)*/
-                                                                            } catch (Throwable jjte002) {
-                                                                              if (jjtc002) {
-                                                                                jjtree.clearNodeScope(jjtn002);
-                                                                                jjtc002 = false;
-                                                                              } else {
-                                                                                jjtree.popNode();
-                                                                              }
-                                                                              if (jjte002 instanceof RuntimeException) {
-                                                                                throw (RuntimeException)jjte002;
-                                                                              }
-                                                                              if (jjte002 instanceof ParseException) {
-                                                                                throw (ParseException)jjte002;
-                                                                              }
-                                                                              throw (Error)jjte002;
-                                                                            } finally {
-                                                                              if (jjtc002) {
-                                                                                jjtree.closeNodeScope(jjtn002, true);
-                                                                              }
-                                                                            }
-/*@egen*/            }
+                                             } catch (Throwable jjte002) {
+                                               if (jjtc002) {
+                                                 jjtree.clearNodeScope(jjtn002);
+                                                 jjtc002 = false;
+                                               } else {
+                                                 jjtree.popNode();
+                                               }
+                                               if (jjte002 instanceof RuntimeException) {
+                                                 throw (RuntimeException)jjte002;
+                                               }
+                                               if (jjte002 instanceof ParseException) {
+                                                 throw (ParseException)jjte002;
+                                               }
+                                               throw (Error)jjte002;
+                                             } finally {
+                                               if (jjtc002) {
+                                                 jjtree.closeNodeScope(jjtn002, true);
+                                               }
+                                             }
+/*@egen*/            
+}
 
-void crossJoin()            : {} { "("/*@bgen(jjtree) FirstSet */
-                                       {
-                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTFIRSTSET);
-                                         boolean jjtc001 = true;
-                                         jjtree.openNodeScope(jjtn001);
-                                       }
-                                       try {
+void crossJoin() :
+{
+}
+{
+    "("/*@bgen(jjtree) FirstSet */
+        {
+          SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTFIRSTSET);
+          boolean jjtc001 = true;
+          jjtree.openNodeScope(jjtn001);
+        }
+        try {
 /*@egen*/ set()/*@bgen(jjtree)*/
-                                       } catch (Throwable jjte001) {
-                                         if (jjtc001) {
-                                           jjtree.clearNodeScope(jjtn001);
-                                           jjtc001 = false;
-                                         } else {
-                                           jjtree.popNode();
-                                         }
-                                         if (jjte001 instanceof RuntimeException) {
-                                           throw (RuntimeException)jjte001;
-                                         }
-                                         if (jjte001 instanceof ParseException) {
-                                           throw (ParseException)jjte001;
-                                         }
-                                         throw (Error)jjte001;
-                                       } finally {
-                                         if (jjtc001) {
-                                           jjtree.closeNodeScope(jjtn001, true);
-                                         }
-                                       }
+        } catch (Throwable jjte001) {
+          if (jjtc001) {
+            jjtree.clearNodeScope(jjtn001);
+            jjtc001 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte001 instanceof RuntimeException) {
+            throw (RuntimeException)jjte001;
+          }
+          if (jjte001 instanceof ParseException) {
+            throw (ParseException)jjte001;
+          }
+          throw (Error)jjte001;
+        } finally {
+          if (jjtc001) {
+            jjtree.closeNodeScope(jjtn001, true);
+          }
+        }
 /*@egen*/           ","/*@bgen(jjtree) SecondSet */
-                                                           {
-                                                             SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTSECONDSET);
-                                                             boolean jjtc002 = true;
-                                                             jjtree.openNodeScope(jjtn002);
-                                                           }
-                                                           try {
+                            {
+                              SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTSECONDSET);
+                              boolean jjtc002 = true;
+                              jjtree.openNodeScope(jjtn002);
+                            }
+                            try {
 /*@egen*/ set()/*@bgen(jjtree)*/
-                                                           } catch (Throwable jjte002) {
-                                                             if (jjtc002) {
-                                                               jjtree.clearNodeScope(jjtn002);
-                                                               jjtc002 = false;
-                                                             } else {
-                                                               jjtree.popNode();
-                                                             }
-                                                             if (jjte002 instanceof RuntimeException) {
-                                                               throw (RuntimeException)jjte002;
-                                                             }
-                                                             if (jjte002 instanceof ParseException) {
-                                                               throw (ParseException)jjte002;
-                                                             }
-                                                             throw (Error)jjte002;
-                                                           } finally {
-                                                             if (jjtc002) {
-                                                               jjtree.closeNodeScope(jjtn002, true);
-                                                             }
-                                                           }
-/*@egen*/            ")" }
+                            } catch (Throwable jjte002) {
+                              if (jjtc002) {
+                                jjtree.clearNodeScope(jjtn002);
+                                jjtc002 = false;
+                              } else {
+                                jjtree.popNode();
+                              }
+                              if (jjte002 instanceof RuntimeException) {
+                                throw (RuntimeException)jjte002;
+                              }
+                              if (jjte002 instanceof ParseException) {
+                                throw (ParseException)jjte002;
+                              }
+                              throw (Error)jjte002;
+                            } finally {
+                              if (jjtc002) {
+                                jjtree.closeNodeScope(jjtn002, true);
+                              }
+                            }
+/*@egen*/            ")" 
+}
 
-void cube()                 : {/*@bgen(jjtree) Cube */
+void cube()       :
+{/*@bgen(jjtree) Cube */
   SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTCUBE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) Cube */
-                                   try {
-/*@egen*/ <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
-                                   } finally {
-                                     if (jjtc000) {
-                                       jjtree.closeNodeScope(jjtn000, true);
-                                     }
-                                   }
-/*@egen*/ }
+/*@egen*/
+}
+{/*@bgen(jjtree) Cube */
+    try {
+/*@egen*/
+    <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/ 
+}
  
-/* ===================== */
-/* = filter expression = */
-/* ===================== */
-
-void filterExpression()         : {/*@bgen(jjtree) Filter */
+void filterExpression()         :
+{/*@bgen(jjtree) Filter */
   SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTFILTER);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) Filter */
-                                       try {
-/*@egen*/ disjunction()/*@bgen(jjtree)*/
-                                       } catch (Throwable jjte000) {
-                                         if (jjtc000) {
-                                           jjtree.clearNodeScope(jjtn000);
-                                           jjtc000 = false;
-                                         } else {
-                                           jjtree.popNode();
-                                         }
-                                         if (jjte000 instanceof RuntimeException) {
-                                           throw (RuntimeException)jjte000;
-                                         }
-                                         if (jjte000 instanceof ParseException) {
-                                           throw (ParseException)jjte000;
-                                         }
-                                         throw (Error)jjte000;
-                                       } finally {
-                                         if (jjtc000) {
-                                           jjtree.closeNodeScope(jjtn000, true);
-                                         }
-                                       }
-/*@egen*/ }
+/*@egen*/
+}
+{/*@bgen(jjtree) Filter */
+    try {
+/*@egen*/
+    disjunction()/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/ 
+}
 
-void disjunction()              : {} {/*@bgen(jjtree) #Disjunction(> 1) */
-                                       {
-                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTDISJUNCTION);
-                                         boolean jjtc001 = true;
-                                         jjtree.openNodeScope(jjtn001);
-                                       }
-                                       try {
-/*@egen*/ ( conjunction() ( <OR> conjunction() )* )/*@bgen(jjtree)*/
-                                       } catch (Throwable jjte001) {
-                                         if (jjtc001) {
-                                           jjtree.clearNodeScope(jjtn001);
-                                           jjtc001 = false;
-                                         } else {
-                                           jjtree.popNode();
-                                         }
-                                         if (jjte001 instanceof RuntimeException) {
-                                           throw (RuntimeException)jjte001;
-                                         }
-                                         if (jjte001 instanceof ParseException) {
-                                           throw (ParseException)jjte001;
-                                         }
-                                         throw (Error)jjte001;
-                                       } finally {
-                                         if (jjtc001) {
-                                           jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
-                                         }
-                                       }
-/*@egen*/                 }
+void disjunction() :
+{
+}
+{/*@bgen(jjtree) #Disjunction(> 1) */
+    {
+      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTDISJUNCTION);
+      boolean jjtc001 = true;
+      jjtree.openNodeScope(jjtn001);
+    }
+    try {
+/*@egen*/
+    ( conjunction() ( <OR> conjunction() )* )/*@bgen(jjtree)*/
+    } catch (Throwable jjte001) {
+      if (jjtc001) {
+        jjtree.clearNodeScope(jjtn001);
+        jjtc001 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte001 instanceof RuntimeException) {
+        throw (RuntimeException)jjte001;
+      }
+      if (jjte001 instanceof ParseException) {
+        throw (ParseException)jjte001;
+      }
+      throw (Error)jjte001;
+    } finally {
+      if (jjtc001) {
+        jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
+      }
+    }
+/*@egen*/                 
+}
 
-void conjunction()              : {} {/*@bgen(jjtree) #Conjunction(> 1) */
-                                       {
-                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTCONJUNCTION);
-                                         boolean jjtc001 = true;
-                                         jjtree.openNodeScope(jjtn001);
-                                       }
-                                       try {
-/*@egen*/ ( term() ( <AND> term() )* )/*@bgen(jjtree)*/
-                                       } catch (Throwable jjte001) {
-                                         if (jjtc001) {
-                                           jjtree.clearNodeScope(jjtn001);
-                                           jjtc001 = false;
-                                         } else {
-                                           jjtree.popNode();
-                                         }
-                                         if (jjte001 instanceof RuntimeException) {
-                                           throw (RuntimeException)jjte001;
-                                         }
-                                         if (jjte001 instanceof ParseException) {
-                                           throw (ParseException)jjte001;
-                                         }
-                                         throw (Error)jjte001;
-                                       } finally {
-                                         if (jjtc001) {
-                                           jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
-                                         }
-                                       }
-/*@egen*/                 }
+void conjunction() : 
+{
+}
+{/*@bgen(jjtree) #Conjunction(> 1) */
+    {
+      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTCONJUNCTION);
+      boolean jjtc001 = true;
+      jjtree.openNodeScope(jjtn001);
+    }
+    try {
+/*@egen*/
+    ( term() ( <AND> term() )* )/*@bgen(jjtree)*/
+    } catch (Throwable jjte001) {
+      if (jjtc001) {
+        jjtree.clearNodeScope(jjtn001);
+        jjtc001 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte001 instanceof RuntimeException) {
+        throw (RuntimeException)jjte001;
+      }
+      if (jjte001 instanceof ParseException) {
+        throw (ParseException)jjte001;
+      }
+      throw (Error)jjte001;
+    } finally {
+      if (jjtc001) {
+        jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
+      }
+    }
+/*@egen*/                 
+}
 
-void term()                     : {} { atom() | negation() }
+void term() :
+{
+}
+{
+    atom() | negation() 
+}
 
-void atom()                     : {} { comparison() | "(" filterExpression() ")"  }
+void atom() :
+{
+}
+{
+    comparison() | "(" filterExpression() ")" 
+}
 
-void negation()                 : {/*@bgen(jjtree) Negation */
+void negation()           :
+{/*@bgen(jjtree) Negation */
   SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTNEGATION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) Negation */
-                                       try {
-/*@egen*/ <NOT> ( term() )/*@bgen(jjtree)*/
-                                       } catch (Throwable jjte000) {
-                                         if (jjtc000) {
-                                           jjtree.clearNodeScope(jjtn000);
-                                           jjtc000 = false;
-                                         } else {
-                                           jjtree.popNode();
-                                         }
-                                         if (jjte000 instanceof RuntimeException) {
-                                           throw (RuntimeException)jjte000;
-                                         }
-                                         if (jjte000 instanceof ParseException) {
-                                           throw (ParseException)jjte000;
-                                         }
-                                         throw (Error)jjte000;
-                                       } finally {
-                                         if (jjtc000) {
-                                           jjtree.closeNodeScope(jjtn000, true);
-                                         }
-                                       }
-/*@egen*/ }
+/*@egen*/
+}
+{/*@bgen(jjtree) Negation */
+    try {
+/*@egen*/
+    <NOT> ( term() )/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/ 
+}
 
-void comparison()               : {/*@bgen(jjtree) Comparison */
+void comparison()             : 
+{/*@bgen(jjtree) Comparison */
   SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTCOMPARISON);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) Comparison */
-                                       try {
+/*@egen*/
+}
+{/*@bgen(jjtree) Comparison */
+    try {
 /*@egen*//*@bgen(jjtree) MetadataObject */
-                                       {
-                                         SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
-                                         boolean jjtc001 = true;
-                                         jjtree.openNodeScope(jjtn001);
-                                       }
-                                       try {
-/*@egen*/ ( <METADATA_OBJECT_NAME> )/*@bgen(jjtree)*/
-                                       } finally {
-                                         if (jjtc001) {
-                                           jjtree.closeNodeScope(jjtn001, true);
-                                         }
-                                       }
+    {
+      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
+      boolean jjtc001 = true;
+      jjtree.openNodeScope(jjtn001);
+    }
+    try {
+/*@egen*/
+    ( <METADATA_OBJECT_NAME> )/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc001) {
+        jjtree.closeNodeScope(jjtn001, true);
+      }
+    }
 /*@egen*/                 [ <DOT> <METADATA_OBJECT_NAME> ] [/*@bgen(jjtree) RelationalOperator */
-                                                                                                                     {
-                                                                                                                       SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTRELATIONALOPERATOR);
-                                                                                                                       boolean jjtc002 = true;
-                                                                                                                       jjtree.openNodeScope(jjtn002);
-                                                                                                                     }
-                                                                                                                     try {
+                                                                                  {
+                                                                                    SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTRELATIONALOPERATOR);
+                                                                                    boolean jjtc002 = true;
+                                                                                    jjtree.openNodeScope(jjtn002);
+                                                                                  }
+                                                                                  try {
 /*@egen*/ <RELATIONAL_OPERATOR>/*@bgen(jjtree)*/
-                                                                                                                     } finally {
-                                                                                                                       if (jjtc002) {
-                                                                                                                         jjtree.closeNodeScope(jjtn002, true);
-                                                                                                                       }
-                                                                                                                     }
+                                                                                  } finally {
+                                                                                    if (jjtc002) {
+                                                                                      jjtree.closeNodeScope(jjtn002, true);
+                                                                                    }
+                                                                                  }
 /*@egen*/                     operating() ]/*@bgen(jjtree)*/
-                                       } catch (Throwable jjte000) {
-                                         if (jjtc000) {
-                                           jjtree.clearNodeScope(jjtn000);
-                                           jjtc000 = false;
-                                         } else {
-                                           jjtree.popNode();
-                                         }
-                                         if (jjte000 instanceof RuntimeException) {
-                                           throw (RuntimeException)jjte000;
-                                         }
-                                         if (jjte000 instanceof ParseException) {
-                                           throw (ParseException)jjte000;
-                                         }
-                                         throw (Error)jjte000;
-                                       } finally {
-                                         if (jjtc000) {
-                                           jjtree.closeNodeScope(jjtn000, true);
-                                         }
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/  // [measure] > 1 or [level].[property] = "foo"
+} 
+
+void operating() :
+{
+}
+{/*@bgen(jjtree) Date */
+    {
+      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTDATE);
+      boolean jjtc001 = true;
+      jjtree.openNodeScope(jjtn001);
+    }
+    try {
+/*@egen*/
+    <DATE>/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc001) {
+        jjtree.closeNodeScope(jjtn001, true);
+      }
+    }
+/*@egen*/       |/*@bgen(jjtree) StringLiteral */
+                   {
+                     SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTSTRINGLITERAL);
+                     boolean jjtc002 = true;
+                     jjtree.openNodeScope(jjtn002);
+                   }
+                   try {
+/*@egen*/ <STRING_LITERAL>/*@bgen(jjtree)*/
+                   } finally {
+                     if (jjtc002) {
+                       jjtree.closeNodeScope(jjtn002, true);
+                     }
+                   }
+/*@egen*/                |/*@bgen(jjtree) ArithmeticExpression */
+                                                     {
+                                                       SimpleNode jjtn003 = (SimpleNode)OlapQlParser.jjtCreate(JJTARITHMETICEXPRESSION);
+                                                       boolean jjtc003 = true;
+                                                       jjtree.openNodeScope(jjtn003);
+                                                     }
+                                                     try {
+/*@egen*/ arithmeticExpression()/*@bgen(jjtree)*/
+                                                     } catch (Throwable jjte003) {
+                                                       if (jjtc003) {
+                                                         jjtree.clearNodeScope(jjtn003);
+                                                         jjtc003 = false;
+                                                       } else {
+                                                         jjtree.popNode();
+                                                       }
+                                                       if (jjte003 instanceof RuntimeException) {
+                                                         throw (RuntimeException)jjte003;
+                                                       }
+                                                       if (jjte003 instanceof ParseException) {
+                                                         throw (ParseException)jjte003;
+                                                       }
+                                                       throw (Error)jjte003;
+                                                     } finally {
+                                                       if (jjtc003) {
+                                                         jjtree.closeNodeScope(jjtn003, true);
+                                                       }
+                                                     }
+/*@egen*/                       
+}
+
+void arithmeticExpression() : 
+{
+}
+{
+    additiveExpression() 
+}
+
+void additiveExpression() :
+{
+}
+{/*@bgen(jjtree) #Addition(> 1) */
+    {
+      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTADDITION);
+      boolean jjtc001 = true;
+      jjtree.openNodeScope(jjtn001);
+    }
+    try {
+/*@egen*/
+    ( multiplicativeExpression() ( ( <PLUS> | <MINUS> ) multiplicativeExpression() )* )/*@bgen(jjtree)*/
+    } catch (Throwable jjte001) {
+      if (jjtc001) {
+        jjtree.clearNodeScope(jjtn001);
+        jjtc001 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte001 instanceof RuntimeException) {
+        throw (RuntimeException)jjte001;
+      }
+      if (jjte001 instanceof ParseException) {
+        throw (ParseException)jjte001;
+      }
+      throw (Error)jjte001;
+    } finally {
+      if (jjtc001) {
+        jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
+      }
+    }
+/*@egen*/              
+}
+
+void multiplicativeExpression() :
+{
+}
+{/*@bgen(jjtree) #Multiplication(> 1) */
+    {
+      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMULTIPLICATION);
+      boolean jjtc001 = true;
+      jjtree.openNodeScope(jjtn001);
+    }
+    try {
+/*@egen*/
+    ( arithmeticAtom() ( ( <MULT> | <DIV> ) arithmeticAtom() )* )/*@bgen(jjtree)*/
+    } catch (Throwable jjte001) {
+      if (jjtc001) {
+        jjtree.clearNodeScope(jjtn001);
+        jjtc001 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte001 instanceof RuntimeException) {
+        throw (RuntimeException)jjte001;
+      }
+      if (jjte001 instanceof ParseException) {
+        throw (ParseException)jjte001;
+      }
+      throw (Error)jjte001;
+    } finally {
+      if (jjtc001) {
+        jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
+      }
+    }
+/*@egen*/                    
+}
+
+void arithmeticAtom() :
+{
+}
+{
+    "(" arithmeticExpression() ")" |/*@bgen(jjtree) MetadataObject */
+                                     {
+                                       SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
+                                       boolean jjtc001 = true;
+                                       jjtree.openNodeScope(jjtn001);
+                                     }
+                                     try {
+/*@egen*/ <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+                                     } finally {
+                                       if (jjtc001) {
+                                         jjtree.closeNodeScope(jjtn001, true);
                                        }
-/*@egen*/  } // [measure] > 1 or [level].[property] = "foo"
+                                     }
+/*@egen*/                 | number()
+}
 
-void operating()                : {} { <DATE> | <STRING_LITERAL> | arithmeticExpression() }
-
-/* ========================= */
-/* = arithmetic expression = */
-/* ========================= */
-
-void arithmeticExpression()     : {} { additiveExpression() }
-
-void additiveExpression()       : {} { multiplicativeExpression() ( ( <PLUS> | <MINUS> ) multiplicativeExpression() )* }
-
-void multiplicativeExpression() : {} { unaryExpression()/*@bgen(jjtree) #Multiplicaton(> 1) */
-                                                         {
-                                                           SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMULTIPLICATON);
-                                                           boolean jjtc001 = true;
-                                                           jjtree.openNodeScope(jjtn001);
-                                                         }
-                                                         try {
-/*@egen*/ ( ( <MULT> | <DIV> ) unaryExpression() )*/*@bgen(jjtree)*/
-                                                         } catch (Throwable jjte001) {
-                                                           if (jjtc001) {
-                                                             jjtree.clearNodeScope(jjtn001);
-                                                             jjtc001 = false;
-                                                           } else {
-                                                             jjtree.popNode();
-                                                           }
-                                                           if (jjte001 instanceof RuntimeException) {
-                                                             throw (RuntimeException)jjte001;
-                                                           }
-                                                           if (jjte001 instanceof ParseException) {
-                                                             throw (ParseException)jjte001;
-                                                           }
-                                                           throw (Error)jjte001;
-                                                         } finally {
-                                                           if (jjtc001) {
-                                                             jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
-                                                           }
-                                                         }
-/*@egen*/                    }
-
-void unaryExpression()          : {} { "(" arithmeticExpression() ")" | <METADATA_OBJECT_NAME> | number() }
-
-void number()                   : {/*@bgen(jjtree) Number */
+void number()         :
+{/*@bgen(jjtree) Number */
   SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTNUMBER);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
-/*@egen*/} {/*@bgen(jjtree) Number */
-                                       try {
-/*@egen*/ [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> )/*@bgen(jjtree)*/
-                                       } finally {
-                                         if (jjtc000) {
-                                           jjtree.closeNodeScope(jjtn000, true);
-                                         }
-                                       }
-/*@egen*/  }
+/*@egen*/
+}
+{/*@bgen(jjtree) Number */
+    try {
+/*@egen*/
+    [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> )/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/ 
+}
