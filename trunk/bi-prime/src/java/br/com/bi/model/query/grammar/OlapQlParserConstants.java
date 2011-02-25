@@ -37,35 +37,29 @@ public interface OlapQlParserConstants {
   /** RegularExpression Id. */
   int SELECT = 18;
   /** RegularExpression Id. */
-  int CREATE = 19;
+  int ON = 19;
   /** RegularExpression Id. */
-  int ALTER = 20;
+  int ROWS = 20;
   /** RegularExpression Id. */
-  int DELETE = 21;
+  int COLUMNS = 21;
   /** RegularExpression Id. */
-  int ON = 22;
+  int FROM = 22;
   /** RegularExpression Id. */
-  int ROWS = 23;
+  int CUBE = 23;
   /** RegularExpression Id. */
-  int COLUMNS = 24;
+  int WHERE = 24;
   /** RegularExpression Id. */
-  int FROM = 25;
+  int METADATA_OBJECT_NAME = 25;
   /** RegularExpression Id. */
-  int CUBE = 26;
+  int FLOATING_POINT_LITERAL = 26;
   /** RegularExpression Id. */
-  int WHERE = 27;
+  int EXPONENT = 27;
   /** RegularExpression Id. */
-  int METADATA_OBJECT_NAME = 28;
+  int INTEGER_LITERAL = 28;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 29;
+  int STRING_LITERAL = 29;
   /** RegularExpression Id. */
-  int EXPONENT = 30;
-  /** RegularExpression Id. */
-  int INTEGER_LITERAL = 31;
-  /** RegularExpression Id. */
-  int STRING_LITERAL = 32;
-  /** RegularExpression Id. */
-  int CHAR = 33;
+  int CHAR = 30;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -91,9 +85,6 @@ public interface OlapQlParserConstants {
     "\"]\"",
     "<DATE>",
     "\"selecione\"",
-    "\"crie\"",
-    "\"altere\"",
-    "\"apague\"",
     "\"nas\"",
     "\"linhas\"",
     "\"colunas\"",

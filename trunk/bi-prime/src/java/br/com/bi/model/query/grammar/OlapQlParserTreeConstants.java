@@ -5,34 +5,28 @@ public interface OlapQlParserTreeConstants
 {
   public int JJTINSTRUCTION = 0;
   public int JJTSELECT = 1;
-  public int JJTCREATE = 2;
-  public int JJTALTER = 3;
-  public int JJTDELETE = 4;
-  public int JJTAXIS = 5;
-  public int JJTVOID = 6;
-  public int JJTCROSSJOIN = 7;
-  public int JJTMETADATAOBJECT = 8;
-  public int JJTCUBE = 9;
-  public int JJTFILTER = 10;
-  public int JJTDISJUNCTION = 11;
-  public int JJTCONJUNCTION = 12;
-  public int JJTNEGATION = 13;
-  public int JJTCOMPARISON = 14;
-  public int JJTRELATIONALOPERATOR = 15;
-  public int JJTARITHMETICEXPRESSION = 16;
-  public int JJTDATE = 17;
-  public int JJTSTRINGLITERAL = 18;
-  public int JJTADDITION = 19;
-  public int JJTMULTIPLICATION = 20;
-  public int JJTNUMBER = 21;
+  public int JJTAXIS = 2;
+  public int JJTVOID = 3;
+  public int JJTCROSSJOIN = 4;
+  public int JJTMETADATAOBJECT = 5;
+  public int JJTCUBE = 6;
+  public int JJTFILTER = 7;
+  public int JJTDISJUNCTION = 8;
+  public int JJTCONJUNCTION = 9;
+  public int JJTNEGATION = 10;
+  public int JJTCOMPARISON = 11;
+  public int JJTRELATIONALOPERATOR = 12;
+  public int JJTARITHMETICEXPRESSION = 13;
+  public int JJTDATE = 14;
+  public int JJTSTRINGLITERAL = 15;
+  public int JJTADDITION = 16;
+  public int JJTMULTIPLICATION = 17;
+  public int JJTNUMBER = 18;
 
 
   public String[] jjtNodeName = {
     "Instruction",
     "Select",
-    "Create",
-    "Alter",
-    "Delete",
     "Axis",
     "void",
     "Crossjoin",
@@ -52,4 +46,4 @@ public interface OlapQlParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=5c530323fe0eac0696b8f056d44c55f0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=27f123d46bc27b8359d47c446dc7916a (do not edit this line) */

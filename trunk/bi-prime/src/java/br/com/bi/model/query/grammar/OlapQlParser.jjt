@@ -4,7 +4,6 @@ options
     NODE_DEFAULT_VOID = true;
     NODE_PREFIX = ""; 
     MULTI = true;
-    VISITOR = true;
 }
 
 PARSER_BEGIN(OlapQlParser)
@@ -30,9 +29,6 @@ public class OlapQlParser {
         try {
             SimpleNode node = parser.instruction();
             node.dump(" ");
-
-            OlapQlParserVisitor visitor = new OlapQlParserVisitorImpl();
-            visitor.visit((Instruction)node, null);
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
@@ -57,9 +53,6 @@ TOKEN [IGNORE_CASE] :
 | < RBRA: "]" >
 | < DATE: ((["0"-"9"])+ "/" (["0"-"9"])+ "/" (["0"-"9"])+) >
 | < SELECT: "selecione" >
-| < CREATE: "crie" >
-| < ALTER: "altere" >
-| < DELETE: "apague" >
 | < ON: "nas" >
 | < ROWS: "linhas" >
 | < COLUMNS: "colunas" >
@@ -81,7 +74,7 @@ SimpleNode instruction() #Instruction:
 {
 }
 {
-    ( select() | create() | alter() | delete() )
+    ( select() )
 
     {
         return jjtThis;
@@ -93,27 +86,6 @@ void select() #Select :
 }
 {
     <SELECT>  axisSpecification() "," axisSpecification() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF>
-}
-
-void create() #Create : 
-{
-}
-{
-    <CREATE>
-}
-
-void alter() #Alter : 
-{
-}
-{
-    <ALTER> 
-}
-
-void delete() #Delete :
-{
-}
-{
-    <DELETE>
 }
 
 void axisSpecification() #Axis :
