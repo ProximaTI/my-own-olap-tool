@@ -3,36 +3,40 @@ package br.com.bi.model.query.grammar;
 
 public interface OlapQlParserTreeConstants
 {
-  public int JJTQUERY = 0;
-  public int JJTAXIS = 1;
-  public int JJTVOID = 2;
-  public int JJTMETADATAOBJECT = 3;
-  public int JJTCROSSJOIN = 4;
-  public int JJTFIRSTSET = 5;
-  public int JJTSECONDSET = 6;
-  public int JJTCUBE = 7;
-  public int JJTFILTER = 8;
-  public int JJTDISJUNCTION = 9;
-  public int JJTCONJUNCTION = 10;
-  public int JJTNEGATION = 11;
-  public int JJTCOMPARISON = 12;
-  public int JJTRELATIONALOPERATOR = 13;
-  public int JJTDATE = 14;
-  public int JJTSTRINGLITERAL = 15;
+  public int JJTINSTRUCTION = 0;
+  public int JJTSELECT = 1;
+  public int JJTCREATE = 2;
+  public int JJTALTER = 3;
+  public int JJTDELETE = 4;
+  public int JJTAXIS = 5;
+  public int JJTVOID = 6;
+  public int JJTCROSSJOIN = 7;
+  public int JJTMETADATAOBJECT = 8;
+  public int JJTCUBE = 9;
+  public int JJTFILTER = 10;
+  public int JJTDISJUNCTION = 11;
+  public int JJTCONJUNCTION = 12;
+  public int JJTNEGATION = 13;
+  public int JJTCOMPARISON = 14;
+  public int JJTRELATIONALOPERATOR = 15;
   public int JJTARITHMETICEXPRESSION = 16;
-  public int JJTADDITION = 17;
-  public int JJTMULTIPLICATION = 18;
-  public int JJTNUMBER = 19;
+  public int JJTDATE = 17;
+  public int JJTSTRINGLITERAL = 18;
+  public int JJTADDITION = 19;
+  public int JJTMULTIPLICATION = 20;
+  public int JJTNUMBER = 21;
 
 
   public String[] jjtNodeName = {
-    "Query",
+    "Instruction",
+    "Select",
+    "Create",
+    "Alter",
+    "Delete",
     "Axis",
     "void",
-    "MetadataObject",
     "Crossjoin",
-    "FirstSet",
-    "SecondSet",
+    "MetadataObject",
     "Cube",
     "Filter",
     "Disjunction",
@@ -40,12 +44,12 @@ public interface OlapQlParserTreeConstants
     "Negation",
     "Comparison",
     "RelationalOperator",
+    "ArithmeticExpression",
     "Date",
     "StringLiteral",
-    "ArithmeticExpression",
     "Addition",
     "Multiplication",
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=7a2145cbc770640dcd44c992bf743589 (do not edit this line) */
+/* JavaCC - OriginalChecksum=5c530323fe0eac0696b8f056d44c55f0 (do not edit this line) */

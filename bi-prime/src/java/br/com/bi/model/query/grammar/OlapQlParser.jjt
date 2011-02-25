@@ -1,9 +1,10 @@
 options 
 { 
     STATIC = false;
-    NODE_FACTORY="OlapQlParser";
     NODE_DEFAULT_VOID = true;
     NODE_PREFIX = ""; 
+    MULTI = true;
+    VISITOR = true;
 }
 
 PARSER_BEGIN(OlapQlParser)
@@ -22,34 +23,18 @@ public class OlapQlParser {
               ("selecione {[teste], ([teste], [teste])}"
                 + " nas colunas, [teste] nas linhas "
                 + "do cubo [teste] "
-                + "onde [teste] = 1 ou [teste] e não [teste] > (1 / 1 + 2 * [teste])").getBytes());
+                + "onde [teste] e não [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
         
         try {
-            SimpleNode node = parser.query();
-            node.dump("   ");
+            SimpleNode node = parser.instruction();
+            node.dump(" ");
+
+            OlapQlParserVisitor visitor = new OlapQlParserVisitorImpl();
+            visitor.visit((Instruction)node, null);
         } catch (ParseException ex) {
             ex.printStackTrace();
-        }
-    }
-
-    public static SimpleNode jjtCreate(int id) {
-        return new OlapQlNode(id);
-    }
-
-    static class OlapQlNode extends SimpleNode {
-
-        OlapQlNode(int i) {
-            super(i);
-        }
-
-        @Override
-        public String toString() {
-            if (value != null)
-                return OlapQlParserTreeConstants.jjtNodeName[id] + "-" + value;
-            else
-                return OlapQlParserTreeConstants.jjtNodeName[id];
         }
     }
 }
@@ -72,6 +57,9 @@ TOKEN [IGNORE_CASE] :
 | < RBRA: "]" >
 | < DATE: ((["0"-"9"])+ "/" (["0"-"9"])+ "/" (["0"-"9"])+) >
 | < SELECT: "selecione" >
+| < CREATE: "crie" >
+| < ALTER: "altere" >
+| < DELETE: "apague" >
 | < ON: "nas" >
 | < ROWS: "linhas" >
 | < COLUMNS: "colunas" >
@@ -89,15 +77,43 @@ TOKEN [IGNORE_CASE] :
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
-SimpleNode query() #Query : 
+SimpleNode instruction() #Instruction: 
 {
 }
 {
-    <SELECT> axisSpecification() "," axisSpecification() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF> 
-    
+    ( select() | create() | alter() | delete() )
+
     {
         return jjtThis;
     }
+}
+
+void select() #Select :
+{
+}
+{
+    <SELECT>  axisSpecification() "," axisSpecification() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF>
+}
+
+void create() #Create : 
+{
+}
+{
+    <CREATE>
+}
+
+void alter() #Alter : 
+{
+}
+{
+    <ALTER> 
+}
+
+void delete() #Delete :
+{
+}
+{
+    <DELETE>
 }
 
 void axisSpecification() #Axis :
@@ -107,7 +123,9 @@ void axisSpecification() #Axis :
 {
     set() <ON>  ( axis = rows() | axis = columns() )
     
-    { jjtThis.value = axis; }
+    { 
+        jjtThis.value = axis; 
+    }
 }
 
 String rows() : 
@@ -157,21 +175,38 @@ void node() :
 {
 }
 {
-    <METADATA_OBJECT_NAME> #MetadataObject | crossJoin() #Crossjoin 
+    metadataObject() | crossJoin() #Crossjoin 
+}
+
+void metadataObject() #MetadataObject :
+{
+    Token t;
+}
+{
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        jjtThis.value = t.image;
+    }
 }
 
 void crossJoin() :
 {
 }
 {
-    "(" set() #FirstSet "," set() #SecondSet ")" 
+    "(" set() "," set() ")" 
 }
 
 void cube() #Cube :
 {
+    Token t;
 }
 {
-    <METADATA_OBJECT_NAME> 
+    t = <METADATA_OBJECT_NAME> 
+    
+    {
+        jjtThis.value = t.image;
+    }
 }
  
 void filterExpression() #Filter :
@@ -220,14 +255,51 @@ void comparison() #Comparison :
 {
 }
 {
-    ( <METADATA_OBJECT_NAME> ) #MetadataObject [ <DOT> <METADATA_OBJECT_NAME> ] [ <RELATIONAL_OPERATOR> #RelationalOperator operating() ]  // [measure] > 1 or [level].[property] = "foo"
+    metadataObject() [ <DOT> <METADATA_OBJECT_NAME> ] [ relationalOperator() operating() ] 
+    // just a filter or a comparison involving a level or some property are valid comparisons
 } 
+
+void relationalOperator() #RelationalOperator :
+{
+    Token t;
+}
+{
+    t = <RELATIONAL_OPERATOR> 
+
+    {
+        jjtThis.value = t.image;
+    }
+}
 
 void operating() :
 {
 }
 {
-    <DATE> #Date | <STRING_LITERAL> #StringLiteral | arithmeticExpression() #ArithmeticExpression 
+    date() | stringLiteral() | arithmeticExpression() #ArithmeticExpression 
+}
+
+void date() #Date :
+{
+    Token t;
+}
+{
+    t = <DATE>
+
+    {
+        jjtThis.value = t.image;
+    }
+}
+
+void stringLiteral() #StringLiteral :
+{
+    Token t;
+}
+{
+    t = <STRING_LITERAL>
+
+    {
+        jjtThis.value = t.image;
+    }
 }
 
 void arithmeticExpression() : 
@@ -237,30 +309,72 @@ void arithmeticExpression() :
     additiveExpression() 
 }
 
-void additiveExpression() :
+void additiveExpression() #Addition(>1) :
 {
+    String op = null;
 }
 {
-    ( multiplicativeExpression() ( ( <PLUS> | <MINUS> ) multiplicativeExpression() )* ) #Addition(>1)
+    ( multiplicativeExpression() ( ( op = additiveOperator() ) multiplicativeExpression() )* )
+
+    {
+        jjtThis.value = op;
+    }
 }
 
-void multiplicativeExpression() :
+String additiveOperator() :
 {
+    Token t;
 }
 {
-    ( arithmeticAtom() ( ( <MULT> | <DIV> ) arithmeticAtom() )* ) #Multiplication(>1)
+    ( t = <PLUS> | t = <MINUS> )
+
+    {
+        return t.image;
+    }
+}
+
+void multiplicativeExpression() #Multiplication(>1) :
+{
+    String op = null;
+}
+{
+    ( arithmeticAtom() ( ( op = multiplicativeOperator() ) arithmeticAtom() )* )
+
+    {
+        jjtThis.value = op;
+    }
+}
+
+String multiplicativeOperator() :
+{
+    Token t;
+}
+{
+    ( t = <MULT> | t = <DIV> )
+
+    {
+        return t.image;
+    }
 }
 
 void arithmeticAtom() :
 {
 }
 {
-    "(" arithmeticExpression() ")" | <METADATA_OBJECT_NAME> #MetadataObject | number()
+    "(" arithmeticExpression() ")" | metadataObject() | number()
 }
 
 void number() #Number :
 {
+    Token minus = null;
+    Token number;
 }
 {
-    [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> ) 
+    [ minus = <MINUS> ]
+
+    ( number = <INTEGER_LITERAL> | number = <FLOATING_POINT_LITERAL> )
+
+    {
+        jjtThis.value = minus == null ? number.image : minus.image + number.image;
+    }
 }

@@ -66,7 +66,7 @@ public class QueryTranslator implements Constants {
         return sql.toString();
     }
 
-    /**
+    /**  
      * Traduz um nó de uma consulta em um fragmento de instrução SQL.
      * @param node
      * @return
