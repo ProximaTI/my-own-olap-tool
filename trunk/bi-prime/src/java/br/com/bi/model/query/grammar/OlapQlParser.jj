@@ -2,9 +2,10 @@
 /*@egen*/options 
 { 
     STATIC = false;
-                                
                              
                       
+                 
+                   
 }
 
 PARSER_BEGIN(OlapQlParser)
@@ -26,34 +27,18 @@ public class OlapQlParser/*@bgen(jjtree)*/implements OlapQlParserTreeConstants/*
               ("selecione {[teste], ([teste], [teste])}"
                 + " nas colunas, [teste] nas linhas "
                 + "do cubo [teste] "
-                + "onde [teste] = 1 ou [teste] e n\u00e3o [teste] > (1 / 1 + 2 * [teste])").getBytes());
+                + "onde [teste] e n\u00e3o [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
 
         OlapQlParser parser = new OlapQlParser(in);
         
         try {
-            SimpleNode node = parser.query();
-            node.dump("   ");
+            SimpleNode node = parser.instruction();
+            node.dump(" ");
+
+            OlapQlParserVisitor visitor = new OlapQlParserVisitorImpl();
+            visitor.visit((Instruction)node);
         } catch (ParseException ex) {
             ex.printStackTrace();
-        }
-    }
-
-    public static SimpleNode jjtCreate(int id) {
-        return new OlapQlNode(id);
-    }
-
-    static class OlapQlNode extends SimpleNode {
-
-        OlapQlNode(int i) {
-            super(i);
-        }
-
-        @Override
-        public String toString() {
-            if (value != null)
-                return OlapQlParserTreeConstants.jjtNodeName[id] + "-" + value;
-            else
-                return OlapQlParserTreeConstants.jjtNodeName[id];
         }
     }
 }
@@ -76,6 +61,9 @@ TOKEN [IGNORE_CASE] :
 | < RBRA: "]" >
 | < DATE: ((["0"-"9"])+ "/" (["0"-"9"])+ "/" (["0"-"9"])+) >
 | < SELECT: "selecione" >
+| < CREATE: "crie" >
+| < ALTER: "altere" >
+| < DELETE: "apague" >
 | < ON: "nas" >
 | < ROWS: "linhas" >
 | < COLUMNS: "colunas" >
@@ -93,23 +81,23 @@ TOKEN [IGNORE_CASE] :
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
-SimpleNode query()        : 
-{/*@bgen(jjtree) Query */
-  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTQUERY);
+SimpleNode instruction()             : 
+{/*@bgen(jjtree) Instruction */
+  Instruction jjtn000 = new Instruction(JJTINSTRUCTION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/
 }
-{/*@bgen(jjtree) Query */
+{/*@bgen(jjtree) Instruction */
     try {
 /*@egen*/
-    <SELECT> axisSpecification() "," axisSpecification() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF>/*@bgen(jjtree)*/
+    ( select() | create() | alter() | delete() )/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
-/*@egen*/ 
-    
+/*@egen*/
+
     {
         return jjtn000;
     }/*@bgen(jjtree)*/
@@ -135,9 +123,99 @@ SimpleNode query()        :
 /*@egen*/
 }
 
+void select()         :
+{/*@bgen(jjtree) Select */
+  Select jjtn000 = new Select(JJTSELECT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) Select */
+    try {
+/*@egen*/
+    <SELECT>  axisSpecification() "," axisSpecification() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF>/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
+
+void create()         : 
+{/*@bgen(jjtree) Create */
+  Create jjtn000 = new Create(JJTCREATE);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) Create */
+    try {
+/*@egen*/
+    <CREATE>/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
+
+void alter()        : 
+{/*@bgen(jjtree) Alter */
+  Alter jjtn000 = new Alter(JJTALTER);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) Alter */
+    try {
+/*@egen*/
+    <ALTER>/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/ 
+}
+
+void delete()         :
+{/*@bgen(jjtree) Delete */
+  Delete jjtn000 = new Delete(JJTDELETE);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) Delete */
+    try {
+/*@egen*/
+    <DELETE>/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
+
 void axisSpecification()       :
 {/*@bgen(jjtree) Axis */
-    SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTAXIS);
+    Axis jjtn000 = new Axis(JJTAXIS);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 /*@egen*/
@@ -153,7 +231,9 @@ void axisSpecification()       :
     }
 /*@egen*/
     
-    { jjtn000.value = axis; }/*@bgen(jjtree)*/
+    { 
+        jjtn000.value = axis; 
+    }/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -222,133 +302,105 @@ void set() :
 void node() :
 {
 }
+{
+    metadataObject() |/*@bgen(jjtree) Crossjoin */
+                       {
+                         Crossjoin jjtn001 = new Crossjoin(JJTCROSSJOIN);
+                         boolean jjtc001 = true;
+                         jjtree.openNodeScope(jjtn001);
+                       }
+                       try {
+/*@egen*/ crossJoin()/*@bgen(jjtree)*/
+                       } catch (Throwable jjte001) {
+                         if (jjtc001) {
+                           jjtree.clearNodeScope(jjtn001);
+                           jjtc001 = false;
+                         } else {
+                           jjtree.popNode();
+                         }
+                         if (jjte001 instanceof RuntimeException) {
+                           throw (RuntimeException)jjte001;
+                         }
+                         if (jjte001 instanceof ParseException) {
+                           throw (ParseException)jjte001;
+                         }
+                         throw (Error)jjte001;
+                       } finally {
+                         if (jjtc001) {
+                           jjtree.closeNodeScope(jjtn001, true);
+                         }
+                       }
+/*@egen*/            
+}
+
+void metadataObject()                 :
 {/*@bgen(jjtree) MetadataObject */
-    {
-      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
-      boolean jjtc001 = true;
-      jjtree.openNodeScope(jjtn001);
-    }
+    MetadataObject jjtn000 = new MetadataObject(JJTMETADATAOBJECT);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    Token t;
+}
+{/*@bgen(jjtree) MetadataObject */
     try {
 /*@egen*/
-    <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+    t = <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+
+    {
+        jjtn000.value = t.image;
+    }/*@bgen(jjtree)*/
     } finally {
-      if (jjtc001) {
-        jjtree.closeNodeScope(jjtn001, true);
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
       }
     }
-/*@egen*/                 |/*@bgen(jjtree) Crossjoin */
-                                             {
-                                               SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTCROSSJOIN);
-                                               boolean jjtc002 = true;
-                                               jjtree.openNodeScope(jjtn002);
-                                             }
-                                             try {
-/*@egen*/ crossJoin()/*@bgen(jjtree)*/
-                                             } catch (Throwable jjte002) {
-                                               if (jjtc002) {
-                                                 jjtree.clearNodeScope(jjtn002);
-                                                 jjtc002 = false;
-                                               } else {
-                                                 jjtree.popNode();
-                                               }
-                                               if (jjte002 instanceof RuntimeException) {
-                                                 throw (RuntimeException)jjte002;
-                                               }
-                                               if (jjte002 instanceof ParseException) {
-                                                 throw (ParseException)jjte002;
-                                               }
-                                               throw (Error)jjte002;
-                                             } finally {
-                                               if (jjtc002) {
-                                                 jjtree.closeNodeScope(jjtn002, true);
-                                               }
-                                             }
-/*@egen*/            
+/*@egen*/
 }
 
 void crossJoin() :
 {
 }
 {
-    "("/*@bgen(jjtree) FirstSet */
-        {
-          SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTFIRSTSET);
-          boolean jjtc001 = true;
-          jjtree.openNodeScope(jjtn001);
-        }
-        try {
-/*@egen*/ set()/*@bgen(jjtree)*/
-        } catch (Throwable jjte001) {
-          if (jjtc001) {
-            jjtree.clearNodeScope(jjtn001);
-            jjtc001 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte001 instanceof RuntimeException) {
-            throw (RuntimeException)jjte001;
-          }
-          if (jjte001 instanceof ParseException) {
-            throw (ParseException)jjte001;
-          }
-          throw (Error)jjte001;
-        } finally {
-          if (jjtc001) {
-            jjtree.closeNodeScope(jjtn001, true);
-          }
-        }
-/*@egen*/           ","/*@bgen(jjtree) SecondSet */
-                            {
-                              SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTSECONDSET);
-                              boolean jjtc002 = true;
-                              jjtree.openNodeScope(jjtn002);
-                            }
-                            try {
-/*@egen*/ set()/*@bgen(jjtree)*/
-                            } catch (Throwable jjte002) {
-                              if (jjtc002) {
-                                jjtree.clearNodeScope(jjtn002);
-                                jjtc002 = false;
-                              } else {
-                                jjtree.popNode();
-                              }
-                              if (jjte002 instanceof RuntimeException) {
-                                throw (RuntimeException)jjte002;
-                              }
-                              if (jjte002 instanceof ParseException) {
-                                throw (ParseException)jjte002;
-                              }
-                              throw (Error)jjte002;
-                            } finally {
-                              if (jjtc002) {
-                                jjtree.closeNodeScope(jjtn002, true);
-                              }
-                            }
-/*@egen*/            ")" 
+    "(" set() "," set() ")" 
 }
 
 void cube()       :
 {/*@bgen(jjtree) Cube */
-  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTCUBE);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+    Cube jjtn000 = new Cube(JJTCUBE);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
 /*@egen*/
+    Token t;
 }
 {/*@bgen(jjtree) Cube */
     try {
 /*@egen*/
-    <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+    t = <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/ 
+    
+    {
+        jjtn000.value = t.image;
+    }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
         jjtree.closeNodeScope(jjtn000, true);
       }
     }
-/*@egen*/ 
+/*@egen*/
 }
  
 void filterExpression()         :
 {/*@bgen(jjtree) Filter */
-  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTFILTER);
+  Filter jjtn000 = new Filter(JJTFILTER);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/
@@ -384,7 +436,7 @@ void disjunction() :
 }
 {/*@bgen(jjtree) #Disjunction(> 1) */
     {
-      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTDISJUNCTION);
+      Disjunction jjtn001 = new Disjunction(JJTDISJUNCTION);
       boolean jjtc001 = true;
       jjtree.openNodeScope(jjtn001);
     }
@@ -418,7 +470,7 @@ void conjunction() :
 }
 {/*@bgen(jjtree) #Conjunction(> 1) */
     {
-      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTCONJUNCTION);
+      Conjunction jjtn001 = new Conjunction(JJTCONJUNCTION);
       boolean jjtc001 = true;
       jjtree.openNodeScope(jjtn001);
     }
@@ -463,7 +515,7 @@ void atom() :
 
 void negation()           :
 {/*@bgen(jjtree) Negation */
-  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTNEGATION);
+  Negation jjtn000 = new Negation(JJTNEGATION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/
@@ -496,41 +548,15 @@ void negation()           :
 
 void comparison()             : 
 {/*@bgen(jjtree) Comparison */
-  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTCOMPARISON);
+  Comparison jjtn000 = new Comparison(JJTCOMPARISON);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/
 }
 {/*@bgen(jjtree) Comparison */
     try {
-/*@egen*//*@bgen(jjtree) MetadataObject */
-    {
-      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
-      boolean jjtc001 = true;
-      jjtree.openNodeScope(jjtn001);
-    }
-    try {
 /*@egen*/
-    ( <METADATA_OBJECT_NAME> )/*@bgen(jjtree)*/
-    } finally {
-      if (jjtc001) {
-        jjtree.closeNodeScope(jjtn001, true);
-      }
-    }
-/*@egen*/                 [ <DOT> <METADATA_OBJECT_NAME> ] [/*@bgen(jjtree) RelationalOperator */
-                                                                                  {
-                                                                                    SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTRELATIONALOPERATOR);
-                                                                                    boolean jjtc002 = true;
-                                                                                    jjtree.openNodeScope(jjtn002);
-                                                                                  }
-                                                                                  try {
-/*@egen*/ <RELATIONAL_OPERATOR>/*@bgen(jjtree)*/
-                                                                                  } finally {
-                                                                                    if (jjtc002) {
-                                                                                      jjtree.closeNodeScope(jjtn002, true);
-                                                                                    }
-                                                                                  }
-/*@egen*/                     operating() ]/*@bgen(jjtree)*/
+    metadataObject() [ <DOT> <METADATA_OBJECT_NAME> ] [ relationalOperator() operating() ]/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -550,67 +576,129 @@ void comparison()             :
         jjtree.closeNodeScope(jjtn000, true);
       }
     }
-/*@egen*/  // [measure] > 1 or [level].[property] = "foo"
+/*@egen*/ 
+    // just a filter or a comparison involving a level or some property are valid comparisons
 } 
+
+void relationalOperator()                     :
+{/*@bgen(jjtree) RelationalOperator */
+    RelationalOperator jjtn000 = new RelationalOperator(JJTRELATIONALOPERATOR);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    Token t;
+}
+{/*@bgen(jjtree) RelationalOperator */
+    try {
+/*@egen*/
+    t = <RELATIONAL_OPERATOR>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/ 
+
+    {
+        jjtn000.value = t.image;
+    }/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
 
 void operating() :
 {
 }
+{
+    date() | stringLiteral() |/*@bgen(jjtree) ArithmeticExpression */
+                               {
+                                 ArithmeticExpression jjtn001 = new ArithmeticExpression(JJTARITHMETICEXPRESSION);
+                                 boolean jjtc001 = true;
+                                 jjtree.openNodeScope(jjtn001);
+                               }
+                               try {
+/*@egen*/ arithmeticExpression()/*@bgen(jjtree)*/
+                               } catch (Throwable jjte001) {
+                                 if (jjtc001) {
+                                   jjtree.clearNodeScope(jjtn001);
+                                   jjtc001 = false;
+                                 } else {
+                                   jjtree.popNode();
+                                 }
+                                 if (jjte001 instanceof RuntimeException) {
+                                   throw (RuntimeException)jjte001;
+                                 }
+                                 if (jjte001 instanceof ParseException) {
+                                   throw (ParseException)jjte001;
+                                 }
+                                 throw (Error)jjte001;
+                               } finally {
+                                 if (jjtc001) {
+                                   jjtree.closeNodeScope(jjtn001, true);
+                                 }
+                               }
+/*@egen*/                       
+}
+
+void date()       :
 {/*@bgen(jjtree) Date */
-    {
-      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTDATE);
-      boolean jjtc001 = true;
-      jjtree.openNodeScope(jjtn001);
-    }
+    Date jjtn000 = new Date(JJTDATE);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    Token t;
+}
+{/*@bgen(jjtree) Date */
     try {
 /*@egen*/
-    <DATE>/*@bgen(jjtree)*/
+    t = <DATE>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+
+    {
+        jjtn000.value = t.image;
+    }/*@bgen(jjtree)*/
     } finally {
-      if (jjtc001) {
-        jjtree.closeNodeScope(jjtn001, true);
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
       }
     }
-/*@egen*/       |/*@bgen(jjtree) StringLiteral */
-                   {
-                     SimpleNode jjtn002 = (SimpleNode)OlapQlParser.jjtCreate(JJTSTRINGLITERAL);
-                     boolean jjtc002 = true;
-                     jjtree.openNodeScope(jjtn002);
-                   }
-                   try {
-/*@egen*/ <STRING_LITERAL>/*@bgen(jjtree)*/
-                   } finally {
-                     if (jjtc002) {
-                       jjtree.closeNodeScope(jjtn002, true);
-                     }
-                   }
-/*@egen*/                |/*@bgen(jjtree) ArithmeticExpression */
-                                                     {
-                                                       SimpleNode jjtn003 = (SimpleNode)OlapQlParser.jjtCreate(JJTARITHMETICEXPRESSION);
-                                                       boolean jjtc003 = true;
-                                                       jjtree.openNodeScope(jjtn003);
-                                                     }
-                                                     try {
-/*@egen*/ arithmeticExpression()/*@bgen(jjtree)*/
-                                                     } catch (Throwable jjte003) {
-                                                       if (jjtc003) {
-                                                         jjtree.clearNodeScope(jjtn003);
-                                                         jjtc003 = false;
-                                                       } else {
-                                                         jjtree.popNode();
-                                                       }
-                                                       if (jjte003 instanceof RuntimeException) {
-                                                         throw (RuntimeException)jjte003;
-                                                       }
-                                                       if (jjte003 instanceof ParseException) {
-                                                         throw (ParseException)jjte003;
-                                                       }
-                                                       throw (Error)jjte003;
-                                                     } finally {
-                                                       if (jjtc003) {
-                                                         jjtree.closeNodeScope(jjtn003, true);
-                                                       }
-                                                     }
-/*@egen*/                       
+/*@egen*/
+}
+
+void stringLiteral()                :
+{/*@bgen(jjtree) StringLiteral */
+    StringLiteral jjtn000 = new StringLiteral(JJTSTRINGLITERAL);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    Token t;
+}
+{/*@bgen(jjtree) StringLiteral */
+    try {
+/*@egen*/
+    t = <STRING_LITERAL>/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+
+    {
+        jjtn000.value = t.image;
+    }/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
 }
 
 void arithmeticExpression() : 
@@ -620,109 +708,151 @@ void arithmeticExpression() :
     additiveExpression() 
 }
 
-void additiveExpression() :
-{
+void additiveExpression()               :
+{/*@bgen(jjtree) #Addition(> 1) */
+    Addition jjtn000 = new Addition(JJTADDITION);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    String op = null;
 }
 {/*@bgen(jjtree) #Addition(> 1) */
-    {
-      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTADDITION);
-      boolean jjtc001 = true;
-      jjtree.openNodeScope(jjtn001);
-    }
     try {
 /*@egen*/
-    ( multiplicativeExpression() ( ( <PLUS> | <MINUS> ) multiplicativeExpression() )* )/*@bgen(jjtree)*/
-    } catch (Throwable jjte001) {
-      if (jjtc001) {
-        jjtree.clearNodeScope(jjtn001);
-        jjtc001 = false;
+    ( multiplicativeExpression() ( ( op = additiveOperator() ) multiplicativeExpression() )* )/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+      jjtc000 = false;
+    }
+/*@egen*/
+
+    {
+        jjtn000.value = op;
+    }/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
       } else {
         jjtree.popNode();
       }
-      if (jjte001 instanceof RuntimeException) {
-        throw (RuntimeException)jjte001;
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
       }
-      if (jjte001 instanceof ParseException) {
-        throw (ParseException)jjte001;
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
       }
-      throw (Error)jjte001;
+      throw (Error)jjte000;
     } finally {
-      if (jjtc001) {
-        jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
       }
     }
-/*@egen*/              
+/*@egen*/
 }
 
-void multiplicativeExpression() :
+String additiveOperator() :
 {
+    Token t;
+}
+{
+    ( t = <PLUS> | t = <MINUS> )
+
+    {
+        return t.image;
+    }
+}
+
+void multiplicativeExpression()                     :
+{/*@bgen(jjtree) #Multiplication(> 1) */
+    Multiplication jjtn000 = new Multiplication(JJTMULTIPLICATION);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    String op = null;
 }
 {/*@bgen(jjtree) #Multiplication(> 1) */
-    {
-      SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMULTIPLICATION);
-      boolean jjtc001 = true;
-      jjtree.openNodeScope(jjtn001);
-    }
     try {
 /*@egen*/
-    ( arithmeticAtom() ( ( <MULT> | <DIV> ) arithmeticAtom() )* )/*@bgen(jjtree)*/
-    } catch (Throwable jjte001) {
-      if (jjtc001) {
-        jjtree.clearNodeScope(jjtn001);
-        jjtc001 = false;
+    ( arithmeticAtom() ( ( op = multiplicativeOperator() ) arithmeticAtom() )* )/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+      jjtc000 = false;
+    }
+/*@egen*/
+
+    {
+        jjtn000.value = op;
+    }/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
       } else {
         jjtree.popNode();
       }
-      if (jjte001 instanceof RuntimeException) {
-        throw (RuntimeException)jjte001;
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
       }
-      if (jjte001 instanceof ParseException) {
-        throw (ParseException)jjte001;
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
       }
-      throw (Error)jjte001;
+      throw (Error)jjte000;
     } finally {
-      if (jjtc001) {
-        jjtree.closeNodeScope(jjtn001, jjtree.nodeArity() > 1);
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
       }
     }
-/*@egen*/                    
+/*@egen*/
+}
+
+String multiplicativeOperator() :
+{
+    Token t;
+}
+{
+    ( t = <MULT> | t = <DIV> )
+
+    {
+        return t.image;
+    }
 }
 
 void arithmeticAtom() :
 {
 }
 {
-    "(" arithmeticExpression() ")" |/*@bgen(jjtree) MetadataObject */
-                                     {
-                                       SimpleNode jjtn001 = (SimpleNode)OlapQlParser.jjtCreate(JJTMETADATAOBJECT);
-                                       boolean jjtc001 = true;
-                                       jjtree.openNodeScope(jjtn001);
-                                     }
-                                     try {
-/*@egen*/ <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
-                                     } finally {
-                                       if (jjtc001) {
-                                         jjtree.closeNodeScope(jjtn001, true);
-                                       }
-                                     }
-/*@egen*/                 | number()
+    "(" arithmeticExpression() ")" | metadataObject() | number()
 }
 
 void number()         :
 {/*@bgen(jjtree) Number */
-  SimpleNode jjtn000 = (SimpleNode)OlapQlParser.jjtCreate(JJTNUMBER);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
+    Number jjtn000 = new Number(JJTNUMBER);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
 /*@egen*/
+    Token minus = null;
+    Token number;
 }
 {/*@bgen(jjtree) Number */
     try {
 /*@egen*/
-    [ <MINUS> ] ( <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> )/*@bgen(jjtree)*/
+    [ minus = <MINUS> ]
+
+    ( number = <INTEGER_LITERAL> | number = <FLOATING_POINT_LITERAL> )/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+
+    {
+        jjtn000.value = minus == null ? number.image : minus.image + number.image;
+    }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
         jjtree.closeNodeScope(jjtn000, true);
       }
     }
-/*@egen*/ 
+/*@egen*/
 }
