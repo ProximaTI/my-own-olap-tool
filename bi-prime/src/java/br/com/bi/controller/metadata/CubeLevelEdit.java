@@ -1,6 +1,6 @@
 package br.com.bi.controller.metadata;
 
-import br.com.bi.model.MetadataFacade;
+import br.com.bi.model.BiFacade;
 import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.util.controller.AbstractController;
@@ -43,7 +43,7 @@ public class CubeLevelEdit extends AbstractController {
         List<SelectItem> itens = new ArrayList<SelectItem>();
 
         List<String> columns =
-                MetadataFacade.getInstance().findColumnsByTable(getCubeEdit().getCube().getSchemaName(),
+                BiFacade.getInstance().findColumnsByTable(getCubeEdit().getCube().getSchemaName(),
                 getCubeEdit().getCube().getTableName());
 
         for (String column : columns) {
@@ -64,7 +64,7 @@ public class CubeLevelEdit extends AbstractController {
      */
     public List<Level> getLevels() {
         if (levels == null) {
-            levels = MetadataFacade.getInstance().findAllLevels();
+            levels = BiFacade.getInstance().findAllLevels();
         }
         return levels;
     }

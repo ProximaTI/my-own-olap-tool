@@ -1,6 +1,6 @@
 package br.com.bi.controller.metadata;
 
-import br.com.bi.model.MetadataFacade;
+import br.com.bi.model.BiFacade;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.util.view.jsf.Util;
 
@@ -26,7 +26,7 @@ public class CubeCad {
      * @return
      */
     public List<Cube> getCubes() {
-        return MetadataFacade.getInstance().findAllCubes();
+        return BiFacade.getInstance().findAllCubes();
     }
 
     /**
@@ -35,7 +35,7 @@ public class CubeCad {
      */
     public String edit() {
         // realiza a carga completa do cubo
-        setSelectedCube(MetadataFacade.getInstance().findCubeById(getSelectedCube().getId()));
+        setSelectedCube(BiFacade.getInstance().findCubeById(getSelectedCube().getId()));
 
         CubeEdit cubeEdit = (CubeEdit) Util.getELVar(CubeEdit.CUBE_EDIT_BEAN_NAME);
         cubeEdit.setCube((Cube) getSelectedCube().clone());
@@ -57,7 +57,7 @@ public class CubeCad {
      * @return
      */
     public String delete() {
-        MetadataFacade.getInstance().deleteCube(getSelectedCube().getId());
+        BiFacade.getInstance().deleteCube(getSelectedCube().getId());
         return null;
     }
 

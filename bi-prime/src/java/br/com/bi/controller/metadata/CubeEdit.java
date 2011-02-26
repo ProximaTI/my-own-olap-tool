@@ -1,6 +1,6 @@
 package br.com.bi.controller.metadata;
 
-import br.com.bi.model.MetadataFacade;
+import br.com.bi.model.BiFacade;
 import br.com.bi.model.entity.metadata.Cube;
 import br.com.bi.util.view.jsf.Util;
 
@@ -60,7 +60,7 @@ public class CubeEdit {
             schemas = new ArrayList<SelectItem>();
 
             List<String> _schemas =
-                    MetadataFacade.getInstance().findAllSchemas();
+                    BiFacade.getInstance().findAllSchemas();
 
             for (String schema : _schemas) {
                 schemas.add(new SelectItem(schema, schema));
@@ -79,7 +79,7 @@ public class CubeEdit {
             tables = new ArrayList<SelectItem>();
 
             List<String> _tables =
-                    MetadataFacade.getInstance().findTablesBySchema(cube.getSchemaName());
+                    BiFacade.getInstance().findTablesBySchema(cube.getSchemaName());
 
             for (String table : _tables) {
                 tables.add(new SelectItem(table, table));
@@ -96,7 +96,7 @@ public class CubeEdit {
      * @return
      */
     public String save() {
-        MetadataFacade.getInstance().saveCube(cube);
+        BiFacade.getInstance().saveCube(cube);
         return CubeCad.CUBE_CAD_ACTION;
     }
 

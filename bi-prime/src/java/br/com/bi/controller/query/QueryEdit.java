@@ -1,6 +1,6 @@
 package br.com.bi.controller.query;
 
-import br.com.bi.model.MetadataFacade;
+import br.com.bi.model.BiFacade;
 import br.com.bi.model.entity.metadata.Level;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -22,7 +22,7 @@ public class QueryEdit {
         if (levelsRoot == null) {
             levelsRoot = new DefaultTreeNode("levelsRoot", null);            
             
-            List<Level> levels = MetadataFacade.getInstance().findAllLevels();
+            List<Level> levels = BiFacade.getInstance().findAllLevels();
             
             for (Level level : levels) {
                 TreeNode node = new DefaultTreeNode(level.getName(), levelsRoot);
