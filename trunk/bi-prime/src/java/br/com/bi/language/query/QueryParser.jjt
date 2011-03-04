@@ -6,13 +6,13 @@ options
     MULTI = true;
 }
 
-PARSER_BEGIN(OlapQlParser)
-package br.com.bi.model.query.olapql;
+PARSER_BEGIN(QueryParser)
+package br.com.bi.language.query;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public class OlapQlParser {
+public class QueryParser {
 
     private boolean rows = false;
     private boolean columns = false;
@@ -24,7 +24,7 @@ public class OlapQlParser {
                 + "do cubo [teste] "
                 + "onde [teste] e não [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
 
-        OlapQlParser parser = new OlapQlParser(in);
+        QueryParser parser = new QueryParser(in);
         
         try {
             SimpleNode node = parser.instruction();
@@ -34,7 +34,7 @@ public class OlapQlParser {
         }
     }
 }
-PARSER_END(OlapQlParser)
+PARSER_END(QueryParser)
 
 SKIP : { " " | "\t" | "\n" | "\r" | "\f" }
 
@@ -85,7 +85,7 @@ void select() #Select :
 {
 }
 {
-    <SELECT>  axis() "," axis() <FROM> <CUBE> cube() <WHERE> filter() <EOF>
+    <SELECT>  axis() "," axis() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF>
 }
 
 void axis() #Axis :
@@ -181,7 +181,7 @@ void cube() #Cube :
     }
 }
  
-void filter() #Filter :
+void filterExpression() #FilterExpression :
 {
 }
 {
@@ -223,13 +223,75 @@ void negation() #Negation :
     <NOT> ( term() ) 
 }
 
-void comparison() #Comparison : 
+void comparison() : 
 {
 }
 {
-    metadataObject() [ <DOT> <METADATA_OBJECT_NAME> ] [ relationalOperator() operating() ] 
+    LOOKAHEAD(2)
+
+    level() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )
+    
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
+
+void level() #Level : 
+{
+    Token t;
+}
+{
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        jjtThis.value = t.image;
+    }
+}
+
+void measure() #Measure : 
+{
+    Token t;
+}
+{
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        jjtThis.value = t.image;
+    }
+}
+
+void filter() #Filter : 
+{
+    Token t;
+}
+{
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        jjtThis.value = t.image;
+    }
+}
+
+void property() #Property :
+{
+    Token t;
+    String property;
+}
+{
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        property = t.image;
+    }
+
+    <DOT> 
+
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        property += "." + t.image;
+
+        jjtThis.value = t.image;
+    }
+}
 
 void relationalOperator() #RelationalOperator :
 {
@@ -333,7 +395,7 @@ void arithmeticAtom() :
 {
 }
 {
-    "(" arithmeticExpression() ")" | metadataObject() | number()
+    "(" arithmeticExpression() ")" | measure() | number()
 }
 
 void number() #Number :
