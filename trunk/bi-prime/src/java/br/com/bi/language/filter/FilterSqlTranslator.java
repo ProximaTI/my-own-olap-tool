@@ -4,8 +4,11 @@
  */
 package br.com.bi.language.filter;
 
+import br.com.bi.model.Application;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -15,7 +18,7 @@ public class FilterSqlTranslator implements FilterParserVisitor {
 
     public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
-                ("[teste] e n\u00e3o [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
+                ("[teste] e n\u00e3o [Produto] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
 
         FilterParser parser = new FilterParser(in);
 
@@ -40,7 +43,7 @@ public class FilterSqlTranslator implements FilterParserVisitor {
         if (node instanceof FilterExpression) {
             visit((FilterExpression) node, data);
         }
-        
+
         if (node instanceof Measure) {
             visit((Measure) node, data);
         }
@@ -128,7 +131,12 @@ public class FilterSqlTranslator implements FilterParserVisitor {
     }
 
     public void visit(Level node, StringBuilder data) {
-        data.append(node.value);
+        br.com.bi.model.entity.metadata.Level level = 
+                Application.getLevelDao().findByName(extractName(node.value.toString()));
+
+        data.append(level.getSchemaName()).append(".").
+                append(level.getTableName()).append(".").
+                append(level.getCodeProperty().getColumnName());
     }
 
     public void visit(Property node, StringBuilder data) {
@@ -187,5 +195,16 @@ public class FilterSqlTranslator implements FilterParserVisitor {
 
     public void visit(Measure node, StringBuilder data) {
         data.append(node.value);
+    }
+
+    private String extractName(String expression) {
+        String patternStr = "\\b(.*)\\b";
+
+        Pattern pattern = Pattern.compile(patternStr);
+        Matcher matcher = pattern.matcher(expression);
+        if (matcher.find()) {
+            return matcher.group(0);
+        }
+        return null;
     }
 }

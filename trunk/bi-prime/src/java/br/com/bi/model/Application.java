@@ -4,6 +4,8 @@
  */
 package br.com.bi.model;
 
+import br.com.bi.model.dao.CubeDao;
+import br.com.bi.model.dao.LevelDao;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -23,5 +25,13 @@ public class Application {
             context = new ClassPathXmlApplicationContext("/beans.xml");
         }
         return context;
+    }
+
+    public static CubeDao getCubeDao() {
+        return (CubeDao) getContext().getBean("cubeDao");
+    }
+    
+    public static LevelDao getLevelDao() {
+        return (LevelDao) getContext().getBean("levelDao");
     }
 }

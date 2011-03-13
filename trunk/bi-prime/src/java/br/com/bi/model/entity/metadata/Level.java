@@ -16,12 +16,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 @Entity
-@NamedQueries( { @NamedQuery(name = "Level.findAll",
-                             query = "select o from Level o") })
+@NamedQueries({
+    @NamedQuery(name = "Level.findAll",
+    query = "select o from Level o")})
 @Table(name = "\"level\"")
 public class Level extends Piece implements Serializable {
+
     @Column(name = "description")
     private String description;
     @Id
@@ -49,8 +50,8 @@ public class Level extends Piece implements Serializable {
     }
 
     public Level(String description, Dimension dimension, Integer id,
-                 Integer indice, String name, String schemaName,
-                 String tableName, String upperLevelJoinColumn) {
+            Integer indice, String name, String schemaName,
+            String tableName, String upperLevelJoinColumn) {
         this.description = description;
         this.dimension = dimension;
         this.id = id;
@@ -68,7 +69,6 @@ public class Level extends Piece implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     public Integer getId() {
         return id;
@@ -167,9 +167,20 @@ public class Level extends Piece implements Serializable {
     }
 
     public Property getCodeProperty() {
-        for (Property p : propertyList)
-            if (p.getCodeProperty().equals("1"))
+        for (Property p : propertyList) {
+            if (p.getCodeProperty()) {
                 return p;
+            }
+        }
+        return null;
+    }
+
+    public Property getNameProperty() {
+        for (Property p : propertyList) {
+            if (p.getNameProperty()) {
+                return p;
+            }
+        }
         return null;
     }
 
