@@ -38,6 +38,7 @@
 		transaction-manager-ref="transactionManager">
         <jpa:repository id="cubeDao"/>
         <jpa:repository id="levelDao"/>
+        <jpa:repository id="filterDao"/>
     </jpa:repositories>
     
     <bean id="rdbmsDriver" class="br.com.bi.model.driver.MySqlRdbmsDriver">

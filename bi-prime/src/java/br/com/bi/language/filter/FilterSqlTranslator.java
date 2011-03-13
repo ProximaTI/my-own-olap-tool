@@ -17,8 +17,10 @@ import java.util.regex.Pattern;
 public class FilterSqlTranslator implements FilterParserVisitor {
 
     public static void main(String args[]) {
+        String olapql = "[Recursos Humanos] e [Recursos Humanos] ou não [Produto] > ((-1 / (100.8 + 2)) * [Recursos Humanos])";
+        
         InputStream in = new ByteArrayInputStream(
-                ("[teste] e n\u00e3o [Produto] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
+                (olapql).getBytes());
 
         FilterParser parser = new FilterParser(in);
 
@@ -32,7 +34,8 @@ public class FilterSqlTranslator implements FilterParserVisitor {
             FilterSqlTranslator translator = new FilterSqlTranslator();
             translator.visit(node, sb);
 
-            System.out.println(sb.toString());
+            System.out.println("OLAPQL = " + olapql);
+            System.out.println("SQL = " + sb.toString());
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
@@ -110,19 +113,36 @@ public class FilterSqlTranslator implements FilterParserVisitor {
     }
 
     public void visit(Filter node, StringBuilder data) {
-        data.append(node.value);
+        try {
+            br.com.bi.model.entity.metadata.Filter filter =
+                    Application.getFilterDao().findByName(extractName(node.value.toString()));
+
+            InputStream in = new ByteArrayInputStream(
+                    (filter.getExpression()).getBytes());
+
+            FilterParser parser = new FilterParser(in);
+
+            visit(parser.filterExpression(), data);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void visit(Disjunction node, StringBuilder data) {
-        visitBinaryOperation(node, "or", data);
+        visitOperation(node, "or", data);
     }
 
     public void visit(Conjunction node, StringBuilder data) {
-        visitBinaryOperation(node, "and", data);
+        visitOperation(node, "and", data);
     }
 
     public void visit(Negation node, StringBuilder data) {
-        data.append(" not ");
+        if (data.charAt(data.length() - 1) != ' ') {
+            data.append(" not");
+        } else {
+            data.append("not ");
+        }
+
         visit(node.children[0], data);
     }
 
@@ -131,7 +151,7 @@ public class FilterSqlTranslator implements FilterParserVisitor {
     }
 
     public void visit(Level node, StringBuilder data) {
-        br.com.bi.model.entity.metadata.Level level = 
+        br.com.bi.model.entity.metadata.Level level =
                 Application.getLevelDao().findByName(extractName(node.value.toString()));
 
         data.append(level.getSchemaName()).append(".").
@@ -140,7 +160,16 @@ public class FilterSqlTranslator implements FilterParserVisitor {
     }
 
     public void visit(Property node, StringBuilder data) {
-        data.append(node.value);
+        String[] str = node.value.toString().split("\\.");
+
+        br.com.bi.model.entity.metadata.Level level =
+                Application.getLevelDao().findByName(extractName(str[0]));
+
+        br.com.bi.model.entity.metadata.Property property = level.getProperty(extractName(str[1]));
+
+        data.append(level.getSchemaName()).append(".").
+                append(level.getTableName()).append(".").
+                append(property.getColumnName());
     }
 
     public void visit(RelationalOperator node, StringBuilder data) {
@@ -160,26 +189,31 @@ public class FilterSqlTranslator implements FilterParserVisitor {
     }
 
     public void visit(Addition node, StringBuilder data) {
-        visitBinaryOperation(node, data);
+        visitOperation(node, data);
     }
 
     public void visit(Multiplication node, StringBuilder data) {
-        visitBinaryOperation(node, data);
+        visitOperation(node, data);
     }
 
     public void visit(Number node, StringBuilder data) {
         data.append(node.value);
     }
 
-    private void visitBinaryOperation(SimpleNode node, StringBuilder data) {
-        visitBinaryOperation(node, node.value.toString(), data);
+    private void visitOperation(SimpleNode node, StringBuilder data) {
+        visitOperation(node, node.value.toString(), data);
     }
 
-    private void visitBinaryOperation(SimpleNode node, String op, StringBuilder data) {
+    private void visitOperation(SimpleNode node, String op, StringBuilder data) {
         data.append("(");
-        visit(node.children[0], data);
-        data.append(" ").append(op).append(" ");
-        visit(node.children[1], data);
+
+        for (int i = 0; i < node.children.length; i++) {
+            visit(node.children[i], data);
+            if (i < node.children.length - 1) {
+                data.append(" ").append(op).append(" ");
+            }
+        }
+
         data.append(")");
     }
 

@@ -106,7 +106,7 @@ void negation() #Negation :
     <NOT> ( term() ) 
 }
 
-void comparison() : 
+void comparison() #Comparison : 
 {
 }
 {
@@ -172,7 +172,7 @@ void property() #Property :
     {
         property += "." + t.image;
 
-        jjtThis.value = t.image;
+        jjtThis.value = property;
     }
 }
 
