@@ -480,13 +480,39 @@ void negation()           :
 /*@egen*/ 
 }
 
-void comparison() : 
-{
+void comparison()             : 
+{/*@bgen(jjtree) Comparison */
+  Comparison jjtn000 = new Comparison(JJTCOMPARISON);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
 }
-{
+{/*@bgen(jjtree) Comparison */
+    try {
+/*@egen*/
     LOOKAHEAD(2)
 
-    level() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )
+    level() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
     
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
@@ -608,7 +634,7 @@ void property()           :
     {
         property += "." + t.image;
 
-        jjtn000.value = t.image;
+        jjtn000.value = property;
     }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {

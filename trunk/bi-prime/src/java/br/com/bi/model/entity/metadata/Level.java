@@ -189,4 +189,13 @@ public class Level extends Piece implements Serializable {
 
         return levels.subList(levels.indexOf(this), levels.size() - 1);
     }
+
+    public Property getProperty(String string) {
+        for (Property property : getPropertyList()) {
+            if (property.getName().equalsIgnoreCase(string)) {
+                return property;
+            }
+        }
+        return null;
+    }
 }

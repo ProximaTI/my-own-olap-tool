@@ -8,17 +8,18 @@ public interface FilterParserTreeConstants
   public int JJTCONJUNCTION = 2;
   public int JJTVOID = 3;
   public int JJTNEGATION = 4;
-  public int JJTMEASURE = 5;
-  public int JJTLEVEL = 6;
-  public int JJTFILTER = 7;
-  public int JJTPROPERTY = 8;
-  public int JJTRELATIONALOPERATOR = 9;
-  public int JJTARITHMETICEXPRESSION = 10;
-  public int JJTDATE = 11;
-  public int JJTSTRINGLITERAL = 12;
-  public int JJTADDITION = 13;
-  public int JJTMULTIPLICATION = 14;
-  public int JJTNUMBER = 15;
+  public int JJTCOMPARISON = 5;
+  public int JJTMEASURE = 6;
+  public int JJTLEVEL = 7;
+  public int JJTFILTER = 8;
+  public int JJTPROPERTY = 9;
+  public int JJTRELATIONALOPERATOR = 10;
+  public int JJTARITHMETICEXPRESSION = 11;
+  public int JJTDATE = 12;
+  public int JJTSTRINGLITERAL = 13;
+  public int JJTADDITION = 14;
+  public int JJTMULTIPLICATION = 15;
+  public int JJTNUMBER = 16;
 
 
   public String[] jjtNodeName = {
@@ -27,6 +28,7 @@ public interface FilterParserTreeConstants
     "Conjunction",
     "void",
     "Negation",
+    "Comparison",
     "Measure",
     "Level",
     "Filter",
@@ -40,4 +42,4 @@ public interface FilterParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=e26ee836d521f79cd8427aebb6f198bb (do not edit this line) */
+/* JavaCC - OriginalChecksum=a09e83d490297ba394a9b589db8e794e (do not edit this line) */

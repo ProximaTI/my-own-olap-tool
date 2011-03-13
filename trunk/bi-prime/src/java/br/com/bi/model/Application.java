@@ -5,6 +5,7 @@
 package br.com.bi.model;
 
 import br.com.bi.model.dao.CubeDao;
+import br.com.bi.model.dao.FilterDao;
 import br.com.bi.model.dao.LevelDao;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -30,8 +31,12 @@ public class Application {
     public static CubeDao getCubeDao() {
         return (CubeDao) getContext().getBean("cubeDao");
     }
-    
+
     public static LevelDao getLevelDao() {
         return (LevelDao) getContext().getBean("levelDao");
+    }
+
+    public static FilterDao getFilterDao() {
+        return (FilterDao) getContext().getBean("filterDao");
     }
 }

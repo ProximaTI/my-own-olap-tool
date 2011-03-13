@@ -14,17 +14,18 @@ public interface QueryParserTreeConstants
   public int JJTDISJUNCTION = 8;
   public int JJTCONJUNCTION = 9;
   public int JJTNEGATION = 10;
-  public int JJTLEVEL = 11;
-  public int JJTMEASURE = 12;
-  public int JJTFILTER = 13;
-  public int JJTPROPERTY = 14;
-  public int JJTRELATIONALOPERATOR = 15;
-  public int JJTARITHMETICEXPRESSION = 16;
-  public int JJTDATE = 17;
-  public int JJTSTRINGLITERAL = 18;
-  public int JJTADDITION = 19;
-  public int JJTMULTIPLICATION = 20;
-  public int JJTNUMBER = 21;
+  public int JJTCOMPARISON = 11;
+  public int JJTLEVEL = 12;
+  public int JJTMEASURE = 13;
+  public int JJTFILTER = 14;
+  public int JJTPROPERTY = 15;
+  public int JJTRELATIONALOPERATOR = 16;
+  public int JJTARITHMETICEXPRESSION = 17;
+  public int JJTDATE = 18;
+  public int JJTSTRINGLITERAL = 19;
+  public int JJTADDITION = 20;
+  public int JJTMULTIPLICATION = 21;
+  public int JJTNUMBER = 22;
 
 
   public String[] jjtNodeName = {
@@ -39,6 +40,7 @@ public interface QueryParserTreeConstants
     "Disjunction",
     "Conjunction",
     "Negation",
+    "Comparison",
     "Level",
     "Measure",
     "Filter",
@@ -52,4 +54,4 @@ public interface QueryParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=478e1ebbc026103ae1827097e90cd431 (do not edit this line) */
+/* JavaCC - OriginalChecksum=06bfa29a3410a66cc96c05d3b972e978 (do not edit this line) */
