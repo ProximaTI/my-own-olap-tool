@@ -15,23 +15,24 @@ import javax.persistence.Table;
 
 @Entity
 @NamedQueries({
-  @NamedQuery(name = "Property.findAll", query = "select o from Property o")
+    @NamedQuery(name = "Property.findAll", query = "select o from Property o")
 })
 @Table(name = "\"property\"")
 public class Property extends Piece implements Serializable {
-    @Column(name="codeProperty")
-    private String codeProperty;
-    @Column(name="columnName")
+
+    @Column(name = "codeProperty")
+    private Boolean codeProperty;
+    @Column(name = "columnName")
     private String columnName;
-    @Column(name="description")
+    @Column(name = "description")
     private String description;
     @Id
-    @Column(name="id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
-    @Column(name="nameProperty")
-    private String nameProperty;
+    @Column(name = "nameProperty")
+    private Boolean nameProperty;
     @ManyToOne
     @JoinColumn(name = "levelId")
     private Level level;
@@ -39,9 +40,9 @@ public class Property extends Piece implements Serializable {
     public Property() {
     }
 
-    public Property(String codeProperty, String columnName, String description,
-                    Integer id, Level level, String name,
-                    String nameProperty) {
+    public Property(Boolean codeProperty, String columnName, String description,
+            Integer id, Level level, String name,
+            Boolean nameProperty) {
         this.codeProperty = codeProperty;
         this.columnName = columnName;
         this.description = description;
@@ -51,11 +52,11 @@ public class Property extends Piece implements Serializable {
         this.nameProperty = nameProperty;
     }
 
-    public String getCodeProperty() {
+    public Boolean getCodeProperty() {
         return codeProperty;
     }
 
-    public void setCodeProperty(String codeProperty) {
+    public void setCodeProperty(Boolean codeProperty) {
         this.codeProperty = codeProperty;
     }
 
@@ -83,7 +84,6 @@ public class Property extends Piece implements Serializable {
         this.id = id;
     }
 
-
     public String getName() {
         return name;
     }
@@ -92,11 +92,11 @@ public class Property extends Piece implements Serializable {
         this.name = name;
     }
 
-    public String getNameProperty() {
+    public Boolean getNameProperty() {
         return nameProperty;
     }
 
-    public void setNameProperty(String nameProperty) {
+    public void setNameProperty(Boolean nameProperty) {
         this.nameProperty = nameProperty;
     }
 
