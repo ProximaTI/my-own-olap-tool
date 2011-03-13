@@ -9,39 +9,37 @@ options
     VISITOR_DATA_TYPE = "StringBuilder";
 }
 
-PARSER_BEGIN (FilterParser)
-package br.com.bi.language.filter;
+PARSER_BEGIN (MeasureParser)
+package br.com.bi.language.measure;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public class FilterParser {
+public class MeasureParser {
 
     public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
-              ("[teste] e não [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
+              ("soma(-1 / (100.8 + 2))").getBytes());
 
-        FilterParser parser = new FilterParser(in);
+        MeasureParser parser = new MeasureParser(in);
         
         try {
-            SimpleNode node = parser.filterExpression();
+            SimpleNode node = parser.measureExpression();
             node.dump(" ");
         } catch (ParseException ex) {
             ex.printStackTrace();
         }
     }
 }
-PARSER_END (FilterParser)
+PARSER_END (MeasureParser)
 
 SKIP : { " " | "\t" | "\n" | "\r" | "\f" }
 
 TOKEN [IGNORE_CASE] :
 {
   < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
-| < NOT: "não" >
-| < AND: "e" >
-| < OR: "ou" >
-| < DOT: "." >
+| < AGGREGATOR: "quantidade" | "média" | "máximo" | "mínimo" | "soma" >
+| < IDENTIFIER: ((["A"-"Z"] (["A"-"Z"] | ["0"-"9"])*) | ("\"" (~["\""])* "\"")) >
 | < PLUS: "+" >
 | < MINUS: "-" >
 | < MULT: "*" >
@@ -60,62 +58,54 @@ TOKEN [IGNORE_CASE] :
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
-SimpleNode filterExpression() #FilterExpression :
+SimpleNode measureExpression() #MeasureExpression :
 {
 }
 {
-    disjunction() <EOF>
+    aggregationExpression() <EOF>
 
     {
         return jjtThis;
     }
 }
 
-void disjunction() #Disjunction(>1) :
+void aggregationExpression() : 
 {
 }
 {
-    ( conjunction() ( <OR> conjunction() )* ) 
-}
-
-void conjunction() #Conjunction(>1) : 
-{
-}
-{
-    ( term() ( <AND> term() )* )
+    aggregationAdditiveExpression() 
 }
 
-void term() :
+void aggregationAdditiveExpression() #Addition(>1) :
 {
+    String op = null;
 }
 {
-    atom() | negation() 
+    ( aggregationMultiplicativeExpression() ( ( op = additiveOperator() ) aggregationMultiplicativeExpression() )* )
+
+    {
+        jjtThis.value = op;
+    }
 }
 
-void atom() :
+void aggregationMultiplicativeExpression() #Multiplication(>1) :
 {
+    String op = null;
 }
 {
-    comparison() | "(" filterExpression() ")"
+    ( measureAtom() ( ( op = multiplicativeOperator() ) measureAtom() )* )
+
+    {
+        jjtThis.value = op;
+    }
 }
 
-void negation() #Negation :
+void measureAtom() :
 {
 }
 {
-    <NOT> ( term() ) 
+    "(" aggregationExpression() ")" | aggregation() | measure()
 }
-
-void comparison() #Comparison : 
-{
-}
-{
-    LOOKAHEAD(2)
-
-    level() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )
-    
-    // just a filter or a comparison involving a level or some property are valid comparisons
-} 
 
 void measure() #Measure : 
 {
@@ -129,90 +119,14 @@ void measure() #Measure :
     }
 }
 
-void level() #Level : 
+void aggregation() #Aggregation :
 {
     Token t;
 }
 {
-    t = <METADATA_OBJECT_NAME>
+    t = <AGGREGATOR> 
 
-    {
-        jjtThis.value = t.image;
-    }
-}
-
-void filter() #Filter : 
-{
-    Token t;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        jjtThis.value = t.image;
-    }
-}
-
-void property() #Property :
-{
-    Token t;
-    String property;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        property = t.image;
-    }
-
-    <DOT> 
-
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        property += "." + t.image;
-
-        jjtThis.value = property;
-    }
-}
-
-void relationalOperator() #RelationalOperator :
-{
-    Token t;
-}
-{
-    t = <RELATIONAL_OPERATOR> 
-
-    {
-        jjtThis.value = t.image;
-    }
-}
-
-void operating() :
-{
-}
-{
-    date() | stringLiteral() | arithmeticExpression() #ArithmeticExpression 
-}
-
-void date() #Date :
-{
-    Token t;
-}
-{
-    t = <DATE>
-
-    {
-        jjtThis.value = t.image;
-    }
-}
-
-void stringLiteral() #StringLiteral :
-{
-    Token t;
-}
-{
-    t = <STRING_LITERAL>
+    "(" arithmeticExpression() ")"
 
     {
         jjtThis.value = t.image;
@@ -278,7 +192,19 @@ void arithmeticAtom() :
 {
 }
 {
-    "(" arithmeticExpression() ")" | measure() | number()
+    "(" arithmeticExpression() ")" | column() | number()
+}
+
+void column() #Column :
+{
+    Token column;
+}
+{
+    column = <IDENTIFIER>
+
+    {
+        jjtThis.value = column.image;
+    }
 }
 
 void number() #Number :
