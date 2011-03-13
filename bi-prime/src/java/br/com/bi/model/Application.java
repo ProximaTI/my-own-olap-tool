@@ -7,6 +7,7 @@ package br.com.bi.model;
 import br.com.bi.model.dao.CubeDao;
 import br.com.bi.model.dao.FilterDao;
 import br.com.bi.model.dao.LevelDao;
+import br.com.bi.model.dao.MeasureDao;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -38,5 +39,9 @@ public class Application {
 
     public static FilterDao getFilterDao() {
         return (FilterDao) getContext().getBean("filterDao");
+    }
+
+    public static MeasureDao getMeasureDao() {
+        return (MeasureDao) getContext().getBean("measureDao");
     }
 }

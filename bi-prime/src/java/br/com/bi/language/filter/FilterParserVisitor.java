@@ -10,7 +10,7 @@ public interface FilterParserVisitor
   public void visit(Negation node, StringBuilder data);
   public void visit(Comparison node, StringBuilder data);
   public void visit(Measure node, StringBuilder data);
-  public void visit(Level node, StringBuilder data);
+  public void visit(LevelOrMeasure node, StringBuilder data);
   public void visit(Filter node, StringBuilder data);
   public void visit(Property node, StringBuilder data);
   public void visit(RelationalOperator node, StringBuilder data);
@@ -21,4 +21,4 @@ public interface FilterParserVisitor
   public void visit(Multiplication node, StringBuilder data);
   public void visit(Number node, StringBuilder data);
 }
-/* JavaCC - OriginalChecksum=8416d0f5984b8c707202e395571a3d02 (do not edit this line) */
+/* JavaCC - OriginalChecksum=9a4183a3d4d63390a0ba1dfaf60f3f1f (do not edit this line) */

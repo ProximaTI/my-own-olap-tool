@@ -112,7 +112,7 @@ void comparison() #Comparison :
 {
     LOOKAHEAD(2)
 
-    level() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )
+    levelOrMeasure() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )
     
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
@@ -129,7 +129,7 @@ void measure() #Measure :
     }
 }
 
-void level() #Level : 
+void levelOrMeasure() #LevelOrMeasure : 
 {
     Token t;
 }

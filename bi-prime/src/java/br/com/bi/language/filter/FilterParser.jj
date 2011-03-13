@@ -74,12 +74,12 @@ SimpleNode filterExpression()                   :
 {/*@bgen(jjtree) FilterExpression */
     try {
 /*@egen*/
-    disjunction()/*@bgen(jjtree)*/
+    disjunction() <EOF>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
-/*@egen*/ 
+/*@egen*/
 
     {
         return jjtn000;
@@ -231,7 +231,7 @@ void comparison()             :
 /*@egen*/
     LOOKAHEAD(2)
 
-    level() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )/*@bgen(jjtree)*/
+    levelOrMeasure() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -285,15 +285,15 @@ void measure()          :
 /*@egen*/
 }
 
-void level()        : 
-{/*@bgen(jjtree) Level */
-    Level jjtn000 = new Level(JJTLEVEL);
+void levelOrMeasure()                 : 
+{/*@bgen(jjtree) LevelOrMeasure */
+    LevelOrMeasure jjtn000 = new LevelOrMeasure(JJTLEVELORMEASURE);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 /*@egen*/
     Token t;
 }
-{/*@bgen(jjtree) Level */
+{/*@bgen(jjtree) LevelOrMeasure */
     try {
 /*@egen*/
     t = <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
