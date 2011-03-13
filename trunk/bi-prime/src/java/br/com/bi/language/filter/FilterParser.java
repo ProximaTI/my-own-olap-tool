@@ -27,6 +27,7 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
   jjtree.openNodeScope(jjtn000);
     try {
       disjunction();
+      jj_consume_token(0);
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
         {if (true) return jjtn000;}
@@ -203,7 +204,7 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
   jjtree.openNodeScope(jjtn000);
     try {
       if (jj_2_2(2)) {
-        level();
+        levelOrMeasure();
         relationalOperator();
         operating();
       } else {
@@ -269,9 +270,9 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
     }
   }
 
-  final public void level() throws ParseException {
- /*@bgen(jjtree) Level */
-    Level jjtn000 = new Level(JJTLEVEL);
+  final public void levelOrMeasure() throws ParseException {
+ /*@bgen(jjtree) LevelOrMeasure */
+    LevelOrMeasure jjtn000 = new LevelOrMeasure(JJTLEVELORMEASURE);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token t;
     try {
@@ -630,6 +631,11 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
     return false;
   }
 
+  private boolean jj_3_1() {
+    if (jj_3R_5()) return true;
+    return false;
+  }
+
   private boolean jj_3_2() {
     if (jj_3R_6()) return true;
     if (jj_3R_7()) return true;
@@ -644,11 +650,6 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
   private boolean jj_3R_5() {
     if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
     if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_5()) return true;
     return false;
   }
 

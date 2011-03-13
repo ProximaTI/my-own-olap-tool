@@ -19,7 +19,7 @@ public class MeasureParser {
 
     public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
-              ("soma(-1 / (100.8 + 2))").getBytes());
+              ("soma(-1 / (100.8 + 2)) + [Total]").getBytes());
 
         MeasureParser parser = new MeasureParser(in);
         
@@ -39,7 +39,7 @@ TOKEN [IGNORE_CASE] :
 {
   < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
 | < AGGREGATOR: "quantidade" | "média" | "máximo" | "mínimo" | "soma" >
-| < IDENTIFIER: ((["A"-"Z"] (["A"-"Z"] | ["0"-"9"])*) | ("\"" (~["\""])* "\"")) >
+| < IDENTIFIER: ("\"" (~["\""])* "\"") >
 | < PLUS: "+" >
 | < MINUS: "-" >
 | < MULT: "*" >

@@ -15,24 +15,23 @@ import javax.persistence.Table;
 
 @Entity
 @NamedQueries({
-  @NamedQuery(name = "Measure.findAll", query = "select o from Measure o")
+    @NamedQuery(name = "Measure.findAll", query = "select o from Measure o")
 })
 @Table(name = "\"measure\"")
 public class Measure extends Piece implements Serializable {
-    @Column(name="aggregateFunction")
-    private Integer aggregateFunction;
-    @Column(name="columnName")
-    private String columnName;
-    @Column(name="defaultMeasure")
+
+    @Column(name = "expression")
+    private String expression;
+    @Column(name = "defaultMeasure")
     private String defaultMeasure;
-    @Column(name="description")
+    @Column(name = "description")
     private String description;
-    @Column(name="filterExpression")
+    @Column(name = "filterExpression")
     private String filterExpression;
     @Id
-    @Column(name="id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
     @ManyToOne
     @JoinColumn(name = "cubeId")
@@ -41,10 +40,9 @@ public class Measure extends Piece implements Serializable {
     public Measure() {
     }
 
-    public Measure(Integer aggregateFunction, String columnName, Cube cube, String defaultMeasure, String description,
-                   String filterExpression, Integer id, String name) {
-        this.aggregateFunction = aggregateFunction;
-        this.columnName = columnName;
+    public Measure(String expression, Cube cube, String defaultMeasure, String description,
+            String filterExpression, Integer id, String name) {
+        this.expression = expression;
         this.cube = cube;
         this.defaultMeasure = defaultMeasure;
         this.description = description;
@@ -52,23 +50,6 @@ public class Measure extends Piece implements Serializable {
         this.id = id;
         this.name = name;
     }
-
-    public Integer getAggregateFunction() {
-        return aggregateFunction;
-    }
-
-    public void setAggregateFunction(Integer aggregateFunction) {
-        this.aggregateFunction = aggregateFunction;
-    }
-
-    public String getColumnName() {
-        return columnName;
-    }
-
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
-
 
     public String getDefaultMeasure() {
         return defaultMeasure;
@@ -116,5 +97,19 @@ public class Measure extends Piece implements Serializable {
 
     public void setCube(Cube cube) {
         this.cube = cube;
+    }
+
+    /**
+     * @return the expression
+     */
+    public String getExpression() {
+        return expression;
+    }
+
+    /**
+     * @param expression the expression to set
+     */
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 }

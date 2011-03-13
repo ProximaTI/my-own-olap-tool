@@ -4,6 +4,7 @@
  */
 package br.com.bi.language.filter;
 
+import br.com.bi.language.measure.MeasureSqlTranslator;
 import br.com.bi.model.Application;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -17,8 +18,8 @@ import java.util.regex.Pattern;
 public class FilterSqlTranslator implements FilterParserVisitor {
 
     public static void main(String args[]) {
-        String olapql = "[Recursos Humanos] e [Recursos Humanos] ou não [Produto] > ((-1 / (100.8 + 2)) * [Recursos Humanos])";
-        
+        String olapql = "[Total (Recursos Humanos)] > 100 e [Recursos Humanos] e [Produto].[Código] = 1";
+
         InputStream in = new ByteArrayInputStream(
                 (olapql).getBytes());
 
@@ -71,8 +72,8 @@ public class FilterSqlTranslator implements FilterParserVisitor {
             visit((Comparison) node, data);
         }
 
-        if (node instanceof Level) {
-            visit((Level) node, data);
+        if (node instanceof LevelOrMeasure) {
+            visit((LevelOrMeasure) node, data);
         }
 
         if (node instanceof Property) {
@@ -150,15 +151,6 @@ public class FilterSqlTranslator implements FilterParserVisitor {
         visitChildren(node, data);
     }
 
-    public void visit(Level node, StringBuilder data) {
-        br.com.bi.model.entity.metadata.Level level =
-                Application.getLevelDao().findByName(extractName(node.value.toString()));
-
-        data.append(level.getSchemaName()).append(".").
-                append(level.getTableName()).append(".").
-                append(level.getCodeProperty().getColumnName());
-    }
-
     public void visit(Property node, StringBuilder data) {
         String[] str = node.value.toString().split("\\.");
 
@@ -200,6 +192,25 @@ public class FilterSqlTranslator implements FilterParserVisitor {
         data.append(node.value);
     }
 
+    public void visit(LevelOrMeasure node, StringBuilder data) {
+        br.com.bi.model.entity.metadata.Measure measure =
+                Application.getMeasureDao().findByName(extractName(node.value.toString()));
+
+        if (measure != null) {
+            Measure m = new Measure(node.parser, FilterParserTreeConstants.JJTMEASURE);
+            m.value = node.value;
+
+            visit(m, data);
+        } else {
+            br.com.bi.model.entity.metadata.Level level =
+                    Application.getLevelDao().findByName(extractName(node.value.toString()));
+
+            data.append(level.getSchemaName()).append(".").
+                    append(level.getTableName()).append(".").
+                    append(level.getCodeProperty().getColumnName());
+        }
+    }
+
     private void visitOperation(SimpleNode node, StringBuilder data) {
         visitOperation(node, node.value.toString(), data);
     }
@@ -228,16 +239,18 @@ public class FilterSqlTranslator implements FilterParserVisitor {
     }
 
     public void visit(Measure node, StringBuilder data) {
-        data.append(node.value);
+        MeasureSqlTranslator translator = new MeasureSqlTranslator();
+
+        data.append(translator.translate(node.value.toString()));
     }
 
     private String extractName(String expression) {
-        String patternStr = "\\b(.*)\\b";
+        String patternStr = "\\[(.*)\\]";
 
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(expression);
         if (matcher.find()) {
-            return matcher.group(0);
+            return matcher.group(1);
         }
         return null;
     }

@@ -39,6 +39,7 @@
         <jpa:repository id="cubeDao"/>
         <jpa:repository id="levelDao"/>
         <jpa:repository id="filterDao"/>
+        <jpa:repository id="measureDao"/>
     </jpa:repositories>
     
     <bean id="rdbmsDriver" class="br.com.bi.model.driver.MySqlRdbmsDriver">

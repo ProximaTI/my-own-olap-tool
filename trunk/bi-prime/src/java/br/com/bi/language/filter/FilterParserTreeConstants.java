@@ -10,7 +10,7 @@ public interface FilterParserTreeConstants
   public int JJTNEGATION = 4;
   public int JJTCOMPARISON = 5;
   public int JJTMEASURE = 6;
-  public int JJTLEVEL = 7;
+  public int JJTLEVELORMEASURE = 7;
   public int JJTFILTER = 8;
   public int JJTPROPERTY = 9;
   public int JJTRELATIONALOPERATOR = 10;
@@ -30,7 +30,7 @@ public interface FilterParserTreeConstants
     "Negation",
     "Comparison",
     "Measure",
-    "Level",
+    "LevelOrMeasure",
     "Filter",
     "Property",
     "RelationalOperator",
@@ -42,4 +42,4 @@ public interface FilterParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=a09e83d490297ba394a9b589db8e794e (do not edit this line) */
+/* JavaCC - OriginalChecksum=ad67bda9ceddf02685c6519df5b8406a (do not edit this line) */

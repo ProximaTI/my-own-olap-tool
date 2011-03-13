@@ -8,7 +8,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
   protected JJTMeasureParserState jjtree = new JJTMeasureParserState();
     public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
-              ("[teste] + [teste]").getBytes());
+              ("soma(-1 / (100.8 + 2)) + [Total]").getBytes());
 
         MeasureParser parser = new MeasureParser(in);
 
