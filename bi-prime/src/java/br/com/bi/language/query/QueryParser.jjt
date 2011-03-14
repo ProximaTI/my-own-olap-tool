@@ -213,7 +213,7 @@ void atom() :
 {
 }
 {
-    comparison() | "(" filter() ")" 
+    ( LOOKAHEAD(2) comparison() | filter() ) | "(" filterExpression() ")" 
 }
 
 void negation() #Negation :
@@ -227,10 +227,8 @@ void comparison() #Comparison :
 {
 }
 {
-    LOOKAHEAD(2)
+    ( LOOKAHEAD(2) ( levelOrMeasure() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
 
-    level() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )
-    
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
 
