@@ -64,11 +64,18 @@ SimpleNode filterExpression() #FilterExpression :
 {
 }
 {
-    disjunction() <EOF>
+    expression() <EOF> 
 
     {
         return jjtThis;
     }
+}
+
+void expression() : 
+{
+}
+{
+    disjunction() 
 }
 
 void disjunction() #Disjunction(>1) :
@@ -96,7 +103,7 @@ void atom() :
 {
 }
 {
-    comparison() | "(" filterExpression() ")"
+    ( LOOKAHEAD(2) comparison() | filter() ) | "(" filterExpression() ")" 
 }
 
 void negation() #Negation :
@@ -110,10 +117,8 @@ void comparison() #Comparison :
 {
 }
 {
-    LOOKAHEAD(2)
+    ( LOOKAHEAD(2) ( levelOrMeasure() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
 
-    levelOrMeasure() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )
-    
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
 

@@ -74,12 +74,12 @@ SimpleNode filterExpression()                   :
 {/*@bgen(jjtree) FilterExpression */
     try {
 /*@egen*/
-    disjunction() <EOF>/*@bgen(jjtree)*/
+    expression() <EOF>/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
-/*@egen*/
+/*@egen*/ 
 
     {
         return jjtn000;
@@ -104,6 +104,13 @@ SimpleNode filterExpression()                   :
       }
     }
 /*@egen*/
+}
+
+void expression() : 
+{
+}
+{
+    disjunction() 
 }
 
 void disjunction()                  :
@@ -183,7 +190,7 @@ void atom() :
 {
 }
 {
-    comparison() | "(" filterExpression() ")"
+    ( LOOKAHEAD(2) comparison() | filter() ) | "(" filterExpression() ")" 
 }
 
 void negation()           :
@@ -229,9 +236,7 @@ void comparison()             :
 {/*@bgen(jjtree) Comparison */
     try {
 /*@egen*/
-    LOOKAHEAD(2)
-
-    levelOrMeasure() relationalOperator() operating() | ( LOOKAHEAD(2) property() relationalOperator() operating() | filter() )/*@bgen(jjtree)*/
+    ( LOOKAHEAD(2) ( levelOrMeasure() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
       if (jjtc000) {
         jjtree.clearNodeScope(jjtn000);
@@ -252,7 +257,7 @@ void comparison()             :
       }
     }
 /*@egen*/
-    
+
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
 
