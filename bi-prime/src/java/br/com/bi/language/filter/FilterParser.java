@@ -26,7 +26,7 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-      disjunction();
+      expression();
       jj_consume_token(0);
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
@@ -51,6 +51,10 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
       }
     }
     throw new Error("Missing return statement in function");
+  }
+
+  final public void expression() throws ParseException {
+    disjunction();
   }
 
   final public void disjunction() throws ParseException {
@@ -154,7 +158,19 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
   final public void atom() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
-      comparison();
+      if (jj_2_1(2)) {
+        comparison();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case METADATA_OBJECT_NAME:
+          filter();
+          break;
+        default:
+          jj_la1[3] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+      }
       break;
     case 24:
       jj_consume_token(24);
@@ -162,7 +178,7 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
       jj_consume_token(25);
       break;
     default:
-      jj_la1[3] = jj_gen;
+      jj_la1[4] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -210,21 +226,9 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case METADATA_OBJECT_NAME:
-          if (jj_2_1(2)) {
-            property();
-            relationalOperator();
-            operating();
-          } else {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case METADATA_OBJECT_NAME:
-              filter();
-              break;
-            default:
-              jj_la1[4] = jj_gen;
-              jj_consume_token(-1);
-              throw new ParseException();
-            }
-          }
+          property();
+          relationalOperator();
+          operating();
           break;
         default:
           jj_la1[5] = jj_gen;
@@ -626,13 +630,19 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3R_6() {
-    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
+  private boolean jj_3R_8() {
+    if (jj_3R_9()) return true;
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_3R_5()) return true;
+  private boolean jj_3R_9() {
+    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
+    if (jj_scan_token(RELATIONAL_OPERATOR)) return true;
     return false;
   }
 
@@ -642,14 +652,23 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
     return false;
   }
 
-  private boolean jj_3R_7() {
-    if (jj_scan_token(RELATIONAL_OPERATOR)) return true;
+  private boolean jj_3R_6() {
+    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
     return false;
   }
 
   private boolean jj_3R_5() {
-    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
-    if (jj_scan_token(DOT)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_2()) {
+    jj_scanpos = xsp;
+    if (jj_3R_8()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_5()) return true;
     return false;
   }
 
@@ -670,7 +689,7 @@ public class FilterParser/*@bgen(jjtree)*/implements FilterParserTreeConstants, 
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x200,0x100,0x1040080,0x1040000,0x40000,0x40000,0x16e1000,0x1800,0x1800,0x6000,0x6000,0x12c1000,0x1000,0x280000,};
+      jj_la1_0 = new int[] {0x200,0x100,0x1040080,0x40000,0x1040000,0x40000,0x16e1000,0x1800,0x1800,0x6000,0x6000,0x12c1000,0x1000,0x280000,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[2];
   private boolean jj_rescan = false;

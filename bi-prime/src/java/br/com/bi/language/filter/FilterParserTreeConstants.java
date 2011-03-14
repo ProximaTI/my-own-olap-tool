@@ -4,9 +4,9 @@ package br.com.bi.language.filter;
 public interface FilterParserTreeConstants
 {
   public int JJTFILTEREXPRESSION = 0;
-  public int JJTDISJUNCTION = 1;
-  public int JJTCONJUNCTION = 2;
-  public int JJTVOID = 3;
+  public int JJTVOID = 1;
+  public int JJTDISJUNCTION = 2;
+  public int JJTCONJUNCTION = 3;
   public int JJTNEGATION = 4;
   public int JJTCOMPARISON = 5;
   public int JJTMEASURE = 6;
@@ -24,9 +24,9 @@ public interface FilterParserTreeConstants
 
   public String[] jjtNodeName = {
     "FilterExpression",
+    "void",
     "Disjunction",
     "Conjunction",
-    "void",
     "Negation",
     "Comparison",
     "Measure",
@@ -42,4 +42,4 @@ public interface FilterParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=ad67bda9ceddf02685c6519df5b8406a (do not edit this line) */
+/* JavaCC - OriginalChecksum=4369f6f079d96efbc76a9b8691b5f7b4 (do not edit this line) */
