@@ -18,6 +18,7 @@ import br.com.bi.language.measure.Number;
 import br.com.bi.language.measure.ParseException;
 import br.com.bi.language.measure.SimpleNode;
 import br.com.bi.model.Application;
+import br.com.bi.model.entity.metadata.Cube;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Stack;
@@ -31,19 +32,10 @@ import java.util.regex.Pattern;
 public class MeasureSqlTranslator implements MeasureParserVisitor {
 
     private Stack<String> filterStack = new Stack<String>();
+    private Cube cube;
 
-    public static void main(String args[]) {
-        String expression = "média(\"store_sales\") + [Total] + [Total (Recursos Humanos)]";
-
-        MeasureSqlTranslator translator = new MeasureSqlTranslator();
-
-        String translation = translator.translate(expression);
-        
-        System.out.print("expression: ");
-        System.out.println(expression);
-
-        System.out.print("translation: ");
-        System.out.println(translation);
+    public MeasureSqlTranslator(Cube cube) {
+        this.cube = cube;
     }
 
     public void visit(Node node, StringBuilder data) {
@@ -131,7 +123,10 @@ public class MeasureSqlTranslator implements MeasureParserVisitor {
 
         if (!filterStack.empty()) {
             data.append("case when (");
-            translateFilter(filterStack.peek(), data);
+
+            FilterSqlTranslator translator = new FilterSqlTranslator(this.cube);
+            data.append(translator.translate(filterStack.peek()));
+
             data.append(" then ");
             visitChildren(node, data);
             data.append(" else null end");
@@ -143,8 +138,7 @@ public class MeasureSqlTranslator implements MeasureParserVisitor {
     }
 
     public void visit(Column node, StringBuilder data) {
-        // TODO
-        data.append(node.jjtGetValue());
+        data.append(cube.getSchemaName()).append(".").append(cube.getTableName()).append(".").append(node.jjtGetValue());
     }
 
     public void visit(br.com.bi.language.measure.Number node, StringBuilder data) {
@@ -185,21 +179,6 @@ public class MeasureSqlTranslator implements MeasureParserVisitor {
         return null;
     }
 
-    private void translateFilter(String filterExpression, StringBuilder data) {
-        try {
-            InputStream in = new ByteArrayInputStream(
-                    (filterExpression).getBytes());
-
-            FilterParser parser = new FilterParser(in);
-
-            FilterSqlTranslator translator = new FilterSqlTranslator();
-
-            translator.visit(parser.filterExpression(), data);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public String translate(String expression) {
         InputStream in = new ByteArrayInputStream(
                 (expression).getBytes());
@@ -211,7 +190,7 @@ public class MeasureSqlTranslator implements MeasureParserVisitor {
 
             StringBuilder sb = new StringBuilder();
 
-            MeasureSqlTranslator translator = new MeasureSqlTranslator();
+            MeasureSqlTranslator translator = new MeasureSqlTranslator(this.cube);
             translator.visit(node, sb);
 
             return sb.toString();
