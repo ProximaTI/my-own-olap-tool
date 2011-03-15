@@ -27,6 +27,7 @@ import br.com.bi.language.filter.RelationalOperator;
 import br.com.bi.language.filter.SimpleNode;
 import br.com.bi.language.filter.StringLiteral;
 import br.com.bi.model.Application;
+import br.com.bi.model.entity.metadata.Cube;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.regex.Matcher;
@@ -38,30 +39,10 @@ import java.util.regex.Pattern;
  */
 public class FilterSqlTranslator implements FilterParserVisitor {
 
-    public static void main(String args[]) {
-        String olapql = "[Total] > 100 ou [Recursos Humanos] e [Produto].[Código] = 3";
+    private Cube cube;
 
-        InputStream in = new ByteArrayInputStream(
-                (olapql).getBytes());
-
-        FilterParser parser = new FilterParser(in);
-
-        try {
-            SimpleNode node = parser.filterExpression();
-
-            node.dump(" ");
-
-            StringBuilder sb = new StringBuilder();
-
-            FilterSqlTranslator translator = new FilterSqlTranslator();
-            translator.visit(node, sb);
-
-            System.out.println("OLAPQL = " + olapql);
-            System.out.println("SQL = " + sb.toString());
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-
+    public FilterSqlTranslator(Cube cube) {
+        this.cube = cube;
     }
 
     public void visit(Node node, StringBuilder data) {
@@ -260,7 +241,7 @@ public class FilterSqlTranslator implements FilterParserVisitor {
     }
 
     public void visit(Measure node, StringBuilder data) {
-        MeasureSqlTranslator translator = new MeasureSqlTranslator();
+        MeasureSqlTranslator translator = new MeasureSqlTranslator(this.cube);
 
         data.append(translator.translate(node.jjtGetValue().toString()));
     }
@@ -273,6 +254,28 @@ public class FilterSqlTranslator implements FilterParserVisitor {
         if (matcher.find()) {
             return matcher.group(1);
         }
+        return null;
+    }
+
+    public String translate(String expression) {
+        InputStream in = new ByteArrayInputStream(
+                (expression).getBytes());
+
+        FilterParser parser = new FilterParser(in);
+
+        try {
+            SimpleNode node = parser.filterExpression();
+
+            StringBuilder sb = new StringBuilder();
+
+            FilterSqlTranslator translator = new FilterSqlTranslator(this.cube);
+            translator.visit(node, sb);
+
+            return sb.toString();
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+
         return null;
     }
 }

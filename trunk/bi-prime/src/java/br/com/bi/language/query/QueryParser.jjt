@@ -4,6 +4,9 @@ options
     NODE_DEFAULT_VOID = true;
     NODE_PREFIX = ""; 
     MULTI = true;
+    VISITOR = true;
+    VISITOR_RETURN_TYPE = "void";
+    VISITOR_DATA_TYPE = "StringBuilder";
 }
 
 PARSER_BEGIN(QueryParser)
@@ -85,7 +88,7 @@ void select() #Select :
 {
 }
 {
-    <SELECT>  axis() "," axis() <FROM> <CUBE> cube() <WHERE> filterExpression() <EOF>
+    <SELECT>  axis() "," axis() <FROM> <CUBE> cube() [ <WHERE> filterExpression() ] <EOF>
 }
 
 void axis() #Axis :
@@ -147,10 +150,19 @@ void node() :
 {
 }
 {
-    metadataObject() | crossJoin() #Crossjoin 
+    metadataObject() | crossJoin() 
 }
 
-void metadataObject() #MetadataObject :
+void metadataObject() :
+{
+}
+{
+    LOOKAHEAD(2)
+
+    levelOrMeasureOrFilter() | property()
+}
+
+void levelOrMeasureOrFilter() #LevelOrMeasureOrFilter : 
 {
     Token t;
 }
@@ -162,7 +174,30 @@ void metadataObject() #MetadataObject :
     }
 }
 
-void crossJoin() :
+void property() #Property :
+{
+    Token t;
+    String property;
+}
+{
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        property = t.image;
+    }
+
+    <DOT> 
+
+    t = <METADATA_OBJECT_NAME>
+
+    {
+        property += "." + t.image;
+
+        jjtThis.value = property;
+    }
+}
+
+void crossJoin() #Crossjoin :
 {
 }
 {
@@ -232,7 +267,7 @@ void comparison() #Comparison :
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
 
-void level() #Level : 
+void levelOrMeasure() #LevelOrMeasure : 
 {
     Token t;
 }
@@ -268,28 +303,6 @@ void filter() #Filter :
     }
 }
 
-void property() #Property :
-{
-    Token t;
-    String property;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        property = t.image;
-    }
-
-    <DOT> 
-
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        property += "." + t.image;
-
-        jjtThis.value = property;
-    }
-}
 
 void relationalOperator() #RelationalOperator :
 {
