@@ -139,11 +139,13 @@ String columns() :
     }
 }
 
-void set() : 
+void set() #Set(>1) : 
 {
 }
 {
-    node() | "{" node() ( "," node() )+ "}" 
+    LOOKAHEAD(3)
+
+    node() | "{" node() ( "," set() )+ "}" | "{" set() "}"
 }
 
 void node() :
@@ -157,9 +159,7 @@ void metadataObject() :
 {
 }
 {
-    LOOKAHEAD(2)
-
-    levelOrMeasureOrFilter() | property()
+    ( LOOKAHEAD(2) levelOrMeasureOrFilter() | property() ) 
 }
 
 void levelOrMeasureOrFilter() #LevelOrMeasureOrFilter : 
@@ -201,7 +201,7 @@ void crossJoin() #Crossjoin :
 {
 }
 {
-    "(" set() "," set() ")" 
+    "(" metadataObject() "," set() ")" 
 }
 
 void cube() #Cube :
