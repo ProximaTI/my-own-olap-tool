@@ -18,7 +18,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Property.findAll", query = "select o from Property o")
 })
 @Table(name = "\"property\"")
-public class Property extends Piece implements Serializable {
+public class Property extends Piece implements Metadata, Serializable {
 
     @Column(name = "codeProperty")
     private Boolean codeProperty;

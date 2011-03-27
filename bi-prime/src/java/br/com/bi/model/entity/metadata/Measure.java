@@ -18,7 +18,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Measure.findAll", query = "select o from Measure o")
 })
 @Table(name = "\"measure\"")
-public class Measure extends Piece implements Serializable {
+public class Measure extends Piece implements Metadata, Serializable {
 
     @Column(name = "expression")
     private String expression;
