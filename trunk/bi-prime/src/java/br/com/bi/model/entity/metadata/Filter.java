@@ -1,6 +1,5 @@
 package br.com.bi.model.entity.metadata;
 
-
 import br.com.bi.model.entity.Piece;
 
 import java.io.Serializable;
@@ -14,12 +13,13 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-
 @Entity
-@NamedQueries( { @NamedQuery(name = "Filter.findAll",
-                             query = "select o from Filter o") })
+@NamedQueries({
+    @NamedQuery(name = "Filter.findAll",
+    query = "select o from Filter o")})
 @Table(name = "\"filter\"")
-public class Filter extends Piece implements Serializable {
+public class Filter extends Piece implements Metadata, Serializable {
+
     @Column(name = "description")
     private String description;
     @Column(name = "expression")
@@ -37,14 +37,13 @@ public class Filter extends Piece implements Serializable {
     }
 
     public Filter(Cube cube, String description, String expression, Integer id,
-                  String name) {
+            String name) {
         this.cube = cube;
         this.description = description;
         this.expression = expression;
         this.id = id;
         this.name = name;
     }
-
 
     public String getDescription() {
         return description;

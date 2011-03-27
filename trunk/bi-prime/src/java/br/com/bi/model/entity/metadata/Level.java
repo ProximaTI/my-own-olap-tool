@@ -21,7 +21,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Level.findAll",
     query = "select o from Level o")})
 @Table(name = "\"level\"")
-public class Level extends Piece implements Serializable {
+public class Level extends Piece implements Metadata, Serializable {
 
     @Column(name = "description")
     private String description;
@@ -187,7 +187,7 @@ public class Level extends Piece implements Serializable {
     public List<Level> getLowerLevels() {
         List<Level> levels = this.getDimension().getLevelList();
 
-        return levels.subList(levels.indexOf(this), levels.size() - 1);
+        return levels.subList(levels.indexOf(this), levels.size());
     }
 
     public Property getProperty(String string) {

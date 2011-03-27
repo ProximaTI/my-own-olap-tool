@@ -18,7 +18,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Cube.findAll",
     query = "select o from Cube o")})
 @Table(name = "\"cube\"")
-public class Cube implements Serializable {
+public class Cube implements Metadata, Serializable {
 
     @Column(name = "description")
     private String description;
