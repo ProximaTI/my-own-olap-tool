@@ -57,15 +57,15 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
         visitChildren(node, data);
 
+        // TODO ordenar estes grupos de acordo com a disposição deles nos eixos
         if (!levelsPresent().isEmpty()) {
-
 
             StringBuilder groupBy = new StringBuilder();
 
             for (Entry<String, Metadata> entry : extractedMetadata.getInternalMap().entrySet()) {
                 if (entry.getValue() instanceof Level) {
                     groupBy.append(translateLevel((Level) entry.getValue())).append(", ");
-                } else if (entry.getValue() instanceof Property) {
+                } else if (entry.getValue() instanceof br.com.bi.model.entity.metadata.Property) {
                     groupBy.append(translateProperty((br.com.bi.model.entity.metadata.Property) entry.getValue())).append(", ");
                 }
             }
@@ -156,6 +156,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         br.com.bi.model.entity.metadata.Property property = extractedMetadata.getProperty(node.jjtGetValue().toString());
 
         data.append(translateProperty(property));
+        
+        data.append(", ");
     }
 
     @Override
