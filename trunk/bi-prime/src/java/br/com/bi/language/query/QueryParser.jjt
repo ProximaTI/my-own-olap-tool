@@ -140,7 +140,7 @@ void set() #Set(>1) :
 {
 }
 {
-    node() | ( LOOKAHEAD(3) "{" node() ( "," set() )+ "}" | "{" set() "}" )
+    node() | ( LOOKAHEAD(3) "{" node() ( "," set() )* "}" | "{" set() "}" )
 }
 
 void node() :
@@ -154,7 +154,9 @@ void metadataObject() :
 {
 }
 {
-    ( LOOKAHEAD(2) levelOrMeasureOrFilter() | property() ) 
+    LOOKAHEAD(2)
+
+    property() | levelOrMeasureOrFilter()
 }
 
 void levelOrMeasureOrFilter() #LevelOrMeasureOrFilter : 
