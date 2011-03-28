@@ -6,15 +6,13 @@ package br.com.bi.language.filter.translator;
 
 import br.com.bi.language.filter.Filter;
 import br.com.bi.language.filter.FilterParser;
-import br.com.bi.language.filter.LevelOrMeasure;
-import br.com.bi.language.filter.Measure;
+import br.com.bi.language.filter.Level;
 import br.com.bi.language.filter.ParseException;
 import br.com.bi.language.filter.Property;
 import br.com.bi.language.measure.translator.MeasureMetadataExtractor;
 import br.com.bi.language.utils.MetadataCache;
 import br.com.bi.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 
@@ -24,7 +22,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class FilterMetadataExtractor extends AbstractFilterParserVisitor {
 
-    private MetadataCache extracted = new MetadataCache();
+    private MetadataCache extractedMetadata = new MetadataCache();
 
     public MetadataCache extract(String filterExpression) {
         FilterParser parser = new FilterParser(IOUtils.toInputStream(filterExpression));
@@ -32,49 +30,21 @@ public class FilterMetadataExtractor extends AbstractFilterParserVisitor {
         try {
             visit(parser.filterExpression(), null);
         } catch (ParseException ex) {
-            Logger.getLogger(MeasureMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MeasureMetadataExtractor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        return extracted;
+        return extractedMetadata;
     }
 
     @Override
-    public void visit(Measure node, StringBuilder data) {
-        br.com.bi.model.entity.metadata.Measure measure =
-                Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
-        MeasureMetadataExtractor mExt = new MeasureMetadataExtractor();
-        FilterMetadataExtractor fExt = new FilterMetadataExtractor();
-
-        if (measure != null) {
-            extracted.put(node.jjtGetValue().toString(), measure);
-
-            extracted.put(mExt.extract(measure.getExpression()));
-            extracted.put(fExt.extract(measure.getFilterExpression()));
-        }
-    }
-
-    @Override
-    public void visit(LevelOrMeasure node, StringBuilder data) {
+    public void visit(Level node, StringBuilder data) {
         String nodeValue = node.jjtGetValue().toString();
 
-        br.com.bi.model.entity.metadata.Measure measure = Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+        br.com.bi.model.entity.metadata.Level level =
+                Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-        MeasureMetadataExtractor mExt = new MeasureMetadataExtractor();
-        FilterMetadataExtractor fExt = new FilterMetadataExtractor();
-
-        if (measure != null) {
-            extracted.put(nodeValue, measure);
-
-            extracted.put(mExt.extract(measure.getExpression()));
-            extracted.put(fExt.extract(measure.getFilterExpression()));
-        } else {
-            br.com.bi.model.entity.metadata.Level level =
-                    Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
-            if (level != null) {
-                extracted.put(nodeValue, level);
-            }
+        if (level != null) {
+            extractedMetadata.put(nodeValue, level);
         }
     }
 
@@ -85,8 +55,8 @@ public class FilterMetadataExtractor extends AbstractFilterParserVisitor {
 
         FilterMetadataExtractor fExt = new FilterMetadataExtractor();
 
-        extracted.put(node.jjtGetValue().toString(), filter);
-        extracted.put(fExt.extract(filter.getExpression()));
+        extractedMetadata.put(node.jjtGetValue().toString(), filter);
+        extractedMetadata.put(fExt.extract(filter.getExpression()));
     }
 
     @Override
@@ -98,6 +68,6 @@ public class FilterMetadataExtractor extends AbstractFilterParserVisitor {
 
         br.com.bi.model.entity.metadata.Property property = level.getProperty(TranslationUtils.extractName(str[1]));
 
-        extracted.put(node.jjtGetValue().toString(), property);
+        extractedMetadata.put(node.jjtGetValue().toString(), property);
     }
 }

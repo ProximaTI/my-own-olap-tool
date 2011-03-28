@@ -56,7 +56,7 @@ TOKEN [IGNORE_CASE] :
                              | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < INTEGER_LITERAL : ["0"-"9"] (["0"-"9"])* >
-| < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
+| < STRING_LITERAL: "\"" (<CHAR>)* "\"" | "'" (<CHAR>)* "'" > 
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
@@ -117,24 +117,12 @@ void comparison() #Comparison :
 {
 }
 {
-    ( LOOKAHEAD(2) ( levelOrMeasure() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
+    ( LOOKAHEAD(2) ( level() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
 
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
 
-void measure() #Measure : 
-{
-    Token t;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        jjtThis.value = t.image;
-    }
-}
-
-void levelOrMeasure() #LevelOrMeasure : 
+void level() #Level : 
 {
     Token t;
 }
@@ -283,7 +271,7 @@ void arithmeticAtom() :
 {
 }
 {
-    "(" arithmeticExpression() ")" | measure() | number()
+    "(" arithmeticExpression() ")" | number()
 }
 
 void number() #Number :

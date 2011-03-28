@@ -10,9 +10,7 @@ import br.com.bi.language.filter.Date;
 import br.com.bi.language.filter.Disjunction;
 import br.com.bi.language.filter.Filter;
 import br.com.bi.language.filter.FilterParser;
-import br.com.bi.language.filter.FilterParserTreeConstants;
-import br.com.bi.language.filter.LevelOrMeasure;
-import br.com.bi.language.filter.Measure;
+import br.com.bi.language.filter.Level;
 import br.com.bi.language.filter.Multiplication;
 import br.com.bi.language.filter.Negation;
 import br.com.bi.language.filter.Number;
@@ -21,7 +19,6 @@ import br.com.bi.language.filter.Property;
 import br.com.bi.language.filter.RelationalOperator;
 import br.com.bi.language.filter.SimpleNode;
 import br.com.bi.language.filter.StringLiteral;
-import br.com.bi.language.measure.translator.MeasureSqlTranslator;
 import br.com.bi.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
 import br.com.bi.model.entity.metadata.Cube;
@@ -87,9 +84,7 @@ public class FilterSqlTranslator extends AbstractFilterParserVisitor {
 
         br.com.bi.model.entity.metadata.Property property = level.getProperty(TranslationUtils.extractName(str[1]));
 
-        data.append(level.getSchemaName()).append(".").
-                append(level.getTableName()).append(".").
-                append(property.getColumnName());
+        data.append(TranslationUtils.columnExpression(level.getTableName(), property.getColumnName()));
     }
 
     @Override
@@ -123,23 +118,11 @@ public class FilterSqlTranslator extends AbstractFilterParserVisitor {
     }
 
     @Override
-    public void visit(LevelOrMeasure node, StringBuilder data) {
-        br.com.bi.model.entity.metadata.Measure measure =
-                Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+    public void visit(Level node, StringBuilder data) {
+        br.com.bi.model.entity.metadata.Level level =
+                Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-        if (measure != null) {
-            Measure m = new Measure(FilterParserTreeConstants.JJTMEASURE);
-            m.jjtSetValue(node.jjtGetValue());
-
-            visit(m, data);
-        } else {
-            br.com.bi.model.entity.metadata.Level level =
-                    Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
-            data.append(level.getSchemaName()).append(".").
-                    append(level.getTableName()).append(".").
-                    append(level.getCodeProperty().getColumnName());
-        }
+        TranslationUtils.columnExpression(level.getTableName(), level.getCodeProperty().getColumnName());
     }
 
     private void visitOperation(SimpleNode node, StringBuilder data) {
@@ -157,13 +140,6 @@ public class FilterSqlTranslator extends AbstractFilterParserVisitor {
         }
 
         data.append(")");
-    }
-
-    @Override
-    public void visit(Measure node, StringBuilder data) {
-        MeasureSqlTranslator translator = new MeasureSqlTranslator(this.cube);
-
-        data.append(translator.translate(node.jjtGetValue().toString()));
     }
 
     public String translate(String expression) {

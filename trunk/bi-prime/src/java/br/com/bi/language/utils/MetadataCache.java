@@ -10,8 +10,8 @@ import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.model.entity.metadata.Measure;
 import br.com.bi.model.entity.metadata.Metadata;
 import br.com.bi.model.entity.metadata.Property;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  *
@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class MetadataCache {
     
-    private Map<String, Metadata> internalCache = new HashMap<String, Metadata>();
+    private Map<String, Metadata> internalCache = new TreeMap<String, Metadata> ();
     private static String CUBE_PREFIX = "C#";
     private static String LEVEL_PREFIX = "L#";
     private static String MEASURE_PREFIX = "M#";

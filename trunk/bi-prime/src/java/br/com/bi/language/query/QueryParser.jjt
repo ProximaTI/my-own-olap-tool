@@ -22,10 +22,7 @@ public class QueryParser {
 
     public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
-              ("selecione {[teste], ([teste], [teste])}"
-                + " nas colunas, [teste] nas linhas "
-                + "do cubo [teste] "
-                + "onde [teste] e não [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
+("selecione {[teste], ([teste], [teste])} nas colunas, [teste] nas linhas do cubo [teste] onde [teste] e não [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
 
         QueryParser parser = new QueryParser(in);
         
@@ -69,7 +66,7 @@ TOKEN [IGNORE_CASE] :
                              | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < INTEGER_LITERAL : ["0"-"9"] (["0"-"9"])* >
-| < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
+| < STRING_LITERAL: "\"" (<CHAR>)* "\"" | "'" (<CHAR>)* "'" > 
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
@@ -143,9 +140,7 @@ void set() #Set(>1) :
 {
 }
 {
-    LOOKAHEAD(3)
-
-    node() | "{" node() ( "," set() )+ "}" | "{" set() "}"
+    node() | ( LOOKAHEAD(3) "{" node() ( "," set() )+ "}" | "{" set() "}" )
 }
 
 void node() :
@@ -262,24 +257,12 @@ void comparison() #Comparison :
 {
 }
 {
-    ( LOOKAHEAD(2) ( levelOrMeasure() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
+    ( LOOKAHEAD(2) ( level() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
 
     // just a filter or a comparison involving a level or some property are valid comparisons
 } 
 
-void levelOrMeasure() #LevelOrMeasure : 
-{
-    Token t;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        jjtThis.value = t.image;
-    }
-}
-
-void measure() #Measure : 
+void level() #Level : 
 {
     Token t;
 }
@@ -406,7 +389,7 @@ void arithmeticAtom() :
 {
 }
 {
-    "(" arithmeticExpression() ")" | measure() | number()
+    "(" arithmeticExpression() ")" | level() | number()
 }
 
 void number() #Number :
