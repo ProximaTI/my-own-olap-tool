@@ -4,7 +4,6 @@
  */
 package br.com.bi.language.query.translator;
 
-import br.com.bi.language.filter.FilterParserTreeConstants;
 import br.com.bi.language.filter.translator.FilterSqlTranslator;
 import br.com.bi.language.measure.translator.MeasureSqlTranslator;
 import br.com.bi.language.query.Addition;
@@ -14,9 +13,7 @@ import br.com.bi.language.query.Date;
 import br.com.bi.language.query.Disjunction;
 import br.com.bi.language.query.Filter;
 import br.com.bi.language.query.FilterExpression;
-import br.com.bi.language.query.LevelOrMeasure;
 import br.com.bi.language.query.LevelOrMeasureOrFilter;
-import br.com.bi.language.query.Measure;
 import br.com.bi.language.query.Multiplication;
 import br.com.bi.language.query.Negation;
 import br.com.bi.language.query.Property;
@@ -28,16 +25,15 @@ import br.com.bi.language.utils.MetadataCache;
 import br.com.bi.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
 import br.com.bi.model.entity.metadata.CubeLevel;
-import br.com.bi.model.entity.metadata.Dimension;
 import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.model.entity.metadata.Metadata;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -60,6 +56,28 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         data.append("select ");
 
         visitChildren(node, data);
+
+        if (!levelsPresent().isEmpty()) {
+
+
+            StringBuilder groupBy = new StringBuilder();
+
+            for (Entry<String, Metadata> entry : extractedMetadata.getInternalMap().entrySet()) {
+                if (entry.getValue() instanceof Level) {
+                    groupBy.append(translateLevel((Level) entry.getValue())).append(", ");
+                } else if (entry.getValue() instanceof Property) {
+                    groupBy.append(translateProperty((br.com.bi.model.entity.metadata.Property) entry.getValue())).append(", ");
+                }
+            }
+
+            if (groupBy.length() > 0) {
+                groupBy.delete(groupBy.length() - 2, groupBy.length());
+
+                data.append(" group by ").append(groupBy);
+            }
+
+
+        }
     }
 
     @Override
@@ -69,27 +87,26 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
         data.append(" from ");
 
-        List<String> tables = new ArrayList<String>();
+        Set<String> tables = new HashSet<String>();
 
-        tables.add(tableExpression(cube.getSchemaName(), cube.getTableName()));
+        tables.add(TranslationUtils.tableExpression(cube.getSchemaName(), cube.getTableName()));
 
-        for (Level topLevel : topLevels()) {
-            for (Level lowerLevel : topLevel.getLowerLevels()) {
-                tables.add(tableExpression(lowerLevel.getSchemaName(),
-                        lowerLevel.getTableName()));
+        for (Level level : levelsPresent()) {
+            for (Level lowerLevel : level.getLowerLevels()) {
+                tables.add(TranslationUtils.tableExpression(lowerLevel.getSchemaName(), lowerLevel.getTableName()));
             }
         }
 
-        for (int i = 0; i < tables.size(); i++) {
-            data.append(tables.get(i));
-
-            if (i < tables.size() - 1) {
-                data.append(", ");
-            }
+        for (String table : tables) {
+            data.append(table).append(", ");
         }
-        
-        data.append(" having ");
-        
+
+        if (!tables.isEmpty()) {
+            data.delete(data.length() - 2, data.length());
+        }
+
+        data.append(" where ");
+
         whereExpression(data);
     }
 
@@ -121,28 +138,10 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(LevelOrMeasure node, StringBuilder data) {
-        br.com.bi.model.entity.metadata.Measure measure = extractedMetadata.getMeasure(node.jjtGetValue().toString());
+    public void visit(br.com.bi.language.query.Level node, StringBuilder data) {
+        br.com.bi.model.entity.metadata.Level level = extractedMetadata.getLevel(node.jjtGetValue().toString());
 
-        if (measure != null) {
-            Measure m = new Measure(FilterParserTreeConstants.JJTMEASURE);
-            m.jjtSetValue(node.jjtGetValue());
-
-            visit(m, data);
-        } else {
-            br.com.bi.model.entity.metadata.Level level = extractedMetadata.getLevel(node.jjtGetValue().toString());
-
-            data.append(level.getSchemaName()).append(".").
-                    append(level.getTableName()).append(".").
-                    append(level.getCodeProperty().getColumnName());
-        }
-    }
-
-    @Override
-    public void visit(Measure node, StringBuilder data) {
-        MeasureSqlTranslator translator = new MeasureSqlTranslator(this.cube);
-
-        data.append(translator.translate(node.jjtGetValue().toString()));
+        data.append(translateLevel(level));
     }
 
     @Override
@@ -156,9 +155,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     public void visit(Property node, StringBuilder data) {
         br.com.bi.model.entity.metadata.Property property = extractedMetadata.getProperty(node.jjtGetValue().toString());
 
-        data.append(property.getLevel().getSchemaName()).append(".").
-                append(property.getLevel().getTableName()).append(".").
-                append(property.getColumnName());
+        data.append(translateProperty(property));
     }
 
     @Override
@@ -205,9 +202,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             br.com.bi.model.entity.metadata.Level level = extractedMetadata.getLevel(node.jjtGetValue().toString());
 
             if (level != null) {
-                sb.append(level.getSchemaName()).append(".").
-                        append(level.getTableName()).append(".").
-                        append(level.getCodeProperty().getColumnName());
+                data.append(TranslationUtils.columnExpression(level.getTableName(), level.getCodeProperty().getColumnName()));
             } else {
                 br.com.bi.model.entity.metadata.Filter filter = extractedMetadata.getFilter(node.jjtGetValue().toString());
 
@@ -241,30 +236,6 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     // ====== Utilitários =======
     // ==========================
     /**
-     * Retorna os níveis utilizados na consulta que são os mais altos em suas dimensões.
-     * @param query
-     * @return
-     */
-    private List<Level> topLevels() {
-        Map<Integer, Level> topLevels = new HashMap<Integer, Level>();
-
-        List<Level> levelsPresent = levelsPresent();
-
-        for (Level level : levelsPresent) {
-            Dimension dimension = level.getDimension();
-
-            // se o nível está acima do que já está no mapa então ele é um "top level".
-            if (!topLevels.containsKey(dimension.getId())
-                    || level.getIndice()
-                    < topLevels.get(dimension.getId()).getIndice()) {
-                topLevels.put(dimension.getId(), level);
-            }
-        }
-
-        return new ArrayList<Level>(topLevels.values());
-    }
-
-    /**
      * Retorna os níveis presentes na consulta, seja explicitamente em um nó, ou indiretamente
      * através de um nó filtro, ou filtro de métrica, ou ainda filtro na consulta.
      * @param query
@@ -285,36 +256,6 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     /**
-     * Retorna a expressão corresponde à referência para uma consulta.
-     * Normalmente esta expressão é denotada por "esquema.tabela".
-     *
-     * @param schema
-     * @param table
-     * @return
-     */
-    private String tableExpression(String schema, String table) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(schema).append(".").append(table);
-
-        return sb.toString();
-    }
-
-    /**
-     * Retorna uma string do tipo tabela + . + coluna.
-     * @param table
-     * @param column
-     * @return
-     */
-    public String columnExpression(String table, String column) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(table).append(".").append(column);
-
-        return sb.toString();
-    }
-
-    /**
      * Produz a cláusula WHERE da consulta, baseado nos joins resultantes das referências
      * para os níveis da consulta.
      * @return
@@ -322,19 +263,19 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     private String whereExpression(StringBuilder data) {
         List<String> joins = new ArrayList<String>();
 
-        List<Level> topLevels = topLevels();
+        List<Level> levels = levelsPresent();
 
         // do nível mais alto vai descendo e adicionando os joins até chegar o nível
         // mais baixo e assim juntá-lo ao cubo
-        for (Level topLevel : topLevels) {
-            List<Level> lowerLevels = topLevel.getLowerLevels();
+        for (Level level : levels) {
+            List<Level> lowerLevels = level.getLowerLevels();
 
             for (int i = 0; i < lowerLevels.size(); i++) {
                 // de duas em duas colunas, coloca o join na lista
                 if (i > 0 & (i + 1) % 2 == 0) {
-                    String upperColumn = columnExpression(lowerLevels.get(i - 1).getTableName(), lowerLevels.get(i - 1).getCodeProperty().getColumnName());
+                    String upperColumn = TranslationUtils.columnExpression(lowerLevels.get(i - 1).getTableName(), lowerLevels.get(i - 1).getCodeProperty().getColumnName());
 
-                    String thisColumn = columnExpression(lowerLevels.get(i).getTableName(), lowerLevels.get(i).getUpperLevelJoinColumn());
+                    String thisColumn = TranslationUtils.columnExpression(lowerLevels.get(i).getTableName(), lowerLevels.get(i).getUpperLevelJoinColumn());
 
                     joins.add(thisColumn + " = " + upperColumn);
                 }
@@ -342,7 +283,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
-            Collections.sort(lowerLevels, new Comparator<Level>()   {
+            Collections.sort(lowerLevels, new Comparator<Level>()                    {
 
                 public int compare(Level level1, Level level2) {
                     return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
@@ -351,16 +292,14 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             Level lowestLevel = lowerLevels.get(lowerLevels.size() - 1);
 
-            for (CubeLevel level : cube.getCubeLevelList()) {
-                if (level.getLevel().getId() == lowestLevel.getId()) {
-                    joins.add(columnExpression(cube.getTableName(), level.getJoinColumn()) + " = " + columnExpression(lowestLevel.getTableName(), lowestLevel.getCodeProperty().getColumnName()));
+            for (CubeLevel cubeLevel : cube.getCubeLevelList()) {
+                if (cubeLevel.getLevel().getId() == lowestLevel.getId()) {
+                    joins.add(TranslationUtils.columnExpression(cube.getTableName(), cubeLevel.getJoinColumn()) + " = " + TranslationUtils.columnExpression(lowestLevel.getTableName(), lowestLevel.getCodeProperty().getColumnName()));
                 }
             }
         }
 
-        if (joins.isEmpty()) {
-            data.append("1 = 1");
-        } else {
+        if (!joins.isEmpty()) {
             for (int i = 0; i < joins.size(); i++) {
                 data.append(joins.get(i));
 
@@ -371,5 +310,21 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         }
 
         return data.toString();
+    }
+
+    private String translateLevel(br.com.bi.model.entity.metadata.Level level) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(TranslationUtils.columnExpression(level.getTableName(), level.getCodeProperty().getColumnName()));
+
+        return sb.toString();
+    }
+
+    private String translateProperty(br.com.bi.model.entity.metadata.Property property) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
+
+        return sb.toString();
     }
 }

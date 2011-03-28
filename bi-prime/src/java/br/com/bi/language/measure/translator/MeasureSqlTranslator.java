@@ -102,7 +102,7 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
 
     @Override
     public void visit(Column node, StringBuilder data) {
-        data.append(cube.getSchemaName()).append(".").append(cube.getTableName()).append(".").append(node.jjtGetValue());
+        data.append(cube.getTableName()).append(".").append(TranslationUtils.extractColumn(node.jjtGetValue().toString()));
     }
 
     @Override

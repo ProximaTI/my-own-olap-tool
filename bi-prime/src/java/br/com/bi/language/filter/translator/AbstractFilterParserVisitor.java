@@ -13,8 +13,7 @@ import br.com.bi.language.filter.Disjunction;
 import br.com.bi.language.filter.Filter;
 import br.com.bi.language.filter.FilterExpression;
 import br.com.bi.language.filter.FilterParserVisitor;
-import br.com.bi.language.filter.LevelOrMeasure;
-import br.com.bi.language.filter.Measure;
+import br.com.bi.language.filter.Level;
 import br.com.bi.language.filter.Multiplication;
 import br.com.bi.language.filter.Negation;
 import br.com.bi.language.filter.Node;
@@ -33,10 +32,6 @@ public abstract class AbstractFilterParserVisitor implements FilterParserVisitor
     public void visit(Node node, StringBuilder data) {
         if (node instanceof FilterExpression) {
             visit((FilterExpression) node, data);
-        }
-
-        if (node instanceof Measure) {
-            visit((Measure) node, data);
         }
 
         if (node instanceof Filter) {
@@ -59,8 +54,8 @@ public abstract class AbstractFilterParserVisitor implements FilterParserVisitor
             visit((Comparison) node, data);
         }
 
-        if (node instanceof LevelOrMeasure) {
-            visit((LevelOrMeasure) node, data);
+        if (node instanceof Level) {
+            visit((Level) node, data);
         }
 
         if (node instanceof Property) {
@@ -120,11 +115,7 @@ public abstract class AbstractFilterParserVisitor implements FilterParserVisitor
         visitChildren(node, data);
     }
 
-    public void visit(Measure node, StringBuilder data) {
-        visitChildren(node, data);
-    }
-
-    public void visit(LevelOrMeasure node, StringBuilder data) {
+    public void visit(Level node, StringBuilder data) {
         visitChildren(node, data);
     }
 

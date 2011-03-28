@@ -16,9 +16,8 @@ import br.com.bi.language.query.Disjunction;
 import br.com.bi.language.query.Filter;
 import br.com.bi.language.query.FilterExpression;
 import br.com.bi.language.query.Instruction;
-import br.com.bi.language.query.LevelOrMeasure;
+import br.com.bi.language.query.Level;
 import br.com.bi.language.query.LevelOrMeasureOrFilter;
-import br.com.bi.language.query.Measure;
 import br.com.bi.language.query.Multiplication;
 import br.com.bi.language.query.Negation;
 import br.com.bi.language.query.Node;
@@ -69,11 +68,8 @@ public class AbstractQueryVisitor implements QueryParserVisitor {
         if (node instanceof Comparison) {
             visit((Comparison) node, data);
         }
-        if (node instanceof LevelOrMeasure) {
-            visit((LevelOrMeasure) node, data);
-        }
-        if (node instanceof Measure) {
-            visit((Measure) node, data);
+        if (node instanceof Level) {
+            visit((Level) node, data);
         }
         if (node instanceof Filter) {
             visit((Filter) node, data);
@@ -166,11 +162,7 @@ public class AbstractQueryVisitor implements QueryParserVisitor {
         visitChildren(node, data);
     }
     
-    public void visit(LevelOrMeasure node, StringBuilder data) {
-        visitChildren(node, data);
-    }
-    
-    public void visit(Measure node, StringBuilder data) {
+    public void visit(Level node, StringBuilder data) {
         visitChildren(node, data);
     }
     

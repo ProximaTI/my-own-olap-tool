@@ -58,7 +58,7 @@ TOKEN [IGNORE_CASE] :
                              | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < INTEGER_LITERAL : ["0"-"9"] (["0"-"9"])* >
-| < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
+| < STRING_LITERAL: "\"" (<CHAR>)* "\"" | "'" (<CHAR>)* "'" > 
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
