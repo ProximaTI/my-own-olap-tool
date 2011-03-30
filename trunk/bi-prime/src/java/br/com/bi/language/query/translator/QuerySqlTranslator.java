@@ -49,7 +49,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         QueryMetadataExtractor extractor = new QueryMetadataExtractor();
         extractor.visit(node, data);
 
-        this.extractedMetadata = extractor.getExtractedMetadata();
+        this.extractedMetadata = extractor.getAllReferencedMetadata();
 
         this.cube = Application.getCubeDao().findByName(TranslationUtils.extractName(((SimpleNode) node.jjtGetChild(2)).jjtGetValue().toString()));
 
@@ -58,7 +58,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         visitChildren(node, data);
 
         // TODO ordenar estes grupos de acordo com a disposição deles nos eixos
-        if (!levelsPresent().isEmpty()) {
+        
+        if (!extractor.getAddedToAxis().getInternalMap().isEmpty()) {
 
             StringBuilder groupBy = new StringBuilder();
 
@@ -75,8 +76,6 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
                 data.append(" group by ").append(groupBy);
             }
-
-
         }
     }
 
@@ -285,7 +284,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
-            Collections.sort(lowerLevels, new Comparator<Level>()                    {
+            Collections.sort(lowerLevels, new Comparator<Level>() {
 
                 public int compare(Level level1, Level level2) {
                     return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
