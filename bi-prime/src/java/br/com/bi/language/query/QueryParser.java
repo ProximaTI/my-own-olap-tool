@@ -5,8 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, QueryParserConstants {/*@bgen(jjtree)*/
-  protected JJTQueryParserState jjtree = new JJTQueryParserState();
-    private boolean rows = false;
+  protected JJTQueryParserState jjtree = new JJTQueryParserState();private boolean rows = false;
     private boolean columns = false;
 
     public static void main(String args[]) {
@@ -24,7 +23,7 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     }
 
   final public SimpleNode instruction() throws ParseException {
- /*@bgen(jjtree) Instruction */ 
+ /*@bgen(jjtree) Instruction */
   Instruction jjtn000 = new Instruction(JJTINSTRUCTION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
@@ -103,9 +102,10 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
  /*@bgen(jjtree) Axis */
     Axis jjtn000 = new Axis(JJTAXIS);
     boolean jjtc000 = true;
-    jjtree.openNodeScope(jjtn000);String axis;
+    jjtree.openNodeScope(jjtn000);java.util.List<SimpleNode> nodes = new java.util.ArrayList<SimpleNode>();
+    String axis;
     try {
-      set();
+      set(nodes);
       jj_consume_token(ON);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ROWS:
@@ -121,6 +121,12 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
       }
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
+        jjtn000.children = null;
+
+        for (SimpleNode node: nodes) {
+            jjtn000.jjtAddChild(node, jjtn000.jjtGetNumChildren());
+        }
+
         jjtn000.value = axis;
     } catch (Throwable jjte000) {
       if (jjtc000) {
@@ -163,97 +169,80 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     throw new Error("Missing return statement in function");
   }
 
-  final public void set() throws ParseException {
- /*@bgen(jjtree) #Set(> 1) */
-  Set jjtn000 = new Set(JJTSET);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case METADATA_OBJECT_NAME:
-      case 34:
-        node();
-        break;
-      case 32:
-        if (jj_2_1(3)) {
-          jj_consume_token(32);
-          node();
-          label_1:
-          while (true) {
-            switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-            case 31:
-              ;
-              break;
-            default:
-              jj_la1[2] = jj_gen;
-              break label_1;
-            }
-            jj_consume_token(31);
-            set();
-          }
-          jj_consume_token(33);
-        } else {
+  final public void set(java.util.List<SimpleNode> nodes) throws ParseException {
+    SimpleNode node = null;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case METADATA_OBJECT_NAME:
+    case 34:
+      node = node();
+                        nodes.add(node);
+      break;
+    case 32:
+      if (jj_2_1(3)) {
+        jj_consume_token(32);
+        node = node();
+                                             nodes.add(node);
+        label_1:
+        while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case 32:
-            jj_consume_token(32);
-            set();
-            jj_consume_token(33);
+          case 31:
+            ;
             break;
           default:
-            jj_la1[3] = jj_gen;
-            jj_consume_token(-1);
-            throw new ParseException();
+            jj_la1[2] = jj_gen;
+            break label_1;
           }
+          jj_consume_token(31);
+          set(nodes);
         }
-        break;
-      default:
-        jj_la1[4] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
+        jj_consume_token(33);
       } else {
-        jjtree.popNode();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case 32:
+          jj_consume_token(32);
+          set(nodes);
+          jj_consume_token(33);
+          break;
+        default:
+          jj_la1[3] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
       }
-      if (jjte000 instanceof RuntimeException) {
-        {if (true) throw (RuntimeException)jjte000;}
-      }
-      if (jjte000 instanceof ParseException) {
-        {if (true) throw (ParseException)jjte000;}
-      }
-      {if (true) throw (Error)jjte000;}
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
-      }
+      break;
+    default:
+      jj_la1[4] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
-  final public void node() throws ParseException {
+  final public SimpleNode node() throws ParseException {
+    SimpleNode node;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case METADATA_OBJECT_NAME:
-      metadataObject();
+      node = metadataObject();
       break;
     case 34:
-      crossJoin();
+      node = crossJoin();
       break;
     default:
       jj_la1[5] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+        {if (true) return node;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void metadataObject() throws ParseException {
+  final public SimpleNode metadataObject() throws ParseException {
+    SimpleNode node = null;
     if (jj_2_2(2)) {
-      property();
+      node = property();
     } else {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case METADATA_OBJECT_NAME:
-        levelOrMeasureOrFilter();
+        node = levelOrMeasureOrFilter();
         break;
       default:
         jj_la1[6] = jj_gen;
@@ -261,9 +250,11 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
         throw new ParseException();
       }
     }
+        {if (true) return node;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void levelOrMeasureOrFilter() throws ParseException {
+  final public SimpleNode levelOrMeasureOrFilter() throws ParseException {
  /*@bgen(jjtree) LevelOrMeasureOrFilter */
     LevelOrMeasureOrFilter jjtn000 = new LevelOrMeasureOrFilter(JJTLEVELORMEASUREORFILTER);
     boolean jjtc000 = true;
@@ -273,14 +264,16 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
         jjtn000.value = t.image;
+        {if (true) return jjtn000;}
     } finally {
       if (jjtc000) {
         jjtree.closeNodeScope(jjtn000, true);
       }
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public void property() throws ParseException {
+  final public SimpleNode property() throws ParseException {
  /*@bgen(jjtree) Property */
     Property jjtn000 = new Property(JJTPROPERTY);
     boolean jjtc000 = true;
@@ -296,43 +289,30 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
         property += "." + t.image;
 
         jjtn000.value = property;
+
+        {if (true) return jjtn000;}
     } finally {
       if (jjtc000) {
         jjtree.closeNodeScope(jjtn000, true);
       }
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public void crossJoin() throws ParseException {
- /*@bgen(jjtree) Crossjoin */
-  Crossjoin jjtn000 = new Crossjoin(JJTCROSSJOIN);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-    try {
-      jj_consume_token(34);
-      metadataObject();
-      jj_consume_token(31);
-      set();
-      jj_consume_token(35);
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
-      } else {
-        jjtree.popNode();
-      }
-      if (jjte000 instanceof RuntimeException) {
-        {if (true) throw (RuntimeException)jjte000;}
-      }
-      if (jjte000 instanceof ParseException) {
-        {if (true) throw (ParseException)jjte000;}
-      }
-      {if (true) throw (Error)jjte000;}
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-      }
-    }
+  final public SimpleNode crossJoin() throws ParseException {
+    SimpleNode firstArgument;
+    java.util.List<SimpleNode> secondArgument = new java.util.ArrayList<SimpleNode>();
+    jj_consume_token(34);
+    firstArgument = metadataObject();
+    jj_consume_token(31);
+    set(secondArgument);
+    jj_consume_token(35);
+        for (SimpleNode node: secondArgument) {
+            firstArgument.jjtAddChild(node, firstArgument.jjtGetNumChildren());
+        }
+
+        {if (true) return firstArgument;}
+    throw new Error("Missing return statement in function");
   }
 
   final public void cube() throws ParseException {
@@ -927,21 +907,38 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     finally { jj_save(3, xla); }
   }
 
-  private boolean jj_3R_16() {
-    if (jj_scan_token(34)) return true;
-    if (jj_3R_15()) return true;
+  private boolean jj_3R_17() {
+    if (jj_3R_18()) return true;
     return false;
   }
 
-  private boolean jj_3_1() {
-    if (jj_scan_token(32)) return true;
-    if (jj_3R_6()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_7()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(33)) return true;
+  private boolean jj_3R_11() {
+    if (jj_scan_token(RELATIONAL_OPERATOR)) return true;
+    return false;
+  }
+
+  private boolean jj_3_3() {
+    if (jj_3R_9()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_10() {
+    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_13() {
+    if (jj_3R_16()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_7() {
+    if (jj_scan_token(31)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_18() {
+    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
     return false;
   }
 
@@ -960,14 +957,15 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     return false;
   }
 
-  private boolean jj_3R_17() {
-    if (jj_3R_18()) return true;
-    return false;
-  }
-
   private boolean jj_3_4() {
     if (jj_3R_10()) return true;
     if (jj_3R_11()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_16() {
+    if (jj_scan_token(34)) return true;
+    if (jj_3R_15()) return true;
     return false;
   }
 
@@ -981,28 +979,31 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     return false;
   }
 
-  private boolean jj_3R_13() {
-    if (jj_3R_16()) return true;
+  private boolean jj_3_1() {
+    if (jj_scan_token(32)) return true;
+    if (jj_3R_6()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_7()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(33)) return true;
     return false;
   }
 
-  private boolean jj_3R_18() {
+  private boolean jj_3R_8() {
     if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_8()) return true;
     return false;
   }
 
   private boolean jj_3R_14() {
     if (jj_3R_8()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_11() {
-    if (jj_scan_token(RELATIONAL_OPERATOR)) return true;
-    return false;
-  }
-
-  private boolean jj_3_3() {
-    if (jj_3R_9()) return true;
     return false;
   }
 
@@ -1013,27 +1014,6 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     jj_scanpos = xsp;
     if (jj_3R_17()) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3R_10() {
-    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_7() {
-    if (jj_scan_token(31)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_8() {
-    if (jj_scan_token(METADATA_OBJECT_NAME)) return true;
-    if (jj_scan_token(DOT)) return true;
     return false;
   }
 

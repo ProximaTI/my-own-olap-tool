@@ -20,7 +20,7 @@ public class Test {
     public static void main(String[] args) {
         try {
             String olapql =
-                    "selecione ( [Região].[País], ( [Região].[Cidade], [Loja] ) ) nas linhas, [Total] nas colunas do cubo [Vendas] onde [EUA]";
+                    "selecione { ( [Região].[País], ( [Região].[Cidade], [Loja])) , { [Loja], [Loja], [Loja], [Loja] } } nas linhas, [Total] nas colunas do cubo [Vendas] onde [EUA]";
 
             InputStream in = new ByteArrayInputStream((olapql).getBytes());
 

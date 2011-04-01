@@ -7,10 +7,8 @@ public interface QueryParserVisitor
   public void visit(Instruction node, StringBuilder data);
   public void visit(Select node, StringBuilder data);
   public void visit(Axis node, StringBuilder data);
-  public void visit(Set node, StringBuilder data);
   public void visit(LevelOrMeasureOrFilter node, StringBuilder data);
   public void visit(Property node, StringBuilder data);
-  public void visit(Crossjoin node, StringBuilder data);
   public void visit(Cube node, StringBuilder data);
   public void visit(FilterExpression node, StringBuilder data);
   public void visit(Disjunction node, StringBuilder data);
@@ -27,4 +25,4 @@ public interface QueryParserVisitor
   public void visit(Multiplication node, StringBuilder data);
   public void visit(Number node, StringBuilder data);
 }
-/* JavaCC - OriginalChecksum=a451f08e3545e796eca97f43b3dd2df0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=d6deeddafdac89df7a693ea05d2835b8 (do not edit this line) */
