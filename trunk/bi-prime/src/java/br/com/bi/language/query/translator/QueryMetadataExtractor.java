@@ -11,10 +11,15 @@ import br.com.bi.language.query.Axis;
 import br.com.bi.language.query.Filter;
 import br.com.bi.language.query.Level;
 import br.com.bi.language.query.LevelOrMeasureOrFilter;
+import br.com.bi.language.query.Node;
 import br.com.bi.language.query.Property;
+import br.com.bi.language.query.SimpleNode;
 import br.com.bi.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
 import br.com.bi.model.entity.metadata.Measure;
+import br.com.bi.model.entity.metadata.Metadata;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe que tem como responsabilidade extrair os metadados referenciados
@@ -35,6 +40,16 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
         return getIndirectlyAdded();
     }
 
+    public List<Node> getChildren(Node node) {
+        List<Node> children = new ArrayList<Node>();
+
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            children.add(node.jjtGetChild(i));
+        }
+
+        return children;
+    }
+
     @Override
     public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
         String nodeValue = node.jjtGetValue().toString();
@@ -45,7 +60,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
         FilterMetadataExtractor filterExtractor = new FilterMetadataExtractor();
 
         if (measure != null) {
-            getAddedToAxis().put(nodeValue, measure);
+            recordNodeAddedToAxis(node, measure);
 
             getIndirectlyAdded().put(measureExtractor.extract(measure.getExpression()));
 
@@ -57,10 +72,10 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
                     Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
             if (level != null) {
-                getAddedToAxis().put(nodeValue, level);
+                recordNodeAddedToAxis(node, level);
             } else {
                 br.com.bi.model.entity.metadata.Filter filter = Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-                getAddedToAxis().put(nodeValue, filter);
+                recordNodeAddedToAxis(node, filter);
 
                 getIndirectlyAdded().put(filterExtractor.extract(filter.getExpression()));
             }
@@ -77,7 +92,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
         br.com.bi.model.entity.metadata.Property property = level.getProperty(TranslationUtils.extractName(str[1]));
 
         if (visitingAxis) {
-            getAddedToAxis().put(node.jjtGetValue().toString(), property);
+            recordNodeAddedToAxis(node, property);
         } else {
             getAddedToFilter().put(node.jjtGetValue().toString(), property);
         }
@@ -145,5 +160,9 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
      */
     public MetadataCache getAddedToFilter() {
         return addedToFilter;
+    }
+
+    private void recordNodeAddedToAxis(SimpleNode node, Metadata metadata) {
+        getAddedToAxis().put(node.jjtGetValue().toString(), metadata);
     }
 }

@@ -7,25 +7,23 @@ public interface QueryParserTreeConstants
   public int JJTSELECT = 1;
   public int JJTAXIS = 2;
   public int JJTVOID = 3;
-  public int JJTSET = 4;
-  public int JJTLEVELORMEASUREORFILTER = 5;
-  public int JJTPROPERTY = 6;
-  public int JJTCROSSJOIN = 7;
-  public int JJTCUBE = 8;
-  public int JJTFILTEREXPRESSION = 9;
-  public int JJTDISJUNCTION = 10;
-  public int JJTCONJUNCTION = 11;
-  public int JJTNEGATION = 12;
-  public int JJTCOMPARISON = 13;
-  public int JJTLEVEL = 14;
-  public int JJTFILTER = 15;
-  public int JJTRELATIONALOPERATOR = 16;
-  public int JJTARITHMETICEXPRESSION = 17;
-  public int JJTDATE = 18;
-  public int JJTSTRINGLITERAL = 19;
-  public int JJTADDITION = 20;
-  public int JJTMULTIPLICATION = 21;
-  public int JJTNUMBER = 22;
+  public int JJTLEVELORMEASUREORFILTER = 4;
+  public int JJTPROPERTY = 5;
+  public int JJTCUBE = 6;
+  public int JJTFILTEREXPRESSION = 7;
+  public int JJTDISJUNCTION = 8;
+  public int JJTCONJUNCTION = 9;
+  public int JJTNEGATION = 10;
+  public int JJTCOMPARISON = 11;
+  public int JJTLEVEL = 12;
+  public int JJTFILTER = 13;
+  public int JJTRELATIONALOPERATOR = 14;
+  public int JJTARITHMETICEXPRESSION = 15;
+  public int JJTDATE = 16;
+  public int JJTSTRINGLITERAL = 17;
+  public int JJTADDITION = 18;
+  public int JJTMULTIPLICATION = 19;
+  public int JJTNUMBER = 20;
 
 
   public String[] jjtNodeName = {
@@ -33,10 +31,8 @@ public interface QueryParserTreeConstants
     "Select",
     "Axis",
     "void",
-    "Set",
     "LevelOrMeasureOrFilter",
     "Property",
-    "Crossjoin",
     "Cube",
     "FilterExpression",
     "Disjunction",
@@ -54,4 +50,4 @@ public interface QueryParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=ac6490425012ecbbf33ed03882676461 (do not edit this line) */
+/* JavaCC - OriginalChecksum=2dde8a3ebc24c124a3c9f5cdfed551cb (do not edit this line) */

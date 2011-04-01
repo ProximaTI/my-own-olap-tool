@@ -7,6 +7,7 @@ options
     VISITOR = true;
     VISITOR_RETURN_TYPE = "void";
     VISITOR_DATA_TYPE = "StringBuilder";
+    NODE_USES_PARSER = false;
 }
 
 PARSER_BEGIN(QueryParser)
@@ -16,7 +17,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public class QueryParser {
-
     private boolean rows = false;
     private boolean columns = false;
 
@@ -90,12 +90,20 @@ void select() #Select :
 
 void axis() #Axis :
 {
+    java.util.List<SimpleNode> nodes = new java.util.ArrayList<SimpleNode>();
     String axis;
 } 
 {
-    set() <ON>  ( axis = rows() | axis = columns() )
+    ( set(nodes) <ON>  ( axis = rows() | axis = columns() ) )
     
-    { 
+    {
+        // desconsidera os children adicionados pelo jjtree através do método closeNodeScope
+        jjtThis.children = null;
+
+        for (SimpleNode node: nodes) {
+            jjtThis.jjtAddChild(node, jjtThis.jjtGetNumChildren());
+        }
+
         jjtThis.value = axis; 
     }
 }
@@ -136,48 +144,69 @@ String columns() :
     }
 }
 
-void set() #Set(>1) : 
+void set(java.util.List<SimpleNode> nodes) : 
 {
+    SimpleNode node = null;
 }
 {
-    node() | ( LOOKAHEAD(3) "{" node() ( "," set() )* "}" | "{" set() "}" )
+    ( 
+        node = node() { nodes.add(node); } | 
+
+        (
+            LOOKAHEAD(3) "{" node = node() { nodes.add(node); } ( "," set(nodes) )* "}" | 
+
+            "{" set(nodes) "}" 
+        ) 
+    )
 }
 
-void node() :
+SimpleNode node() :
 {
+    SimpleNode node;
 }
 {
-    metadataObject() | crossJoin() 
+    ( node = metadataObject() | node = crossJoin() )
+
+    {
+        return node;
+    }
 }
 
-void metadataObject() :
+SimpleNode metadataObject() :
 {
+    SimpleNode node = null;
 }
 {
-    LOOKAHEAD(2)
+    ( LOOKAHEAD(2)
 
-    property() | levelOrMeasureOrFilter()
+    node = property() | node = levelOrMeasureOrFilter() )
+
+    {
+        return node;
+    }
 }
 
-void levelOrMeasureOrFilter() #LevelOrMeasureOrFilter : 
+SimpleNode levelOrMeasureOrFilter() #LevelOrMeasureOrFilter : 
 {
     Token t;
 }
 {
-    t = <METADATA_OBJECT_NAME>
+
+    ( t = <METADATA_OBJECT_NAME> )
 
     {
         jjtThis.value = t.image;
+        return jjtThis;
     }
 }
 
-void property() #Property :
+SimpleNode property() #Property :
 {
     Token t;
     String property;
 }
 {
-    t = <METADATA_OBJECT_NAME>
+    ( t = <METADATA_OBJECT_NAME>
 
     {
         property = t.image;
@@ -185,20 +214,32 @@ void property() #Property :
 
     <DOT> 
 
-    t = <METADATA_OBJECT_NAME>
+    t = <METADATA_OBJECT_NAME> )
 
     {
         property += "." + t.image;
 
         jjtThis.value = property;
+
+        return jjtThis;
     }
 }
 
-void crossJoin() #Crossjoin :
+SimpleNode crossJoin() :
 {
+    SimpleNode firstArgument;
+    java.util.List<SimpleNode> secondArgument = new java.util.ArrayList<SimpleNode>();
 }
 {
-    "(" metadataObject() "," set() ")" 
+    ( "(" firstArgument = metadataObject() "," set(secondArgument) ")" )
+
+    {
+        for (SimpleNode node: secondArgument) {
+            firstArgument.jjtAddChild(node, firstArgument.jjtGetNumChildren());
+        }
+
+        return firstArgument;
+    }
 }
 
 void cube() #Cube :

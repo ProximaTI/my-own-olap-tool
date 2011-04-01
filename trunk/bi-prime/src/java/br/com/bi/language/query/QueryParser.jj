@@ -8,6 +8,7 @@
                    
                                  
                                         
+                             
 }
 
 PARSER_BEGIN(QueryParser)
@@ -20,7 +21,6 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants/*@e
   protected JJTQueryParserState jjtree = new JJTQueryParserState();
 
 /*@egen*/
-
     private boolean rows = false;
     private boolean columns = false;
 
@@ -155,19 +155,26 @@ void axis()       :
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 /*@egen*/
+    java.util.List<SimpleNode> nodes = new java.util.ArrayList<SimpleNode>();
     String axis;
 } 
 {/*@bgen(jjtree) Axis */
     try {
 /*@egen*/
-    set() <ON>  ( axis = rows() | axis = columns() )/*@bgen(jjtree)*/
+    ( set(nodes) <ON>  ( axis = rows() | axis = columns() ) )/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
     }
 /*@egen*/
     
-    { 
+    {
+        jjtn000.children = null;
+
+        for (SimpleNode node: nodes) {
+            jjtn000.jjtAddChild(node, jjtn000.jjtGetNumChildren());
+        }
+
         jjtn000.value = axis; 
     }/*@bgen(jjtree)*/
     } catch (Throwable jjte000) {
@@ -228,56 +235,49 @@ String columns() :
     }
 }
 
-void set()          : 
-{/*@bgen(jjtree) #Set(> 1) */
-  Set jjtn000 = new Set(JJTSET);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/
+void set(java.util.List<SimpleNode> nodes) : 
+{
+    SimpleNode node = null;
 }
-{/*@bgen(jjtree) #Set(> 1) */
-    try {
-/*@egen*/
-    node() | ( LOOKAHEAD(3) "{" node() ( "," set() )* "}" | "{" set() "}" )/*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
-      } else {
-        jjtree.popNode();
-      }
-      if (jjte000 instanceof RuntimeException) {
-        throw (RuntimeException)jjte000;
-      }
-      if (jjte000 instanceof ParseException) {
-        throw (ParseException)jjte000;
-      }
-      throw (Error)jjte000;
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
-      }
+{
+    ( 
+        node = node() { nodes.add(node); } | 
+
+        (
+            LOOKAHEAD(3) "{" node = node() { nodes.add(node); } ( "," set(nodes) )* "}" | 
+
+            "{" set(nodes) "}" 
+        ) 
+    )
+}
+
+SimpleNode node() :
+{
+    SimpleNode node;
+}
+{
+    ( node = metadataObject() | node = crossJoin() )
+
+    {
+        return node;
     }
-/*@egen*/
 }
 
-void node() :
+SimpleNode metadataObject() :
 {
+    SimpleNode node = null;
 }
 {
-    metadataObject() | crossJoin() 
+    ( LOOKAHEAD(2)
+
+    node = property() | node = levelOrMeasureOrFilter() )
+
+    {
+        return node;
+    }
 }
 
-void metadataObject() :
-{
-}
-{
-    LOOKAHEAD(2)
-
-    property() | levelOrMeasureOrFilter()
-}
-
-void levelOrMeasureOrFilter()                         : 
+SimpleNode levelOrMeasureOrFilter()                         : 
 {/*@bgen(jjtree) LevelOrMeasureOrFilter */
     LevelOrMeasureOrFilter jjtn000 = new LevelOrMeasureOrFilter(JJTLEVELORMEASUREORFILTER);
     boolean jjtc000 = true;
@@ -288,7 +288,8 @@ void levelOrMeasureOrFilter()                         :
 {/*@bgen(jjtree) LevelOrMeasureOrFilter */
     try {
 /*@egen*/
-    t = <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+
+    ( t = <METADATA_OBJECT_NAME> )/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
@@ -297,6 +298,7 @@ void levelOrMeasureOrFilter()                         :
 
     {
         jjtn000.value = t.image;
+        return jjtn000;
     }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
@@ -306,7 +308,7 @@ void levelOrMeasureOrFilter()                         :
 /*@egen*/
 }
 
-void property()           :
+SimpleNode property()           :
 {/*@bgen(jjtree) Property */
     Property jjtn000 = new Property(JJTPROPERTY);
     boolean jjtc000 = true;
@@ -318,7 +320,7 @@ void property()           :
 {/*@bgen(jjtree) Property */
     try {
 /*@egen*/
-    t = <METADATA_OBJECT_NAME>
+    ( t = <METADATA_OBJECT_NAME>
 
     {
         property = t.image;
@@ -326,7 +328,7 @@ void property()           :
 
     <DOT> 
 
-    t = <METADATA_OBJECT_NAME>/*@bgen(jjtree)*/
+    t = <METADATA_OBJECT_NAME> )/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
@@ -337,6 +339,8 @@ void property()           :
         property += "." + t.image;
 
         jjtn000.value = property;
+
+        return jjtn000;
     }/*@bgen(jjtree)*/
     } finally {
       if (jjtc000) {
@@ -346,37 +350,21 @@ void property()           :
 /*@egen*/
 }
 
-void crossJoin()            :
-{/*@bgen(jjtree) Crossjoin */
-  Crossjoin jjtn000 = new Crossjoin(JJTCROSSJOIN);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/
+SimpleNode crossJoin() :
+{
+    SimpleNode firstArgument;
+    java.util.List<SimpleNode> secondArgument = new java.util.ArrayList<SimpleNode>();
 }
-{/*@bgen(jjtree) Crossjoin */
-    try {
-/*@egen*/
-    "(" metadataObject() "," set() ")"/*@bgen(jjtree)*/
-    } catch (Throwable jjte000) {
-      if (jjtc000) {
-        jjtree.clearNodeScope(jjtn000);
-        jjtc000 = false;
-      } else {
-        jjtree.popNode();
-      }
-      if (jjte000 instanceof RuntimeException) {
-        throw (RuntimeException)jjte000;
-      }
-      if (jjte000 instanceof ParseException) {
-        throw (ParseException)jjte000;
-      }
-      throw (Error)jjte000;
-    } finally {
-      if (jjtc000) {
-        jjtree.closeNodeScope(jjtn000, true);
-      }
+{
+    ( "(" firstArgument = metadataObject() "," set(secondArgument) ")" )
+
+    {
+        for (SimpleNode node: secondArgument) {
+            firstArgument.jjtAddChild(node, firstArgument.jjtGetNumChildren());
+        }
+
+        return firstArgument;
     }
-/*@egen*/ 
 }
 
 void cube()       :
