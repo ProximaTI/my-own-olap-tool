@@ -18,6 +18,7 @@ import br.com.bi.olapql.language.query.LevelOrMeasureOrFilter;
 import br.com.bi.olapql.language.query.Multiplication;
 import br.com.bi.olapql.language.query.Negation;
 import br.com.bi.olapql.language.query.Node;
+import br.com.bi.olapql.language.query.ParseException;
 import br.com.bi.olapql.language.query.Property;
 import br.com.bi.olapql.language.query.PropertyNode;
 import br.com.bi.olapql.language.query.RelationalOperator;
@@ -29,6 +30,8 @@ import br.com.bi.model.Application;
 import br.com.bi.model.entity.metadata.CubeLevel;
 import br.com.bi.model.entity.metadata.Level;
 import br.com.bi.model.entity.metadata.Metadata;
+import br.com.bi.olapql.language.query.Instruction;
+import br.com.bi.olapql.language.query.QueryParser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,6 +42,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import org.apache.commons.collections.BidiMap;
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.io.IOUtils;
 
 /**
  *
@@ -48,17 +54,20 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     private br.com.bi.model.entity.metadata.Cube cube;
     private QueryMetadataExtractor extractor = new QueryMetadataExtractor();
-    private Stack<Integer> nodeCoordinates = new Stack<Integer>();
     // =================================================
     // variables used in coordinates calculating process
     // =================================================
     /**
+     * Stack used to registrate node position during its visitation.
+     */
+    private Stack<Integer> nodeCoordinates = new Stack<Integer>();
+    /**
      * List used to put the nodes in the order that they appear in the query axis.
-     * It's used on translation of "group by" expression, this is because it's ordered.
+     * It's useful on translation of "group by" expression, due to its assortment.
      */
     private List<Node> axisNodeList = new ArrayList<Node>();
     private Map<Node, Metadata> axisNodeMetadataMap = new HashMap<Node, Metadata>();
-    private Map<Node, String> axisNodeCoordinateMap = new HashMap<Node, String>();
+    private BidiMap axisNodeCoordinateMap = new DualHashBidiMap();
 
     @Override
     public void visit(Select node, StringBuilder data) {
@@ -75,11 +84,11 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             StringBuilder groupBy = new StringBuilder();
 
             for (Node n : axisNodeList) {
-                Metadata metadata = axisNodeMetadataMap.get(n);
+                Metadata metadata = getAxisNodeMetadataMap().get(n);
 
                 if (metadata instanceof br.com.bi.model.entity.metadata.Level
                         || metadata instanceof br.com.bi.model.entity.metadata.Property) {
-                    groupBy.append(axisNodeCoordinateMap.get(n)).append(", ");
+                    groupBy.append(getAxisNodeCoordinateMap().get(n)).append(", ");
                 }
             }
 
@@ -171,9 +180,9 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
                 extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
 
         registrateAxisNode(node, property);
-                
+
         data.append(translateProperty(property));
-        data.append(" as ").append(axisNodeCoordinateMap.get(node));
+        data.append(" as ").append(getAxisNodeCoordinateMap().get(node));
         data.append(", ");
 
         super.visit(node, data);
@@ -259,8 +268,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         }
 
         registrateAxisNode(node, metadata);
-        
-        data.append(sb).append(" as ").append(axisNodeCoordinateMap.get(node)).append(", ");
+
+        data.append(sb).append(" as ").append(getAxisNodeCoordinateMap().get(node)).append(", ");
 
         super.visit(node, data);
         nodeCoordinates.pop();
@@ -335,7 +344,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
-            Collections.sort(lowerLevels, new Comparator<Level>()          {
+            Collections.sort(lowerLevels, new Comparator<Level>()           {
 
                 public int compare(Level level1, Level level2) {
                     return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
@@ -381,9 +390,9 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     private void registrateAxisNode(SimpleNode node, Metadata metadata) {
-        axisNodeMetadataMap.put(node, metadata);
+        getAxisNodeMetadataMap().put(node, metadata);
         axisNodeList.add(node);
-        axisNodeCoordinateMap.put(node, calculateCoordinates(node));
+        getAxisNodeCoordinateMap().put(node, calculateCoordinates(node));
     }
 
     private String calculateCoordinates(SimpleNode node) {
@@ -404,5 +413,36 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         coordinate.deleteCharAt(coordinate.length() - 1);
 
         return coordinate.toString();
+    }
+
+    /**
+     * @return the axisNodeMetadataMap
+     */
+    public Map<Node, Metadata> getAxisNodeMetadataMap() {
+        return axisNodeMetadataMap;
+    }
+
+    /**
+     * @return the axisNodeCoordinateMap
+     */
+    public BidiMap getAxisNodeCoordinateMap() {
+        return axisNodeCoordinateMap;
+    }
+
+    /**
+     * Translates an olapql instruction into a sql instruction.
+     * @param olapql
+     * @return
+     * @throws ParseException 
+     */
+    public String translate(String olapql) throws ParseException {
+        QueryParser parser = new QueryParser(IOUtils.toInputStream(olapql));
+        Instruction instruction = (Instruction) parser.instruction();
+
+        StringBuilder sb = new StringBuilder();
+        QuerySqlTranslator translator = new QuerySqlTranslator();
+        translator.visit(instruction, sb);
+
+        return sb.toString();
     }
 }
