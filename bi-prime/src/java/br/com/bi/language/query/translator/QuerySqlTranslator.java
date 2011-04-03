@@ -17,13 +17,13 @@ import br.com.bi.language.query.FilterExpression;
 import br.com.bi.language.query.LevelOrMeasureOrFilter;
 import br.com.bi.language.query.Multiplication;
 import br.com.bi.language.query.Negation;
+import br.com.bi.language.query.Node;
 import br.com.bi.language.query.Property;
 import br.com.bi.language.query.PropertyNode;
 import br.com.bi.language.query.RelationalOperator;
 import br.com.bi.language.query.Select;
 import br.com.bi.language.query.SimpleNode;
 import br.com.bi.language.query.StringLiteral;
-import br.com.bi.language.utils.MetadataCache;
 import br.com.bi.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
 import br.com.bi.model.entity.metadata.CubeLevel;
@@ -32,8 +32,10 @@ import br.com.bi.model.entity.metadata.Metadata;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
@@ -44,34 +46,40 @@ import java.util.Stack;
  */
 public class QuerySqlTranslator extends AbstractQueryVisitor {
 
-    private MetadataCache extractedMetadata;
     private br.com.bi.model.entity.metadata.Cube cube;
+    private QueryMetadataExtractor extractor = new QueryMetadataExtractor();
     private Stack<Integer> nodeCoordinates = new Stack<Integer>();
+    // =================================================
+    // variables used in coordinates calculating process
+    // =================================================
+    /**
+     * List used to put the nodes in the order that they appear in the query axis.
+     * It's used on translation of "group by" expression, this is because it's ordered.
+     */
+    private List<Node> axisNodeList = new ArrayList<Node>();
+    private Map<Node, Metadata> axisNodeMetadataMap = new HashMap<Node, Metadata>();
+    private Map<Node, String> axisNodeCoordinateMap = new HashMap<Node, String>();
 
     @Override
     public void visit(Select node, StringBuilder data) {
-        QueryMetadataExtractor extractor = new QueryMetadataExtractor();
+        cube = Application.getCubeDao().findByName(TranslationUtils.extractName(((SimpleNode) node.jjtGetChild(2)).jjtGetValue().toString()));
+
         extractor.visit(node, data);
-
-        this.extractedMetadata = extractor.getAllReferencedMetadata();
-
-        this.cube = Application.getCubeDao().findByName(TranslationUtils.extractName(((SimpleNode) node.jjtGetChild(2)).jjtGetValue().toString()));
 
         data.append("select ");
 
         visitChildren(node, data);
 
-        // TODO ordenar estes grupos de acordo com a disposição deles nos eixos
-
-        if (!extractor.getAddedToAxis().getInternalMap().isEmpty()) {
+        if (!axisNodeMetadataMap.isEmpty()) {
 
             StringBuilder groupBy = new StringBuilder();
 
-            for (Entry<String, Metadata> entry : extractedMetadata.getInternalMap().entrySet()) {
-                if (entry.getValue() instanceof Level) {
-                    groupBy.append(translateLevel((Level) entry.getValue())).append(", ");
-                } else if (entry.getValue() instanceof br.com.bi.model.entity.metadata.Property) {
-                    groupBy.append(translateProperty((br.com.bi.model.entity.metadata.Property) entry.getValue())).append(", ");
+            for (Node n : axisNodeList) {
+                Metadata metadata = axisNodeMetadataMap.get(n);
+
+                if (metadata instanceof br.com.bi.model.entity.metadata.Level
+                        || metadata instanceof br.com.bi.model.entity.metadata.Property) {
+                    groupBy.append(axisNodeCoordinateMap.get(n)).append(", ");
                 }
             }
 
@@ -142,7 +150,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     @Override
     public void visit(br.com.bi.language.query.Level node, StringBuilder data) {
-        br.com.bi.model.entity.metadata.Level level = extractedMetadata.getLevel(node.jjtGetValue().toString());
+        br.com.bi.model.entity.metadata.Level level =
+                extractor.getAllReferencedMetadata().getLevel(node.jjtGetValue().toString());
 
         data.append(translateLevel(level));
     }
@@ -158,10 +167,13 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     public void visit(PropertyNode node, StringBuilder data) {
         nodeCoordinates.push(childIndex(node));
 
-        br.com.bi.model.entity.metadata.Property property = extractedMetadata.getProperty(node.jjtGetValue().toString());
+        br.com.bi.model.entity.metadata.Property property =
+                extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
 
+        registrateAxisNode(node, property);
+                
         data.append(translateProperty(property));
-        data.append(" as ").append(coordinates(node));
+        data.append(" as ").append(axisNodeCoordinateMap.get(node));
         data.append(", ");
 
         super.visit(node, data);
@@ -170,7 +182,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     @Override
     public void visit(Property node, StringBuilder data) {
-        br.com.bi.model.entity.metadata.Property property = extractedMetadata.getProperty(node.jjtGetValue().toString());
+        br.com.bi.model.entity.metadata.Property property =
+                extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
 
         data.append(translateProperty(property));
     }
@@ -224,27 +237,30 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
         StringBuilder sb = new StringBuilder();
 
-        br.com.bi.model.entity.metadata.Measure measure = extractedMetadata.getMeasure(node.jjtGetValue().toString());
+        br.com.bi.model.entity.metadata.Metadata metadata =
+                extractor.getAllReferencedMetadata().getMeasure(node.jjtGetValue().toString());
 
-        if (measure != null) {
+        if (metadata != null) {
             MeasureSqlTranslator translator = new MeasureSqlTranslator(cube);
 
             sb.append(translator.translate(node.jjtGetValue().toString()));
         } else {
-            br.com.bi.model.entity.metadata.Level level = extractedMetadata.getLevel(node.jjtGetValue().toString());
+            metadata = extractor.getAllReferencedMetadata().getLevel(node.jjtGetValue().toString());
 
-            if (level != null) {
-                data.append(TranslationUtils.columnExpression(level.getTableName(), level.getCodeProperty().getColumnName()));
+            if (metadata != null) {
+                data.append(TranslationUtils.columnExpression(((br.com.bi.model.entity.metadata.Level) metadata).getTableName(), ((Level) metadata).getCodeProperty().getColumnName()));
             } else {
-                br.com.bi.model.entity.metadata.Filter filter = extractedMetadata.getFilter(node.jjtGetValue().toString());
+                metadata = extractor.getAllReferencedMetadata().getFilter(node.jjtGetValue().toString());
 
                 FilterSqlTranslator translator = new FilterSqlTranslator(cube);
 
-                sb.append("case when ").append(translator.translate(filter.getExpression())).append(" then 1 else 0 end");
+                sb.append("case when ").append(translator.translate(((br.com.bi.model.entity.metadata.Filter) metadata).getExpression())).append(" then 1 else 0 end");
             }
         }
 
-        data.append(sb).append(" as ").append(coordinates(node)).append(", ");
+        registrateAxisNode(node, metadata);
+        
+        data.append(sb).append(" as ").append(axisNodeCoordinateMap.get(node)).append(", ");
 
         super.visit(node, data);
         nodeCoordinates.pop();
@@ -279,7 +295,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     private List<Level> levelsPresent() {
         List<Level> levels = new ArrayList<Level>();
 
-        for (Entry<String, Metadata> entry : extractedMetadata.getInternalMap().entrySet()) {
+        for (Entry<String, Metadata> entry :
+                extractor.getAllReferencedMetadata().getInternalMap().entrySet()) {
             if (entry.getValue() instanceof Level) {
                 levels.add((Level) entry.getValue());
             } else if (entry.getValue() instanceof br.com.bi.model.entity.metadata.Property) {
@@ -318,7 +335,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
-            Collections.sort(lowerLevels, new Comparator<Level>()    {
+            Collections.sort(lowerLevels, new Comparator<Level>()          {
 
                 public int compare(Level level1, Level level2) {
                     return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
@@ -363,7 +380,13 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         return sb.toString();
     }
 
-    private String coordinates(SimpleNode node) {
+    private void registrateAxisNode(SimpleNode node, Metadata metadata) {
+        axisNodeMetadataMap.put(node, metadata);
+        axisNodeList.add(node);
+        axisNodeCoordinateMap.put(node, calculateCoordinates(node));
+    }
+
+    private String calculateCoordinates(SimpleNode node) {
         StringBuilder coordinate = new StringBuilder();
 
         for (int i = 0; i < nodeCoordinates.size(); i++) {

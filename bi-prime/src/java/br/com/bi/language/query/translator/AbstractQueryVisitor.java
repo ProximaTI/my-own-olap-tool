@@ -26,7 +26,6 @@ import br.com.bi.language.query.PropertyNode;
 import br.com.bi.language.query.QueryParserVisitor;
 import br.com.bi.language.query.RelationalOperator;
 import br.com.bi.language.query.Select;
-import br.com.bi.language.query.Set;
 import br.com.bi.language.query.SimpleNode;
 import br.com.bi.language.query.StringLiteral;
 
@@ -101,9 +100,6 @@ public class AbstractQueryVisitor implements QueryParserVisitor {
         if (node instanceof LevelOrMeasureOrFilter) {
             visit((LevelOrMeasureOrFilter) node, data);
         }
-        if (node instanceof Set) {
-            visit((Set) node, data);
-        }
     }
 
     @Override
@@ -125,11 +121,6 @@ public class AbstractQueryVisitor implements QueryParserVisitor {
     public void visit(Axis node, StringBuilder data) {
         visitChildren(node, data);
     }
-
-    public void visit(Set node, StringBuilder data) {
-        visitChildren(node, data);
-    }
-
     @Override
     public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
         visitChildren(node, data);
