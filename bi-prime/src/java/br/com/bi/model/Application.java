@@ -44,4 +44,8 @@ public class Application {
     public static MeasureDao getMeasureDao() {
         return (MeasureDao) getContext().getBean("measureDao");
     }
+
+    public static Object getBean(String beanName) {
+        return getContext().getBean(beanName);
+    }
 }

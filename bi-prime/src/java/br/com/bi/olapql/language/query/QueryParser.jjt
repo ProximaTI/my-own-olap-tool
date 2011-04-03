@@ -11,7 +11,7 @@ options
 }
 
 PARSER_BEGIN(QueryParser)
-package br.com.bi.language.query;
+package br.com.bi.olapql.language.query;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -74,7 +74,7 @@ TOKEN [IGNORE_CASE] :
                              | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < INTEGER_LITERAL : ["0"-"9"] (["0"-"9"])* >
-| < STRING_LITERAL: "\"" (<CHAR>)* "\"" | "'" (<CHAR>)* "'" > 
+| < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
@@ -312,9 +312,7 @@ void comparison() #Comparison :
 {
 }
 {
-    ( LOOKAHEAD(2) ( level() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
-
-    // just a filter or a comparison involving a level or some property are valid comparisons
+    property() relationalOperator() operating()
 } 
 
 void level() #Level : 

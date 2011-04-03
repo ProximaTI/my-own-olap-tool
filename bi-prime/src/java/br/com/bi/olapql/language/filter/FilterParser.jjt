@@ -10,7 +10,7 @@ options
 }
 
 PARSER_BEGIN (FilterParser)
-package br.com.bi.language.filter;
+package br.com.bi.olapql.language.filter;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -56,7 +56,7 @@ TOKEN [IGNORE_CASE] :
                              | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < INTEGER_LITERAL : ["0"-"9"] (["0"-"9"])* >
-| < STRING_LITERAL: "\"" (<CHAR>)* "\"" | "'" (<CHAR>)* "'" > 
+| < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 

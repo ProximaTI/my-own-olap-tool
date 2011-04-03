@@ -10,7 +10,7 @@ options
 }
 
 PARSER_BEGIN (MeasureParser)
-package br.com.bi.language.measure;
+package br.com.bi.olapql.language.measure;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -54,7 +54,7 @@ TOKEN [IGNORE_CASE] :
                              | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
 | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 | < INTEGER_LITERAL : ["0"-"9"] (["0"-"9"])* >
-| < STRING_LITERAL: "\"" (<CHAR>)* "\"" | "'" (<CHAR>)* "'" > 
+| < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
 | < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
 }
 
