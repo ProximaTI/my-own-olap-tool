@@ -8,7 +8,7 @@ public interface QueryParserTreeConstants
   public int JJTAXIS = 2;
   public int JJTVOID = 3;
   public int JJTLEVELORMEASUREORFILTER = 4;
-  public int JJTPROPERTY = 5;
+  public int JJTPROPERTYNODE = 5;
   public int JJTCUBE = 6;
   public int JJTFILTEREXPRESSION = 7;
   public int JJTDISJUNCTION = 8;
@@ -17,13 +17,14 @@ public interface QueryParserTreeConstants
   public int JJTCOMPARISON = 11;
   public int JJTLEVEL = 12;
   public int JJTFILTER = 13;
-  public int JJTRELATIONALOPERATOR = 14;
-  public int JJTARITHMETICEXPRESSION = 15;
-  public int JJTDATE = 16;
-  public int JJTSTRINGLITERAL = 17;
-  public int JJTADDITION = 18;
-  public int JJTMULTIPLICATION = 19;
-  public int JJTNUMBER = 20;
+  public int JJTPROPERTY = 14;
+  public int JJTRELATIONALOPERATOR = 15;
+  public int JJTARITHMETICEXPRESSION = 16;
+  public int JJTDATE = 17;
+  public int JJTSTRINGLITERAL = 18;
+  public int JJTADDITION = 19;
+  public int JJTMULTIPLICATION = 20;
+  public int JJTNUMBER = 21;
 
 
   public String[] jjtNodeName = {
@@ -32,7 +33,7 @@ public interface QueryParserTreeConstants
     "Axis",
     "void",
     "LevelOrMeasureOrFilter",
-    "Property",
+    "PropertyNode",
     "Cube",
     "FilterExpression",
     "Disjunction",
@@ -41,6 +42,7 @@ public interface QueryParserTreeConstants
     "Comparison",
     "Level",
     "Filter",
+    "Property",
     "RelationalOperator",
     "ArithmeticExpression",
     "Date",
@@ -50,4 +52,4 @@ public interface QueryParserTreeConstants
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=2dde8a3ebc24c124a3c9f5cdfed551cb (do not edit this line) */
+/* JavaCC - OriginalChecksum=1864a3661d8bfe2313a7f47df7c4df3f (do not edit this line) */

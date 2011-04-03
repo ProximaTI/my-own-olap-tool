@@ -9,7 +9,6 @@ import br.com.bi.language.query.ArithmeticExpression;
 import br.com.bi.language.query.Axis;
 import br.com.bi.language.query.Comparison;
 import br.com.bi.language.query.Conjunction;
-import br.com.bi.language.query.Crossjoin;
 import br.com.bi.language.query.Cube;
 import br.com.bi.language.query.Date;
 import br.com.bi.language.query.Disjunction;
@@ -23,6 +22,7 @@ import br.com.bi.language.query.Negation;
 import br.com.bi.language.query.Node;
 import br.com.bi.language.query.Number;
 import br.com.bi.language.query.Property;
+import br.com.bi.language.query.PropertyNode;
 import br.com.bi.language.query.QueryParserVisitor;
 import br.com.bi.language.query.RelationalOperator;
 import br.com.bi.language.query.Select;
@@ -35,9 +35,9 @@ import br.com.bi.language.query.StringLiteral;
  * @author luiz
  */
 public class AbstractQueryVisitor implements QueryParserVisitor {
-    
+
     public void visit(Node node, StringBuilder data) {
-        
+
         if (node instanceof Instruction) {
             visit((Instruction) node, data);
         }
@@ -46,9 +46,6 @@ public class AbstractQueryVisitor implements QueryParserVisitor {
         }
         if (node instanceof Axis) {
             visit((Axis) node, data);
-        }
-        if (node instanceof Crossjoin) {
-            visit((Crossjoin) node, data);
         }
         if (node instanceof Cube) {
             visit((Cube) node, data);
@@ -76,6 +73,9 @@ public class AbstractQueryVisitor implements QueryParserVisitor {
         }
         if (node instanceof Property) {
             visit((Property) node, data);
+        }
+        if (node instanceof PropertyNode) {
+            visit((PropertyNode) node, data);
         }
         if (node instanceof RelationalOperator) {
             visit((RelationalOperator) node, data);
@@ -105,102 +105,133 @@ public class AbstractQueryVisitor implements QueryParserVisitor {
             visit((Set) node, data);
         }
     }
-    
+
+    @Override
     public void visit(SimpleNode node, StringBuilder data) {
         visit((Node) node, data);
     }
-    
+
+    @Override
     public void visit(Instruction node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Select node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Axis node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
     public void visit(Set node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Property node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
-    public void visit(Crossjoin node, StringBuilder data) {
+
+    @Override
+    public void visit(PropertyNode node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Cube node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(FilterExpression node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Disjunction node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Conjunction node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Negation node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Comparison node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Level node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Filter node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(RelationalOperator node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(ArithmeticExpression node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Date node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(StringLiteral node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Addition node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Multiplication node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
+    @Override
     public void visit(Number node, StringBuilder data) {
         visitChildren(node, data);
     }
-    
+
     protected void visitChildren(SimpleNode node, StringBuilder data) {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             visit(node.jjtGetChild(i), data);
         }
+    }
+
+    protected Integer childIndex(Node node) {
+        for (int i = 0; i < node.jjtGetParent().jjtGetNumChildren(); i++) {
+            if (node.jjtGetParent().jjtGetChild(i).equals(node)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

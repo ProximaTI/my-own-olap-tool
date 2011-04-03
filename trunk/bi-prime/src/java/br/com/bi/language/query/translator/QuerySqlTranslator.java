@@ -7,6 +7,7 @@ package br.com.bi.language.query.translator;
 import br.com.bi.language.filter.translator.FilterSqlTranslator;
 import br.com.bi.language.measure.translator.MeasureSqlTranslator;
 import br.com.bi.language.query.Addition;
+import br.com.bi.language.query.Axis;
 import br.com.bi.language.query.Conjunction;
 import br.com.bi.language.query.Cube;
 import br.com.bi.language.query.Date;
@@ -17,6 +18,7 @@ import br.com.bi.language.query.LevelOrMeasureOrFilter;
 import br.com.bi.language.query.Multiplication;
 import br.com.bi.language.query.Negation;
 import br.com.bi.language.query.Property;
+import br.com.bi.language.query.PropertyNode;
 import br.com.bi.language.query.RelationalOperator;
 import br.com.bi.language.query.Select;
 import br.com.bi.language.query.SimpleNode;
@@ -34,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  *
@@ -43,6 +46,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     private MetadataCache extractedMetadata;
     private br.com.bi.model.entity.metadata.Cube cube;
+    private Stack<Integer> nodeCoordinates = new Stack<Integer>();
 
     @Override
     public void visit(Select node, StringBuilder data) {
@@ -58,7 +62,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         visitChildren(node, data);
 
         // TODO ordenar estes grupos de acordo com a disposição deles nos eixos
-        
+
         if (!extractor.getAddedToAxis().getInternalMap().isEmpty()) {
 
             StringBuilder groupBy = new StringBuilder();
@@ -151,12 +155,24 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
+    public void visit(PropertyNode node, StringBuilder data) {
+        nodeCoordinates.push(childIndex(node));
+
+        br.com.bi.model.entity.metadata.Property property = extractedMetadata.getProperty(node.jjtGetValue().toString());
+
+        data.append(translateProperty(property));
+        data.append(" as ").append(coordinates(node));
+        data.append(", ");
+
+        super.visit(node, data);
+        nodeCoordinates.pop();
+    }
+
+    @Override
     public void visit(Property node, StringBuilder data) {
         br.com.bi.model.entity.metadata.Property property = extractedMetadata.getProperty(node.jjtGetValue().toString());
 
         data.append(translateProperty(property));
-        
-        data.append(", ");
     }
 
     @Override
@@ -190,7 +206,22 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
+    public void visit(Axis node, StringBuilder data) {
+        if (node.jjtGetValue().toString().equals("ROWS")) {
+            nodeCoordinates.push(0);
+        } else {
+            nodeCoordinates.push(1);
+        }
+
+        super.visit(node, data);
+
+        nodeCoordinates.pop();
+    }
+
+    @Override
     public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
+        nodeCoordinates.push(childIndex(node));
+
         StringBuilder sb = new StringBuilder();
 
         br.com.bi.model.entity.metadata.Measure measure = extractedMetadata.getMeasure(node.jjtGetValue().toString());
@@ -213,7 +244,10 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             }
         }
 
-        data.append(sb).append(", ");
+        data.append(sb).append(" as ").append(coordinates(node)).append(", ");
+
+        super.visit(node, data);
+        nodeCoordinates.pop();
     }
 
     private void visitOperation(SimpleNode node, StringBuilder data) {
@@ -284,7 +318,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
-            Collections.sort(lowerLevels, new Comparator<Level>() {
+            Collections.sort(lowerLevels, new Comparator<Level>()    {
 
                 public int compare(Level level1, Level level2) {
                     return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
@@ -327,5 +361,25 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         sb.append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
 
         return sb.toString();
+    }
+
+    private String coordinates(SimpleNode node) {
+        StringBuilder coordinate = new StringBuilder();
+
+        for (int i = 0; i < nodeCoordinates.size(); i++) {
+            if (i == 0) {
+                if (nodeCoordinates.get(i) == 0) {
+                    coordinate.append("r_");
+                } else {
+                    coordinate.append("c_");
+                }
+            } else {
+                coordinate.append(nodeCoordinates.get(i)).append("_");
+            }
+        }
+
+        coordinate.deleteCharAt(coordinate.length() - 1);
+
+        return coordinate.toString();
     }
 }
