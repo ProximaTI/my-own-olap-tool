@@ -8,7 +8,7 @@ public interface QueryParserVisitor
   public void visit(Select node, StringBuilder data);
   public void visit(Axis node, StringBuilder data);
   public void visit(LevelOrMeasureOrFilter node, StringBuilder data);
-  public void visit(Property node, StringBuilder data);
+  public void visit(PropertyNode node, StringBuilder data);
   public void visit(Cube node, StringBuilder data);
   public void visit(FilterExpression node, StringBuilder data);
   public void visit(Disjunction node, StringBuilder data);
@@ -17,6 +17,7 @@ public interface QueryParserVisitor
   public void visit(Comparison node, StringBuilder data);
   public void visit(Level node, StringBuilder data);
   public void visit(Filter node, StringBuilder data);
+  public void visit(Property node, StringBuilder data);
   public void visit(RelationalOperator node, StringBuilder data);
   public void visit(ArithmeticExpression node, StringBuilder data);
   public void visit(Date node, StringBuilder data);
@@ -25,4 +26,4 @@ public interface QueryParserVisitor
   public void visit(Multiplication node, StringBuilder data);
   public void visit(Number node, StringBuilder data);
 }
-/* JavaCC - OriginalChecksum=d6deeddafdac89df7a693ea05d2835b8 (do not edit this line) */
+/* JavaCC - OriginalChecksum=d6fbbf4b226b563afb7ca1b834f37675 (do not edit this line) */

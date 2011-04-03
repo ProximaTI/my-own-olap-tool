@@ -37,6 +37,14 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants/*@e
             ex.printStackTrace();
         }
     }
+
+    private void fixChildren(Node node) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            node.jjtGetChild(i).jjtSetParent(node);
+
+            fixChildren(node.jjtGetChild(i));
+        }
+    }
 }
 PARSER_END(QueryParser)
 
@@ -169,11 +177,15 @@ void axis()       :
 /*@egen*/
     
     {
+        // desconsidera os children adicionados pelo jjtree atrav\u00e9s do m\u00e9todo closeNodeScope
         jjtn000.children = null;
 
         for (SimpleNode node: nodes) {
             jjtn000.jjtAddChild(node, jjtn000.jjtGetNumChildren());
+            node.jjtSetParent(jjtn000);
         }
+
+        fixChildren(jjtn000);
 
         jjtn000.value = axis; 
     }/*@bgen(jjtree)*/
@@ -270,7 +282,7 @@ SimpleNode metadataObject() :
 {
     ( LOOKAHEAD(2)
 
-    node = property() | node = levelOrMeasureOrFilter() )
+    node = propertyNode() | node = levelOrMeasureOrFilter() )
 
     {
         return node;
@@ -308,16 +320,16 @@ SimpleNode levelOrMeasureOrFilter()                         :
 /*@egen*/
 }
 
-SimpleNode property()           :
-{/*@bgen(jjtree) Property */
-    Property jjtn000 = new Property(JJTPROPERTY);
+SimpleNode propertyNode()               :
+{/*@bgen(jjtree) PropertyNode */
+    PropertyNode jjtn000 = new PropertyNode(JJTPROPERTYNODE);
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);
 /*@egen*/
     Token t;
     String property;
 }
-{/*@bgen(jjtree) Property */
+{/*@bgen(jjtree) PropertyNode */
     try {
 /*@egen*/
     ( t = <METADATA_OBJECT_NAME>
@@ -361,6 +373,7 @@ SimpleNode crossJoin() :
     {
         for (SimpleNode node: secondArgument) {
             firstArgument.jjtAddChild(node, firstArgument.jjtGetNumChildren());
+            node.jjtSetParent(firstArgument);
         }
 
         return firstArgument;
@@ -635,6 +648,47 @@ void filter()         :
 /*@egen*/
 }
 
+SimpleNode property()           :
+{/*@bgen(jjtree) Property */
+    Property jjtn000 = new Property(JJTPROPERTY);
+    boolean jjtc000 = true;
+    jjtree.openNodeScope(jjtn000);
+/*@egen*/
+    Token t;
+    String property;
+}
+{/*@bgen(jjtree) Property */
+    try {
+/*@egen*/
+    ( t = <METADATA_OBJECT_NAME>
+
+    {
+        property = t.image;
+    }
+
+    <DOT> 
+
+    t = <METADATA_OBJECT_NAME> )/*@bgen(jjtree)*/
+    {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtc000 = false;
+    }
+/*@egen*/
+
+    {
+        property += "." + t.image;
+
+        jjtn000.value = property;
+
+        return jjtn000;
+    }/*@bgen(jjtree)*/
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+/*@egen*/
+}
 
 void relationalOperator()                     :
 {/*@bgen(jjtree) RelationalOperator */

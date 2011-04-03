@@ -33,6 +33,14 @@ public class QueryParser {
             ex.printStackTrace();
         }
     }
+
+    private void fixChildren(Node node) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+            node.jjtGetChild(i).jjtSetParent(node);
+
+            fixChildren(node.jjtGetChild(i));
+        }
+    }
 }
 PARSER_END(QueryParser)
 
@@ -102,7 +110,10 @@ void axis() #Axis :
 
         for (SimpleNode node: nodes) {
             jjtThis.jjtAddChild(node, jjtThis.jjtGetNumChildren());
+            node.jjtSetParent(jjtThis);
         }
+
+        fixChildren(jjtThis);
 
         jjtThis.value = axis; 
     }
@@ -179,7 +190,7 @@ SimpleNode metadataObject() :
 {
     ( LOOKAHEAD(2)
 
-    node = property() | node = levelOrMeasureOrFilter() )
+    node = propertyNode() | node = levelOrMeasureOrFilter() )
 
     {
         return node;
@@ -200,7 +211,7 @@ SimpleNode levelOrMeasureOrFilter() #LevelOrMeasureOrFilter :
     }
 }
 
-SimpleNode property() #Property :
+SimpleNode propertyNode() #PropertyNode :
 {
     Token t;
     String property;
@@ -236,6 +247,7 @@ SimpleNode crossJoin() :
     {
         for (SimpleNode node: secondArgument) {
             firstArgument.jjtAddChild(node, firstArgument.jjtGetNumChildren());
+            node.jjtSetParent(firstArgument);
         }
 
         return firstArgument;
@@ -329,6 +341,30 @@ void filter() #Filter :
     }
 }
 
+SimpleNode property() #Property :
+{
+    Token t;
+    String property;
+}
+{
+    ( t = <METADATA_OBJECT_NAME>
+
+    {
+        property = t.image;
+    }
+
+    <DOT> 
+
+    t = <METADATA_OBJECT_NAME> )
+
+    {
+        property += "." + t.image;
+
+        jjtThis.value = property;
+
+        return jjtThis;
+    }
+}
 
 void relationalOperator() #RelationalOperator :
 {
