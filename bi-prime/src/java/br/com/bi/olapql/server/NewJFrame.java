@@ -10,7 +10,7 @@
  */
 package br.com.bi.olapql.server;
 
-import br.com.bi.olapql.server.OlapQlServer;
+import br.com.bi.olapql.language.query.translator.QuerySqlTranslator;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -113,6 +113,11 @@ public class NewJFrame extends javax.swing.JFrame {
             OlapQlServer server = new OlapQlServer();
 
             QueryTableModel model = new QueryTableModel();
+
+            QuerySqlTranslator translator = new QuerySqlTranslator();
+
+            System.out.println(translator.translate(jTextArea1.getText()));
+
             model.setResultset(server.execute(jTextArea1.getText()));
             jTable1.setModel(model);
         } catch (Exception ex) {
@@ -120,8 +125,7 @@ public class NewJFrame extends javax.swing.JFrame {
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
             //JOptionPane.showMessageDialog(this, sw.toString());
-JOptionPane.showMessageDialog(this, ex.getMessage());
-
+            JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -129,7 +133,7 @@ JOptionPane.showMessageDialog(this, ex.getMessage());
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable()    {
+        java.awt.EventQueue.invokeLater(new Runnable()      {
 
             public void run() {
                 new NewJFrame().setVisible(true);
@@ -185,7 +189,7 @@ JOptionPane.showMessageDialog(this, ex.getMessage());
                 // Now we must rebuild the headers array with the new column names
                 headers = new String[colCount];
                 for (int h = 1; h <= colCount; h++) {
-                    headers[h - 1] = meta.getColumnName(h);
+                    headers[h - 1] = meta.getColumnLabel(h);
                 }
 
                 // and file the cache with the records from our query. This would

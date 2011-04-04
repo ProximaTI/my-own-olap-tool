@@ -48,7 +48,7 @@ SKIP : { " " | "\t" | "\n" | "\r" | "\f" }
 
 TOKEN [IGNORE_CASE] :
 {
-  < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
+  < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" | "<>" >
 | < NOT: "não" >
 | < AND: "e" >
 | < OR: "ou" >
