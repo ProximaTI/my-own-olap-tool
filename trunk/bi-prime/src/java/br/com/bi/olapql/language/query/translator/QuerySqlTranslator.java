@@ -62,7 +62,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
      */
     private Stack<Integer> nodeCoordinates = new Stack<Integer>();
     /**
-     * List used to put the nodes in the order that they appear in the query axis.
+     * List used to put the nodes in the same order they appear in the query axis.
      * It's useful on translation of "group by" expression, due to its assortment.
      */
     private List<Node> axisNodeList = new ArrayList<Node>();
@@ -346,6 +346,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             // e indiretamente liga todos os níveis superiores também.
             Collections.sort(lowerLevels, new Comparator<Level>()           {
 
+                @Override
                 public int compare(Level level1, Level level2) {
                     return Integer.valueOf(level1.getIndice()).compareTo(Integer.valueOf(level2.getIndice()));
                 }
