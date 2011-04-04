@@ -37,7 +37,7 @@ SKIP : { " " | "\t" | "\n" | "\r" | "\f" }
 
 TOKEN [IGNORE_CASE] :
 {
-  < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" >
+  < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" | "<>" >
 | < AGGREGATOR: "quantidade" | "média" | "máximo" | "mínimo" | "soma" >
 | < IDENTIFIER: ("\"" (~["\""])* "\"") >
 | < PLUS: "+" >

@@ -19,6 +19,7 @@ public class OlapQlServer {
         DataSource dataSource = (DataSource) Application.getBean("dataSource");
 
         QuerySqlTranslator translator = new QuerySqlTranslator();
+        
         return dataSource.getConnection().createStatement().executeQuery(translator.translate(olapql));
     }
 }
