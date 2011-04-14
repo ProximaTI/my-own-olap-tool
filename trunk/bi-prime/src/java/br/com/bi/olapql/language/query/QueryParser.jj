@@ -721,34 +721,7 @@ void operating() :
 {
 }
 {
-    date() | stringLiteral() |/*@bgen(jjtree) ArithmeticExpression */
-                               {
-                                 ArithmeticExpression jjtn001 = new ArithmeticExpression(JJTARITHMETICEXPRESSION);
-                                 boolean jjtc001 = true;
-                                 jjtree.openNodeScope(jjtn001);
-                               }
-                               try {
-/*@egen*/ arithmeticExpression()/*@bgen(jjtree)*/
-                               } catch (Throwable jjte001) {
-                                 if (jjtc001) {
-                                   jjtree.clearNodeScope(jjtn001);
-                                   jjtc001 = false;
-                                 } else {
-                                   jjtree.popNode();
-                                 }
-                                 if (jjte001 instanceof RuntimeException) {
-                                   throw (RuntimeException)jjte001;
-                                 }
-                                 if (jjte001 instanceof ParseException) {
-                                   throw (ParseException)jjte001;
-                                 }
-                                 throw (Error)jjte001;
-                               } finally {
-                                 if (jjtc001) {
-                                   jjtree.closeNodeScope(jjtn001, true);
-                                 }
-                               }
-/*@egen*/                       
+    date() | stringLiteral() | arithmeticExpression() 
 }
 
 void date()       :
@@ -809,11 +782,37 @@ void stringLiteral()                :
 /*@egen*/
 }
 
-void arithmeticExpression() : 
-{
+void arithmeticExpression()                           :
+{/*@bgen(jjtree) #ArithmeticExpression(> 1) */
+  ArithmeticExpression jjtn000 = new ArithmeticExpression(JJTARITHMETICEXPRESSION);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+/*@egen*/
 }
-{
-    additiveExpression() 
+{/*@bgen(jjtree) #ArithmeticExpression(> 1) */
+    try {
+/*@egen*/
+    additiveExpression()/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+      }
+    }
+/*@egen*/ 
 }
 
 void additiveExpression()               :

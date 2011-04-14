@@ -10,7 +10,7 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
 
     public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
-("selecione {[teste], ([teste], [teste])} nas colunas, [teste] nas linhas do cubo [teste]").getBytes());
+("selecione {[teste], ([teste], [teste])} nas colunas, [teste] nas linhas do cubo [teste] onde [teste] e n\u00e3o [teste] > ((-1 / (100.8 + 2)) * [teste])").getBytes());
 
         QueryParser parser = new QueryParser(in);
 
@@ -649,30 +649,7 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     case FLOATING_POINT_LITERAL:
     case INTEGER_LITERAL:
     case 34:
-                                 ArithmeticExpression jjtn001 = new ArithmeticExpression(JJTARITHMETICEXPRESSION);
-                                 boolean jjtc001 = true;
-                                 jjtree.openNodeScope(jjtn001);
-      try {
-        arithmeticExpression();
-      } catch (Throwable jjte001) {
-                                 if (jjtc001) {
-                                   jjtree.clearNodeScope(jjtn001);
-                                   jjtc001 = false;
-                                 } else {
-                                   jjtree.popNode();
-                                 }
-                                 if (jjte001 instanceof RuntimeException) {
-                                   {if (true) throw (RuntimeException)jjte001;}
-                                 }
-                                 if (jjte001 instanceof ParseException) {
-                                   {if (true) throw (ParseException)jjte001;}
-                                 }
-                                 {if (true) throw (Error)jjte001;}
-      } finally {
-                                 if (jjtc001) {
-                                   jjtree.closeNodeScope(jjtn001, true);
-                                 }
-      }
+      arithmeticExpression();
       break;
     default:
       jj_la1[12] = jj_gen;
@@ -716,7 +693,31 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
   }
 
   final public void arithmeticExpression() throws ParseException {
-    additiveExpression();
+ /*@bgen(jjtree) #ArithmeticExpression(> 1) */
+  ArithmeticExpression jjtn000 = new ArithmeticExpression(JJTARITHMETICEXPRESSION);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      additiveExpression();
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        {if (true) throw (RuntimeException)jjte000;}
+      }
+      if (jjte000 instanceof ParseException) {
+        {if (true) throw (ParseException)jjte000;}
+      }
+      {if (true) throw (Error)jjte000;}
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, jjtree.nodeArity() > 1);
+      }
+    }
   }
 
   final public void additiveExpression() throws ParseException {

@@ -380,7 +380,7 @@ void operating() :
 {
 }
 {
-    date() | stringLiteral() | arithmeticExpression() #ArithmeticExpression 
+    date() | stringLiteral() | arithmeticExpression() 
 }
 
 void date() #Date :
@@ -407,7 +407,7 @@ void stringLiteral() #StringLiteral :
     }
 }
 
-void arithmeticExpression() : 
+void arithmeticExpression() #ArithmeticExpression(>1) :
 {
 }
 {

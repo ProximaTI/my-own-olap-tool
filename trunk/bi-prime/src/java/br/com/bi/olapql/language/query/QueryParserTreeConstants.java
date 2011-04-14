@@ -19,9 +19,9 @@ public interface QueryParserTreeConstants
   public int JJTFILTER = 13;
   public int JJTPROPERTY = 14;
   public int JJTRELATIONALOPERATOR = 15;
-  public int JJTARITHMETICEXPRESSION = 16;
-  public int JJTDATE = 17;
-  public int JJTSTRINGLITERAL = 18;
+  public int JJTDATE = 16;
+  public int JJTSTRINGLITERAL = 17;
+  public int JJTARITHMETICEXPRESSION = 18;
   public int JJTADDITION = 19;
   public int JJTMULTIPLICATION = 20;
   public int JJTNUMBER = 21;
@@ -44,12 +44,12 @@ public interface QueryParserTreeConstants
     "Filter",
     "Property",
     "RelationalOperator",
-    "ArithmeticExpression",
     "Date",
     "StringLiteral",
+    "ArithmeticExpression",
     "Addition",
     "Multiplication",
     "Number",
   };
 }
-/* JavaCC - OriginalChecksum=2dfcac77038ceaf77d3cf478dda6f1b9 (do not edit this line) */
+/* JavaCC - OriginalChecksum=a2e6ac45ad0ee5aae6c74670bdbf08fc (do not edit this line) */
