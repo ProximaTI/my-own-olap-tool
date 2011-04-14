@@ -344,7 +344,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
-            Collections.sort(lowerLevels, new Comparator<Level>()           {
+            Collections.sort(lowerLevels, new Comparator<Level>() {
 
                 @Override
                 public int compare(Level level1, Level level2) {
@@ -439,6 +439,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     public String translate(String olapql) throws ParseException {
         QueryParser parser = new QueryParser(IOUtils.toInputStream(olapql));
         Instruction instruction = (Instruction) parser.instruction();
+
+        instruction.dump(" ");
 
         StringBuilder sb = new StringBuilder();
         QuerySqlTranslator translator = new QuerySqlTranslator();

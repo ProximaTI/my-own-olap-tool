@@ -116,16 +116,14 @@ public class NewJFrame extends javax.swing.JFrame {
 
             QuerySqlTranslator translator = new QuerySqlTranslator();
 
-            System.out.println(translator.translate(jTextArea1.getText()));
-
             model.setResultset(server.execute(jTextArea1.getText()));
             jTable1.setModel(model);
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            //JOptionPane.showMessageDialog(this, sw.toString());
-            JOptionPane.showMessageDialog(this, ex.getMessage());
+            JOptionPane.showMessageDialog(this, sw.toString());
+            //JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

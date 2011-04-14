@@ -19,11 +19,11 @@ public interface QueryParserVisitor
   public void visit(Filter node, StringBuilder data);
   public void visit(Property node, StringBuilder data);
   public void visit(RelationalOperator node, StringBuilder data);
-  public void visit(ArithmeticExpression node, StringBuilder data);
   public void visit(Date node, StringBuilder data);
   public void visit(StringLiteral node, StringBuilder data);
+  public void visit(ArithmeticExpression node, StringBuilder data);
   public void visit(Addition node, StringBuilder data);
   public void visit(Multiplication node, StringBuilder data);
   public void visit(Number node, StringBuilder data);
 }
-/* JavaCC - OriginalChecksum=e9c90c7b1b896d6dcd16efb86c01e0ce (do not edit this line) */
+/* JavaCC - OriginalChecksum=d791cfed0382d496e5f0041d18e69b9e (do not edit this line) */
