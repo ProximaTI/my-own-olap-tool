@@ -1,0 +1,13 @@
+ALTER TABLE `cube_level` DROP FOREIGN KEY `FK_cube_level_cubeId`
+ALTER TABLE `cube_level` DROP FOREIGN KEY `FK_cube_level_levelId`
+ALTER TABLE `filter` DROP FOREIGN KEY `FK_filter_cubeId`
+ALTER TABLE `level` DROP FOREIGN KEY `FK_level_dimensionId`
+ALTER TABLE `measure` DROP FOREIGN KEY `FK_measure_cubeId`
+ALTER TABLE `property` DROP FOREIGN KEY `FK_property_levelId`
+DROP TABLE `cube`
+DROP TABLE `cube_level`
+DROP TABLE `dimension`
+DROP TABLE `filter`
+DROP TABLE `level`
+DROP TABLE `measure`
+DROP TABLE `property`
