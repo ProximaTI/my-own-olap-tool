@@ -1,0 +1,22 @@
+body {
+	font-family: arial;
+	font-size: 11pt;
+}
+
+input {
+	border: 1px solid;
+	margin: 1px;
+}
+
+h1 {
+	font-size: 15pt;
+	border-bottom: 1px solid;
+}
+
+.info {
+	color:green;
+}
+
+.error {
+	color:red;
+}
