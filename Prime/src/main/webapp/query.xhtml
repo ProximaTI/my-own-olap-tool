@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.prime.com.tr/ui"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:panelGroup>
+        <h:form>
+            <h:panelGrid columns="1">
+                <p:inputTextarea autoResize="true" value="#{queryHandler.olapQl}" maxHeight="300" effectDuration="100"/>
+                <p:spacer height="10"/>
+                <p:dataTable value="#{queryHandler.result}" var="row" paginator="true" rows="10">
+                    <ui:repeat value="#{queryHandler.resultMetadata}" var="metadata">
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{metadata.columnName}"/>
+                            </f:facet>
+                        </p:column>
+                    </ui:repeat>
+                </p:dataTable>
+            </h:panelGrid>
+        </h:form>
+    </h:panelGroup>
+</html>

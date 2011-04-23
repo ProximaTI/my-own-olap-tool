@@ -1,0 +1,110 @@
+<h:panelGroup
+			xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+>			
+<h:form>
+<h:panelGroup 
+			id="list" rendered="#{empty measureHandler.selected}">
+			<h1><h:outputText value="#{msgs['measure.list.title']}" /></h1>
+
+			<h:messages errorClass="error"  infoClass="info"/>
+			<br />	
+			<h:commandButton id="newMeasure" value="#{msgs['new']}" action="#{measureHandler.newInstance}">
+				<f:ajax execute="@form" render="@form"/>
+			</h:commandButton>
+			
+			<br />
+			<h:dataTable value="#{measureHandler.list}" var="measure">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['measure.entity.id']}" />
+					</f:facet>
+					<h:outputText value="#{measure.id}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['measure.entity.cube']}" />
+					</f:facet>
+					<h:outputText value="#{measure.cube.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['measure.entity.name']}" />
+					</f:facet>
+					<h:outputText value="#{measure.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['measure.entity.description']}" />
+					</f:facet>
+					<h:outputText value="#{measure.description}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['measure.entity.expression']}" />
+					</f:facet>
+					<h:outputText value="#{measure.expression}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['measure.entity.filterExpression']}" />
+					</f:facet>
+					<h:outputText value="#{measure.filterExpression}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['options']}" />
+					</f:facet>
+					<h:commandButton id="editMeasure" action="#{measureHandler.edit(measure)}" value="#{msgs['edit']}">
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+					<h:commandButton id="removeMeasure" action="#{measureHandler.delete(measure)}" value="#{msgs['remove']}" >
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+				</h:column>
+			</h:dataTable>
+		</h:panelGroup>
+		<h:panelGroup id="editviewMeasure" rendered="#{not empty measureHandler.selected}">
+			<h1><h:outputText value="#{msgs['measure.edit.title']}"/></h1>
+			<h:messages errorClass="error"  infoClass="info"/>
+			<br/>		
+			<h:panelGrid columns="3">
+				<h:outputText value="#{msgs['measure.entity.id']}" />
+				<h:outputText value="#{measureHandler.selected.id}"/>
+				<h:outputText value="" />
+			
+				<h:outputLabel value="#{msgs['measure.entity.cube']}" for="editCubeMeasure"/>
+				<h:selectOneMenu id="editCubeMeasure" value="#{measureHandler.selected.cube}" converter="#{genericConverter.create(measureHandler.listOfCubes)}">
+					<f:selectItems value="#{measureHandler.listOfCubes}" var="cube" itemLabel="#{cube.name}" itemValue="#{cube}" noSelectionValue="#{msgs['selectOneValue']}"/>
+				</h:selectOneMenu>
+				<h:message for="editCubeMeasure"/>
+			
+				<h:outputLabel value="#{msgs['measure.entity.name']}" for="editNameMeasure"/>
+				<h:inputText id="editNameMeasure" value="#{measureHandler.selected.name}" />
+				<h:message for="editNameMeasure"/>
+			
+				<h:outputLabel value="#{msgs['measure.entity.description']}" for="editDescriptionMeasure"/>
+				<h:inputText id="editDescriptionMeasure" value="#{measureHandler.selected.description}" />
+				<h:message for="editDescriptionMeasure"/>
+			
+				<h:outputLabel value="#{msgs['measure.entity.expression']}" for="editExpressionMeasure"/>
+				<h:inputText id="editExpressionMeasure" value="#{measureHandler.selected.expression}" />
+				<h:message for="editExpressionMeasure"/>
+			
+				<h:outputLabel value="#{msgs['measure.entity.filterExpression']}" for="editFilterExpressionMeasure"/>
+				<h:inputText id="editFilterExpressionMeasure" value="#{measureHandler.selected.filterExpression}" />
+				<h:message for="editFilterExpressionMeasure"/>
+
+			</h:panelGrid>
+			<h:panelGrid columns="2">
+				<h:commandButton action="#{measureHandler.save(measureHandler.selected)}" value="#{msgs['save']}">
+					<f:ajax execute="@form" render="@form"/>
+				</h:commandButton>
+				<h:commandButton action="#{measureHandler.cancelEdit()}" value="#{msgs['cancel']}">
+					<f:ajax execute="@form" render="@form"/>
+				</h:commandButton>
+			</h:panelGrid>
+		</h:panelGroup>
+</h:form>
+		</h:panelGroup>

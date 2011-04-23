@@ -1,0 +1,101 @@
+<h:panelGroup
+			xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+
+>
+<h:form>
+		<h:panelGroup
+		  rendered="#{empty filterHandler.selected}">
+			<h1><h:outputText value="#{msgs['filter.list.title']}" /></h1>
+
+			<h:messages errorClass="error"  infoClass="info"/>
+			<br />	
+			<h:commandButton id="newFilter" value="#{msgs['new']}" action="#{filterHandler.newInstance}">
+				<f:ajax execute="@form" render="@form"/>
+			</h:commandButton>
+			
+			<br />
+			<h:dataTable value="#{filterHandler.list}" var="filter">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['filter.entity.id']}" />
+					</f:facet>
+					<h:outputText value="#{filter.id}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['filter.entity.cube']}" />
+					</f:facet>
+					<h:outputText value="#{filter.cube.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['filter.entity.name']}" />
+					</f:facet>
+					<h:outputText value="#{filter.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['filter.entity.description']}" />
+					</f:facet>
+					<h:outputText value="#{filter.description}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['filter.entity.expression']}" />
+					</f:facet>
+					<h:outputText value="#{filter.expression}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['options']}" />
+					</f:facet>
+					<h:commandButton id="editFilter" action="#{filterHandler.edit(filter)}" value="#{msgs['edit']}">
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+					<h:commandButton id="removeFilter" action="#{filterHandler.delete(filter)}" value="#{msgs['remove']}" >
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+				</h:column>
+			</h:dataTable>
+		</h:panelGroup>
+		<h:panelGroup id="editviewFilter" rendered="#{not empty filterHandler.selected}">
+			<h1><h:outputText value="#{msgs['filter.edit.title']}"/></h1>
+			<h:messages errorClass="error"  infoClass="info"/>
+			<br/>		
+			<h:panelGrid columns="3">
+				<h:outputText value="#{msgs['filter.entity.id']}" />
+				<h:outputText value="#{filterHandler.selected.id}"/>
+				<h:outputText value="" />
+			
+				<h:outputLabel value="#{msgs['filter.entity.cube']}" for="editFilterCube"/>
+				<h:selectOneMenu id="editFilterCube" value="#{filterHandler.selected.cube}" converter="#{genericConverter.create(filterHandler.listOfCubes)}">
+					<f:selectItems value="#{filterHandler.listOfCubes}" var="cube" itemLabel="#{cube.name}" itemValue="#{cube}" noSelectionValue="#{msgs['selectOneValue']}"/>
+				</h:selectOneMenu>
+				<h:message for="editFilterCube"/>
+			
+				<h:outputLabel value="#{msgs['filter.entity.name']}" for="editNameFilter"/>
+				<h:inputText id="editNameFilter" value="#{filterHandler.selected.name}" />
+				<h:message for="editNameFilter"/>
+			
+				<h:outputLabel value="#{msgs['filter.entity.description']}" for="editDescriptionFilter"/>
+				<h:inputText id="editDescriptionFilter" value="#{filterHandler.selected.description}" />
+				<h:message for="editDescriptionFilter"/>
+			
+				<h:outputLabel value="#{msgs['filter.entity.expression']}" for="editExpressionFilter"/>
+				<h:inputText id="editExpressionFilter" value="#{filterHandler.selected.expression}" />
+				<h:message for="editExpressionFilter"/>
+			
+			</h:panelGrid>
+			<h:panelGrid columns="2">
+				<h:commandButton action="#{filterHandler.save(filterHandler.selected)}" value="#{msgs['save']}">
+					<f:ajax execute="@form" render="@form"/>
+				</h:commandButton>
+				<h:commandButton action="#{filterHandler.cancelEdit()}" value="#{msgs['cancel']}">
+					<f:ajax execute="@form" render="@form"/>
+				</h:commandButton>
+			</h:panelGrid>
+		</h:panelGroup>
+		</h:form>
+</h:panelGroup>
