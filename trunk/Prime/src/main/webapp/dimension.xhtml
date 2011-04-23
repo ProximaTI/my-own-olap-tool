@@ -1,0 +1,390 @@
+<h:panelGroup
+			xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+
+>
+<h:form>
+		<h:panelGroup 
+		rendered="#{empty dimensionHandler.viewDimensions.selected}">
+			<h1><h:outputText value="#{msgs['dimension.list.title']}" /></h1>
+			<h:messages errorClass="error"  infoClass="info"/>
+			<br />	
+			<h:commandButton id="newDimension" value="#{msgs['new']}" action="#{dimensionHandler.viewDimensions.newInstance}">
+				<f:ajax execute="@form" render="@form"/>
+			</h:commandButton>
+			<br />
+			<h:dataTable value="#{dimensionHandler.viewDimensions.list}" var="dimension">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['dimension.entity.id']}" />
+					</f:facet>
+					<h:outputText value="#{dimension.id}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['dimension.entity.name']}" />
+					</f:facet>
+					<h:outputText value="#{dimension.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['dimension.entity.description']}" />
+					</f:facet>
+					<h:outputText value="#{dimension.description}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="#{msgs['options']}" />
+					</f:facet>
+					<h:commandButton id="editDimension" action="#{dimensionHandler.viewDimensions.edit(dimension)}" value="#{msgs['edit']}">
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+					<h:commandButton id="removeDimension" action="#{dimensionHandler.viewDimensions.delete(dimension)}" value="#{msgs['remove']}" >
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+					
+				</h:column>
+			</h:dataTable>
+		</h:panelGroup>
+		<h:panelGroup  rendered="#{not empty dimensionHandler.viewDimensions.selected}">
+			<h1><h:outputText value="#{msgs['dimension.edit.title']}"/></h1>
+			<h:messages errorClass="error"  infoClass="info"/>
+			<br/>		
+			<h:panelGrid columns="3">
+				<h:outputText value="#{msgs['dimension.entity.id']}" />
+				<h:outputText value="#{dimensionHandler.viewDimensions.selected.id}"/>
+				<h:outputText value="" />
+			
+				<h:outputLabel value="#{msgs['dimension.entity.name']}" for="editNameDimension"/>
+				<h:inputText id="editNameDimension" value="#{dimensionHandler.viewDimensions.selected.name}" />
+				<h:message for="editNameDimension"/>
+			
+				<h:outputLabel value="#{msgs['dimension.entity.description']}" for="editDescriptionDimension"/>
+				<h:inputText id="editDescriptionDimension" value="#{dimensionHandler.viewDimensions.selected.description}" />
+				<h:message for="editDescriptionDimension"/>
+			
+			</h:panelGrid>
+			<h:panelGrid columns="2">
+				<h:commandButton action="#{dimensionHandler.viewDimensions.save(dimensionHandler.viewDimensions.selected)}" value="#{msgs['save']}">
+					<f:ajax execute="@form" render="@form"/>
+				</h:commandButton>
+				<h:commandButton action="#{dimensionHandler.viewDimensions.cancelEdit()}" value="#{msgs['cancel']}">
+					<f:ajax execute="@form" render="@form"/>
+				</h:commandButton>
+			</h:panelGrid>
+			<h:panelGroup rendered="#{empty dimensionHandler.viewLevels.selected and dimensionHandler.viewDimensions.selected.id !=null}">
+				<h1><h:outputText value="#{msgs['level.list.title']}" /></h1>
+				<h:messages errorClass="error"  infoClass="info"/>
+				<br />	
+				<h:commandButton id="newLevel" value="#{msgs['new']}" action="#{dimensionHandler.viewLevels.newInstance}">
+					<f:ajax execute="@form" render="@form"/>
+				</h:commandButton>
+				<br />
+				<h:dataTable value="#{dimensionHandler.viewLevels.list}" var="level">
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.id']}" />
+						</f:facet>
+						<h:outputText value="#{level.id}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.dimension']}" />
+						</f:facet>
+						<h:outputText value="#{level.dimension.name}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.name']}" />
+						</f:facet>
+						<h:outputText value="#{level.name}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.description']}" />
+						</f:facet>
+						<h:outputText value="#{level.description}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.schemaName']}" />
+						</f:facet>
+						<h:outputText value="#{level.schemaName}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.tableName']}" />
+						</f:facet>
+						<h:outputText value="#{level.tableName}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.upperLevelJoinColumn']}" />
+						</f:facet>
+						<h:outputText value="#{level.upperLevelJoinColumn}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['level.entity.indice']}" />
+						</f:facet>
+						<h:outputText value="#{level.indice}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="#{msgs['options']}" />
+						</f:facet>
+						<h:commandButton id="editLevel" action="#{dimensionHandler.viewLevels.edit(level)}" value="#{msgs['edit']}" >
+							<f:ajax execute="@form" render="@form"/>
+						</h:commandButton>
+						<h:commandButton id="removeLevel" action="#{dimensionHandler.viewLevels.delete(level)}" value="#{msgs['remove']}" >
+							<f:ajax execute="@form" render="@form"/>
+						</h:commandButton>
+					</h:column>
+				</h:dataTable>
+			</h:panelGroup>
+			<h:panelGroup id="editViewLevel" rendered="#{not empty dimensionHandler.viewLevels.selected}">
+				<h1><h:outputText value="#{msgs['level.edit.title']}"/></h1>
+				<h:messages errorClass="error"  infoClass="info"/>
+				<br/>		
+				<h:panelGrid columns="3">
+					<h:outputText value="#{msgs['level.entity.id']}" />
+					<h:outputText value="#{dimensionHandler.viewLevels.selected.id}"/>
+					<h:outputText value="" />
+				
+					<h:outputText value="#{msgs['level.entity.dimension']}"/>
+					<h:outputText value="#{dimensionHandler.viewLevels.selected.dimension.name}" />
+					<h:outputText value=""/>
+				
+					<h:outputLabel value="#{msgs['level.entity.name']}" for="editNameLevel"/>
+					<h:inputText id="editNameLevel" value="#{dimensionHandler.viewLevels.selected.name}" />
+					<h:message for="editNameLevel"/>
+				
+					<h:outputLabel value="#{msgs['level.entity.description']}" for="editDescriptionLevel"/>
+					<h:inputText id="editDescriptionLevel" value="#{dimensionHandler.viewLevels.selected.description}" />
+					<h:message for="editDescriptionLevel"/>
+				
+					<h:outputLabel value="#{msgs['level.entity.schemaName']}" for="editSchemaNameLevel"/>
+					<h:inputText id="editSchemaNameLevel" value="#{dimensionHandler.viewLevels.selected.schemaName}" />
+					<h:message for="editSchemaNameLevel"/>
+				
+					<h:outputLabel value="#{msgs['level.entity.tableName']}" for="editTableNameLevel"/>
+					<h:inputText id="editTableNameLevel" value="#{dimensionHandler.viewLevels.selected.tableName}" />
+					<h:message for="editTableNameLevel"/>
+				
+					<h:outputLabel value="#{msgs['level.entity.upperLevelJoinColumn']}" for="editUpperLevelJoinColumnLevel"/>
+					<h:inputText id="editUpperLevelJoinColumnLevel" value="#{dimensionHandler.viewLevels.selected.upperLevelJoinColumn}" />
+					<h:message for="editUpperLevelJoinColumnLevel"/>
+				
+					<h:outputLabel value="#{msgs['level.entity.indice']}" for="editIndiceLevel"/>
+					<h:inputText id="editIndiceLevel" value="#{dimensionHandler.viewLevels.selected.indice}" />
+					<h:message for="editIndiceLevel"/>
+				
+				</h:panelGrid>
+				<h:panelGrid columns="2">
+					<h:commandButton action="#{dimensionHandler.viewLevels.save(dimensionHandler.viewLevels.selected)}" value="#{msgs['save']}">
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+					<h:commandButton action="#{dimensionHandler.viewLevels.cancelEdit()}" value="#{msgs['cancel']}">
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+				</h:panelGrid>
+				<p:tabView dynamic="true" cache="false">
+				<p:tab title="#{msgs['dimension.tab.cubelevel']}">
+				<h:panelGroup rendered="#{empty dimensionHandler.viewCubeLevels.selected and dimensionHandler.viewLevels.selected.id != null}">
+					<h1><h:outputText value="#{msgs['cubeLevel.list.title']}" /></h1>
+					<h:messages errorClass="error"  infoClass="info"/>
+					<br />	
+					<h:commandButton id="newCubeLevels" value="#{msgs['new']}" action="#{dimensionHandler.viewCubeLevels.newInstance}">
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+					<br />
+					<h:dataTable value="#{dimensionHandler.viewCubeLevels.list}" var="cubeLevel">
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['cubeLevel.entity.id']}" />
+							</f:facet>
+							<h:outputText value="#{cubeLevel.id}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['cubeLevel.entity.level']}" />
+							</f:facet>
+							<h:outputText value="#{cubeLevel.level.name}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['cubeLevel.entity.cube']}" />
+							</f:facet>
+							<h:outputText value="#{cubeLevel.cube.name}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['cubeLevel.entity.joinColumn']}" />
+							</f:facet>
+							<h:outputText value="#{cubeLevel.joinColumn}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['options']}" />
+							</f:facet>
+							<h:commandButton id="editCubeLevel" action="#{dimensionHandler.viewCubeLevels.edit(cubeLevel)}" value="#{msgs['edit']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandButton>
+							<h:commandButton id="removeCubeLevel" action="#{dimensionHandler.viewCubeLevels.delete(cubeLevel)}" value="#{msgs['remove']}" >
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandButton>
+						</h:column>
+					</h:dataTable>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{not empty dimensionHandler.viewCubeLevels.selected}">
+					<h1><h:outputText value="#{msgs['cubeLevel.edit.title']}"/></h1>
+					<h:messages errorClass="error"  infoClass="info"/>
+					<br/>		
+					<h:panelGrid columns="3">
+						<h:outputText value="#{msgs['cubeLevel.entity.id']}" />
+						<h:outputText value="#{dimensionHandler.viewCubeLevels.selected.id}"/>
+						<h:outputText value="" />
+					
+						<h:outputText value="#{msgs['cubeLevel.entity.level']}"/>
+						<h:outputText value="#{dimensionHandler.viewCubeLevels.selected.level.name}" />
+						<h:outputText value=""/>
+
+						<h:outputLabel value="#{msgs['cubeLevel.entity.cube']}" for="editCubeCubeLevel"/>
+						<h:selectOneMenu id="editCubeCubeLevel" value="#{dimensionHandler.viewCubeLevels.selected.cube}" converter="#{genericConverter.create(dimensionHandler.listOfCubes)}">
+							<f:selectItems value="#{dimensionHandler.listOfCubes}" var="cube" itemLabel="#{cube.name}" itemValue="#{cube}" noSelectionValue="#{msgs['selectOneValue']}"/>
+						</h:selectOneMenu>
+						<h:message for="editCubeCubeLevel"/>
+					
+						<h:outputLabel value="#{msgs['cubeLevel.entity.joinColumn']}" for="editJoinColumnLevel"/>
+						<h:inputText id="editJoinColumnLevel" value="#{dimensionHandler.viewCubeLevels.selected.joinColumn}" />
+						<h:message for="editJoinColumnLevel"/>
+					
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:commandButton action="#{dimensionHandler.viewCubeLevels.save(dimensionHandler.viewCubeLevels.selected)}" value="#{msgs['save']}">
+							<f:ajax execute="@form" render="@form"/>
+						</h:commandButton>
+						<h:commandButton action="#{dimensionHandler.viewCubeLevels.cancelEdit()}" value="#{msgs['cancel']}">
+							<f:ajax execute="@form" render="@form"/>
+						</h:commandButton>
+					</h:panelGrid>
+				</h:panelGroup>
+				</p:tab>
+								
+				<p:tab title="#{msgs['dimension.tab.property']}">
+				<h:panelGroup rendered="#{empty dimensionHandler.viewProperties.selected and dimensionHandler.viewLevels.selected.id != null}">
+					<h1><h:outputText value="#{msgs['property.list.title']}" /></h1>
+					<h:messages errorClass="error"  infoClass="info"/>
+					<br />	
+					<h:commandButton id="newPropertyLevels" value="#{msgs['new']}" action="#{dimensionHandler.viewProperties.newInstance}">
+						<f:ajax execute="@form" render="@form"/>
+					</h:commandButton>
+					<br />
+					<h:dataTable value="#{dimensionHandler.viewProperties.list}" var="property">
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['property.entity.id']}" />
+							</f:facet>
+							<h:outputText value="#{property.id}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['property.entity.level']}" />
+							</f:facet>
+							<h:outputText value="#{property.level.name}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['property.entity.name']}" />
+							</f:facet>
+							<h:outputText value="#{property.name}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['property.entity.description']}" />
+							</f:facet>
+							<h:outputText value="#{property.description}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['property.entity.columnName']}" />
+							</f:facet>
+							<h:outputText value="#{property.columnName}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['property.entity.codeProperty']}" />
+							</f:facet>
+							<h:outputText value="#{property.codeProperty ? msgs['true'] : msgs['false']}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['property.entity.nameProperty']}" />
+							</f:facet>
+							<h:outputText value="#{property.nameProperty ? msgs['true'] : msgs['false']}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="#{msgs['options']}" />
+							</f:facet>
+							<h:commandButton id="editProperty" action="#{dimensionHandler.viewProperties.edit(property)}" value="#{msgs['edit']}">
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandButton>
+							<h:commandButton id="removeProperty" action="#{dimensionHandler.viewProperties.delete(property)}" value="#{msgs['remove']}" >
+								<f:ajax execute="@form" render="@form"/>
+							</h:commandButton>
+						</h:column>
+					</h:dataTable>
+				</h:panelGroup>
+				
+				<h:panelGroup rendered="#{not empty dimensionHandler.viewProperties.selected}">
+					<h1><h:outputText value="#{msgs['property.edit.title']}"/></h1>
+					<h:messages errorClass="error"  infoClass="info"/>
+					<br/>		
+					<h:panelGrid columns="3">
+						<h:outputText value="#{msgs['property.entity.id']}" />
+						<h:outputText value="#{dimensionHandler.viewProperties.selected.id}"/>
+						<h:outputText value="" />
+					
+						<h:outputText value="#{msgs['property.entity.level']}"/>
+						<h:outputText value="#{dimensionHandler.viewProperties.selected.level.name}" />
+						<h:outputText value=""/>
+
+						<h:outputLabel value="#{msgs['property.entity.name']}" for="editNameProperty"/>
+						<h:inputText id="editNameProperty" value="#{dimensionHandler.viewProperties.selected.name}" />
+						<h:message for="editNameProperty"/>
+					
+						<h:outputLabel value="#{msgs['property.entity.description']}" for="editDescriptionProperty"/>
+						<h:inputText id="editDescriptionProperty" value="#{dimensionHandler.viewProperties.selected.description}" />
+						<h:message for="editDescriptionProperty"/>
+					
+						<h:outputLabel value="#{msgs['property.entity.columnName']}" for="editColumnNameProperty"/>
+						<h:inputText id="editColumnNameProperty" value="#{dimensionHandler.viewProperties.selected.columnName}" />
+						<h:message for="editColumnNameProperty"/>
+					
+						<h:outputLabel value="#{msgs['property.entity.codeProperty']}" for="editCodePropertyProperty"/>
+						<h:selectBooleanCheckbox id="editCodePropertyProperty" value="#{dimensionHandler.viewProperties.selected.codeProperty}" />
+						<h:message for="editCodePropertyProperty"/>
+					
+						<h:outputLabel value="#{msgs['property.entity.nameProperty']}" for="editNamePropertyProperty"/>
+						<h:selectBooleanCheckbox id="editNamePropertyProperty" value="#{dimensionHandler.viewProperties.selected.nameProperty}" />
+						<h:message for="editNamePropertyProperty"/>
+					
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<h:commandButton action="#{dimensionHandler.viewProperties.save(dimensionHandler.viewProperties.selected)}" value="#{msgs['save']}">
+							<f:ajax execute="@form" render="@form"/>
+						</h:commandButton>
+						<h:commandButton action="#{dimensionHandler.viewProperties.cancelEdit()}" value="#{msgs['cancel']}">
+							<f:ajax execute="@form" render="@form"/>
+						</h:commandButton>
+					</h:panelGrid>
+				</h:panelGroup>
+				</p:tab>
+				</p:tabView>
+			</h:panelGroup>					
+		</h:panelGroup>
+	</h:form>
+</h:panelGroup>

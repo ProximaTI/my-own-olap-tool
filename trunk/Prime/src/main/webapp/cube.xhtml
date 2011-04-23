@@ -1,0 +1,96 @@
+<h:panelGroup
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    >		<h:form>
+        <h:panelGroup
+            rendered="#{empty cubeHandler.selected}">
+            <h1><h:outputText value="#{msgs['cube.list.title']}" /></h1>
+
+            <h:messages errorClass="error"  infoClass="info"/>
+            <br />
+            <h:commandButton value="#{msgs['new']}" action="#{cubeHandler.newInstance}">
+                <f:ajax execute="@form" render="@form"/>
+            </h:commandButton>
+            <br />
+            <h:dataTable value="#{cubeHandler.list}" var="cube">
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{msgs['cube.entity.id']}" />
+                    </f:facet>
+                    <h:outputText value="#{cube.id}" />
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{msgs['cube.entity.name']}" />
+                    </f:facet>
+                    <h:outputText value="#{cube.name}" />
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{msgs['cube.entity.description']}" />
+                    </f:facet>
+                    <h:outputText value="#{cube.description}" />
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{msgs['cube.entity.schemaName']}" />
+                    </f:facet>
+                    <h:outputText value="#{cube.schemaName}" />
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{msgs['cube.entity.tableName']}" />
+                    </f:facet>
+                    <h:outputText value="#{cube.tableName}" />
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{msgs['options']}" />
+                    </f:facet>
+                    <h:commandButton action="#{cubeHandler.edit(cube)}" value="#{msgs['edit']}">
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+                    <h:commandButton  action="#{cubeHandler.delete(cube)}" value="#{msgs['remove']}" >
+                        <f:ajax execute="@form" render="@form"/>
+                    </h:commandButton>
+                </h:column>
+            </h:dataTable>
+        </h:panelGroup>
+        <h:panelGroup  rendered="#{not empty cubeHandler.selected}">
+            <h1><h:outputText value="#{msgs['cube.edit.title']}"/></h1>
+            <h:messages errorClass="error"  infoClass="info"/>
+            <br/>
+            <h:panelGrid columns="3">
+                <h:outputText value="#{msgs['cube.entity.id']}" />
+                <h:outputText value="#{cubeHandler.selected.id}"/>
+                <h:outputText value="" />
+
+                <h:outputLabel value="#{msgs['cube.entity.name']}" for="editcubeName"/>
+                <h:inputText id="editcubeName" value="#{cubeHandler.selected.name}" />
+                <h:message for="editcubeName"/>
+
+
+                <h:outputLabel value="#{msgs['cube.entity.description']}" for="editcubeDescription"/>
+                <h:inputText id="editcubeDescription" value="#{cubeHandler.selected.description}" />
+                <h:message for="editcubeDescription"/>
+
+                <h:outputLabel value="#{msgs['cube.entity.schemaName']}" for="editcubeSchemaName"/>
+                <h:inputText id="editcubeSchemaName" value="#{cubeHandler.selected.schemaName}" />
+                <h:message for="editcubeSchemaName"/>
+
+                <h:outputLabel value="#{msgs['cube.entity.tableName']}" for="editcubeTableName"/>
+                <h:inputText id="editcubeTableName" value="#{cubeHandler.selected.tableName}" />
+                <h:message for="editcubeTableName"/>
+            </h:panelGrid>
+            <h:panelGrid columns="2">
+                <h:commandButton action="#{cubeHandler.save(cubeHandler.selected)}" value="#{msgs['save']}">
+                    <f:ajax execute="@form" render="@form"/>
+                </h:commandButton>
+                <h:commandButton action="#{cubeHandler.cancelEdit()}" value="#{msgs['cancel']}">
+                    <f:ajax execute="@form" render="@form"/>
+                </h:commandButton>
+            </h:panelGrid>
+        </h:panelGroup>
+    </h:form>
+</h:panelGroup>
