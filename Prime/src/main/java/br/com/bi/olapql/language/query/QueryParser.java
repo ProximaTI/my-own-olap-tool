@@ -10,7 +10,7 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
 
    public static void main(String args [])
    {
-      String s = "selecione [Teste] nas colunas, [Teste] nas linhas do cubo [Vendas] onde n\u00e3o (1 > [n\u00edvel].[propriedade] e 2 * \"hdfh\" + 1 + 1 = 2) e 1 = 1 ou [filtro]";
+      String s = "selecione [Teste] nas colunas, [Teste] nas linhas do cubo [Vendas] onde [teste] e não 1 > [teste].[teste]";
       InputStream in = new ByteArrayInputStream(s.getBytes());
       QueryParser parser = new QueryParser(in);
       try

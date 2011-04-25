@@ -35,256 +35,318 @@ PARSER_END (FilterParser)
 
 SKIP : { " " | "\t" | "\n" | "\r" | "\f" }
 
-TOKEN [IGNORE_CASE] :
+TOKEN [ IGNORE_CASE ] :
 {
-  < RELATIONAL_OPERATOR: ">" | "<" | ">=" | "<=" | "=" | "<>" >
-| < NOT: "não" >
-| < AND: "e" >
-| < OR: "ou" >
-| < DOT: "." >
-| < PLUS: "+" >
-| < MINUS: "-" >
-| < MULT: "*" >
-| < DIV: "/" >
-| < LBRA: "[" >
-| < RBRA: "]" >
-| < DATE: ((["0"-"9"])+ "/" (["0"-"9"])+ "/" (["0"-"9"])+) >
-| < METADATA_OBJECT_NAME: <LBRA> (~["[","]"])+ <RBRA> >
-| < FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])? 
-                             | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])? 
-                             | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
-                             | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"] >
-| < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
-| < INTEGER_LITERAL : ["0"-"9"] (["0"-"9"])* >
-| < STRING_LITERAL: "\"" (<CHAR>)* "\"" > 
-| < #CHAR: (~["\""] | "\\" (["n","r","\\","\'","\""])) >
+   < RELATIONAL_OPERATOR :
+      ">"
+   |  "<"
+   |  ">="
+   |  "<="
+   |  "="
+   |  "<>" >
+|  < NOT : "não" >
+|  < AND : "e" >
+|  < OR : "ou" >
+|  < DOT : "." >
+|  < PLUS : "+" >
+|  < MINUS : "-" >
+|  < MULT : "*" >
+|  < DIV : "/" >
+|  < LBRA : "[" >
+|  < RBRA : "]" >
+|  < LPAREN : "(" >
+|  < RPAREN : ")" >
+|  < COMMA : "," >
+|  < LBRACE : "{" >
+|  < RBRACE : "}" >
+|  < DATE :
+      (
+         ([ "0"-"9" ])+ "/" ([ "0"-"9" ])+ "/" ([ "0"-"9" ])+
+      ) >
+|  < IN : "pertence" >
+|  < LIKE : "contém" >
+|  < STARTS_WITH : "começa com" >
+|  < ENDS_WITH : "termina com" >
+|  < METADATA_OBJECT_NAME : < LBRA > (~[ "[", "]" ])+ < RBRA > >
+|  < FLOATING_POINT_LITERAL :
+      ([ "0"-"9" ])+ "." ([ "0"-"9" ])* (< EXPONENT >)? ([ "f", "F", "d", "D" ])?
+   |  "." ([ "0"-"9" ])+ (< EXPONENT >)? ([ "f", "F", "d", "D" ])?
+   |  ([ "0"-"9" ])+ < EXPONENT > ([ "f", "F", "d", "D" ])?
+   |  ([ "0"-"9" ])+ (< EXPONENT >)? [ "f", "F", "d", "D" ] >
+|  < #EXPONENT : [ "e", "E" ] ([ "+", "-" ])? ([ "0"-"9" ])+ >
+|  < INTEGER_LITERAL : [ "0"-"9" ] ([ "0"-"9" ])* >
+|  < STRING_LITERAL : "\"" (< CHAR >)* "\"" >
+|  < #CHAR :
+      (
+         ~[ "\"" ]
+      |  "\\" ([ "n", "r", "\\", "\'", "\"" ])
+      ) >
 }
 
-SimpleNode filterExpression() #FilterExpression :
+
+SimpleNode filterExpression() #FilterExpression:
+{}
 {
-}
-{
-    expression() <EOF> 
+   orCondition() <EOF>
 
     {
         return jjtThis;
     }
 }
 
-void expression() : 
+void orCondition() #OrCondition(>1)
+:
+{}
 {
-}
-{
-    disjunction() 
-}
-
-void disjunction() #Disjunction(>1) :
-{
-}
-{
-    ( conjunction() ( <OR> conjunction() )* ) 
+   (
+      andCondition()
+      (
+         < OR > andCondition()
+      )*
+   )
 }
 
-void conjunction() #Conjunction(>1) : 
+void andCondition() #AndCondition(>1)
+:
+{}
 {
-}
-{
-    ( term() ( <AND> term() )* )
-}
-
-void term() :
-{
-}
-{
-    atom() | negation() 
+   (
+      condition()
+      (
+         < AND > condition()
+      )*
+   )
 }
 
-void atom() :
+void condition() #Condition(>1)
+:
+{}
 {
-}
-{
-    ( LOOKAHEAD(2) comparison() | filter() ) | "(" filterExpression() ")" 
+   (
+      negation()
+   |
+      (
+         LOOKAHEAD(2)
+         operand() conditionRightHandSide()
+      |  filter()
+      )
+   |  < LPAREN > filterExpression() < RPAREN >
+   )
 }
 
 void negation() #Negation :
+{}
 {
-}
-{
-    <NOT> ( term() ) 
-}
-
-void comparison() #Comparison : 
-{
-}
-{
-    ( LOOKAHEAD(2) ( level() relationalOperator() operating() ) | ( property() relationalOperator() operating() ) )
-
-    // just a filter or a comparison involving a level or some property are valid comparisons
-} 
-
-void level() #Level : 
-{
-    Token t;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        jjtThis.value = t.image;
-    }
+   < NOT >
+   (
+      condition()
+   )
 }
 
-void filter() #Filter : 
+void operand() :
+{}
 {
-    Token t;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        jjtThis.value = t.image;
-    }
+   summand()
 }
 
-void property() #Property :
+void conditionRightHandSide() :
+{}
 {
-    Token t;
-    String property;
-}
-{
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        property = t.image;
-    }
-
-    <DOT> 
-
-    t = <METADATA_OBJECT_NAME>
-
-    {
-        property += "." + t.image;
-
-        jjtThis.value = property;
-    }
+   compare() operand()
+|  inExpression()
+|  likeExpression()
+|  startsWithExpression()
+|  endsWithExpression()
 }
 
-void relationalOperator() #RelationalOperator :
+void inExpression() #InExpression :
+{}
 {
-    Token t;
-}
-{
-    t = <RELATIONAL_OPERATOR> 
-
-    {
-        jjtThis.value = t.image;
-    }
+   < IN > < LPAREN > value()
+   (
+      < COMMA > value()
+   )*
+   < RPAREN >
 }
 
-void operating() :
+void likeExpression() #LikeExpression :
+{}
 {
-}
-{
-    date() | stringLiteral() | arithmeticExpression() #ArithmeticExpression 
-}
-
-void date() #Date :
-{
-    Token t;
-}
-{
-    t = <DATE>
-
-    {
-        jjtThis.value = t.image;
-    }
+   < LIKE > operand()
 }
 
-void stringLiteral() #StringLiteral :
+void startsWithExpression() #StartsWithExpression :
+{}
 {
-    Token t;
-}
-{
-    t = <STRING_LITERAL>
-
-    {
-        jjtThis.value = t.image;
-    }
+   < STARTS_WITH > operand()
 }
 
-void arithmeticExpression() : 
+void endsWithExpression() #EndsWithExpression :
+{}
 {
-}
-{
-    additiveExpression() 
+   < ENDS_WITH > operand()
 }
 
-void additiveExpression() #Addition(>1) :
+void compare() #Compare :
 {
-    String op = null;
+   Token t;
 }
 {
-    ( multiplicativeExpression() ( ( op = additiveOperator() ) multiplicativeExpression() )* )
+   t = < RELATIONAL_OPERATOR >
+   {
+      jjtThis.value = t.image;
+   }
+}
 
-    {
-        jjtThis.value = op;
-    }
+void summand() #AdditiveExpression(>1)
+:
+{
+   String op = null;
+}
+{
+   (
+      factor()
+      (
+         (
+            op = additiveOperator()
+         )
+         factor()
+      )*
+   )
+   {
+      jjtThis.value = op;
+   }
 }
 
 String additiveOperator() :
 {
-    Token t;
+   Token t;
 }
 {
-    ( t = <PLUS> | t = <MINUS> )
-
-    {
-        return t.image;
-    }
+   (
+      t = < PLUS >
+   |  t = < MINUS >
+   )
+   {
+      return t.image;
+   }
 }
 
-void multiplicativeExpression() #Multiplication(>1) :
+void factor() #MultiplicativeExpression(>1)
+:
 {
-    String op = null;
+   String op = null;
 }
 {
-    ( arithmeticAtom() ( ( op = multiplicativeOperator() ) arithmeticAtom() )* )
-
-    {
-        jjtThis.value = op;
-    }
+   (
+      term()
+      (
+         (
+            op = multiplicativeOperator()
+         )
+         term()
+      )*
+   )
+   {
+      jjtThis.value = op;
+   }
 }
 
 String multiplicativeOperator() :
 {
-    Token t;
+   Token t;
 }
 {
-    ( t = <MULT> | t = <DIV> )
-
-    {
-        return t.image;
-    }
+   (
+      t = < MULT >
+   |  t = < DIV >
+   )
+   {
+      return t.image;
+   }
 }
 
-void arithmeticAtom() :
+void term() :
+{}
 {
-}
-{
-    "(" arithmeticExpression() ")" | number()
+   value()
+|  property()
 }
 
-void number() #Number :
+void value() :
+{}
 {
-    Token minus = null;
-    Token number;
+   numberLiteral()
+|  dateLiteral()
+|  stringLiteral()
+}
+
+/* **************************** */
+/* ********* LITERALS ********* */
+/* **************************** */
+void numberLiteral() #NumberLiteral :
+{
+   Token minus = null;
+   Token number;
 }
 {
-    [ minus = <MINUS> ]
+   [ minus = < MINUS > ]
+   (
+      number = < INTEGER_LITERAL >
+   |  number = < FLOATING_POINT_LITERAL >
+   )
+   {
+      jjtThis.value = minus == null ? number.image : minus.image + number.image;
+   }
+}
 
-    ( number = <INTEGER_LITERAL> | number = <FLOATING_POINT_LITERAL> )
+void dateLiteral() #DateLiteral :
+{
+   Token t;
+}
+{
+   t = < DATE >
+   {
+      jjtThis.value = t.image;
+   }
+}
 
-    {
-        jjtThis.value = minus == null ? number.image : minus.image + number.image;
-    }
+void stringLiteral() #StringLiteral :
+{
+   Token t;
+}
+{
+   t = < STRING_LITERAL >
+   {
+      jjtThis.value = t.image;
+   }
+}
+
+void filter() #Filter :
+{
+   Token t;
+}
+{
+   t = < METADATA_OBJECT_NAME >
+   {
+      jjtThis.value = t.image;
+   }
+}
+
+SimpleNode property() #Property :
+{
+   Token t;
+   String property;
+}
+{
+   (t = < METADATA_OBJECT_NAME >
+   {
+      property = t.image;
+   }
+   < DOT > t = < METADATA_OBJECT_NAME >)
+   {
+      property += "." + t.image;
+      jjtThis.value = property;
+      return jjtThis;
+   }
 }
