@@ -4,8 +4,8 @@
  */
 package br.com.bi.olapql.language.query.translator;
 
+import br.com.bi.olapql.language.query.ParseException;
 import br.com.bi.olapql.language.utils.MetadataCache;
-import br.com.bi.olapql.language.filter.translator.FilterMetadataExtractor;
 import br.com.bi.olapql.language.measure.translator.MeasureMetadataExtractor;
 import br.com.bi.olapql.language.query.Filter;
 import br.com.bi.olapql.language.query.Level;
@@ -17,8 +17,11 @@ import br.com.bi.olapql.language.query.SimpleNode;
 import br.com.bi.olapql.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
 import br.com.bi.model.entity.metadata.Metadata;
+import br.com.bi.olapql.language.query.QueryParser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Classe que tem como responsabilidade extrair os metadados referenciados
@@ -54,7 +57,6 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
                 Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
         MeasureMetadataExtractor measureExtractor = new MeasureMetadataExtractor();
-        FilterMetadataExtractor filterExtractor = new FilterMetadataExtractor();
 
         if (measure != null) {
             recordNodeAddedToAxis(node, measure);
@@ -62,7 +64,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
             getIndirectlyAdded().put(measureExtractor.extract(measure.getExpression()));
 
             if (measure.getFilterExpression() != null) {
-                getIndirectlyAdded().put(filterExtractor.extract(measure.getFilterExpression()));
+                extractMetadataFromFilter(measure.getFilterExpression());
             }
         } else {
             br.com.bi.model.entity.metadata.Level level =
@@ -75,7 +77,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
                         Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
                 recordNodeAddedToAxis(node, filter);
 
-                getIndirectlyAdded().put(filterExtractor.extract(filter.getExpression()));
+                extractMetadataFromFilter(filter.getExpression());
             }
         }
 
@@ -125,11 +127,9 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
         br.com.bi.model.entity.metadata.Filter filter =
                 Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-        FilterMetadataExtractor filterExtractor = new FilterMetadataExtractor();
-
         if (filter != null) {
             getAddedToFilter().put(nodeValue, filter);
-            getAddedToFilter().put(filterExtractor.extract(filter.getExpression()));
+            extractMetadataFromFilter(filter.getExpression());
         }
     }
 
@@ -165,5 +165,16 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
 
     private void recordNodeAddedToAxis(SimpleNode node, Metadata metadata) {
         getAddedToAxis().put(node.jjtGetValue().toString(), metadata);
+    }
+
+    private void extractMetadataFromFilter(String filterExpression) {
+        QueryParser parser = new QueryParser(IOUtils.toInputStream(filterExpression));
+
+        try {
+            SimpleNode filterNode = parser.detachedFilterExpression();
+            visit(filterNode, null);
+        } catch (ParseException ex) {
+            Logger.getLogger(QueryMetadataExtractor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 }

@@ -4,7 +4,6 @@
  */
 package br.com.bi.olapql.language.query.translator;
 
-import br.com.bi.olapql.language.filter.translator.FilterSqlTranslator;
 import br.com.bi.olapql.language.measure.translator.MeasureSqlTranslator;
 import br.com.bi.olapql.language.query.Axis;
 import br.com.bi.olapql.language.query.AndCondition;
@@ -172,9 +171,10 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     @Override
     public void visit(Filter node, StringBuilder data) {
-        FilterSqlTranslator translator = new FilterSqlTranslator(this.cube);
-        String filterTranslation = translator.translate(node.jjtGetValue().toString());
-        data.append(filterTranslation);
+        br.com.bi.model.entity.metadata.Filter filter =
+                Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+
+        data.append(translateFilterExpression(filter.getExpression()));
     }
 
     @Override
@@ -268,9 +268,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             } else {
                 metadata = extractor.getAllReferencedMetadata().getFilter(node.jjtGetValue().toString());
 
-                FilterSqlTranslator translator = new FilterSqlTranslator(cube);
-
-                sb.append("case when ").append(translator.translate(((br.com.bi.model.entity.metadata.Filter) metadata).getExpression())).append(" then 1 else 0 end");
+                sb.append("case when ").append(translateFilterExpression(((br.com.bi.model.entity.metadata.Filter) metadata).getExpression())).append(" then 1 else 0 end");
             }
         }
 
@@ -490,18 +488,32 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     /**
      * Translates an olapql instruction into a sql instruction.
-     * @param olapql
+     * @param instruction
      * @return
      * @throws ParseException 
      */
-    public String translate(String olapql) throws ParseException {
-        QueryParser parser = new QueryParser(IOUtils.toInputStream(olapql));
-        Instruction instruction = (Instruction) parser.instruction();
+    public String translateOlapQlInstruction(String instruction) throws ParseException {
+        QueryParser parser = new QueryParser(IOUtils.toInputStream(instruction));
+        Instruction node = (Instruction) parser.instruction();
 
         StringBuilder sb = new StringBuilder();
         QuerySqlTranslator translator = new QuerySqlTranslator();
-        translator.visit(instruction, sb);
+        translator.visit(node, sb);
 
         return sb.toString();
+    }
+
+    public String translateFilterExpression(String filterExpression) {
+        QueryParser parser = new QueryParser(IOUtils.toInputStream(filterExpression));
+
+        try {
+            StringBuilder sb = new StringBuilder();
+            visit(parser.detachedFilterExpression(), sb);
+            return sb.toString();
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 }

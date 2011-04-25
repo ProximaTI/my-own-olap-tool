@@ -14,6 +14,7 @@ public interface QueryParserVisitor
   public void visit(Filter node, StringBuilder data);
   public void visit(Property node, StringBuilder data);
   public void visit(Cube node, StringBuilder data);
+  public void visit(DetachedFilterExpression node, StringBuilder data);
   public void visit(OrCondition node, StringBuilder data);
   public void visit(AndCondition node, StringBuilder data);
   public void visit(Condition node, StringBuilder data);
@@ -29,4 +30,4 @@ public interface QueryParserVisitor
   public void visit(DateLiteral node, StringBuilder data);
   public void visit(StringLiteral node, StringBuilder data);
 }
-/* JavaCC - OriginalChecksum=8647475d1f36caf28ca2e02ffbd67e6c (do not edit this line) */
+/* JavaCC - OriginalChecksum=3241540892a8fc49335c5fd8e609c229 (do not edit this line) */

@@ -14,20 +14,21 @@ public interface QueryParserTreeConstants
   public int JJTFILTER = 8;
   public int JJTPROPERTY = 9;
   public int JJTCUBE = 10;
-  public int JJTORCONDITION = 11;
-  public int JJTANDCONDITION = 12;
-  public int JJTCONDITION = 13;
-  public int JJTNEGATION = 14;
-  public int JJTINEXPRESSION = 15;
-  public int JJTLIKEEXPRESSION = 16;
-  public int JJTSTARTSWITHEXPRESSION = 17;
-  public int JJTENDSWITHEXPRESSION = 18;
-  public int JJTCOMPARE = 19;
-  public int JJTADDITIVEEXPRESSION = 20;
-  public int JJTMULTIPLICATIVEEXPRESSION = 21;
-  public int JJTNUMBERLITERAL = 22;
-  public int JJTDATELITERAL = 23;
-  public int JJTSTRINGLITERAL = 24;
+  public int JJTDETACHEDFILTEREXPRESSION = 11;
+  public int JJTORCONDITION = 12;
+  public int JJTANDCONDITION = 13;
+  public int JJTCONDITION = 14;
+  public int JJTNEGATION = 15;
+  public int JJTINEXPRESSION = 16;
+  public int JJTLIKEEXPRESSION = 17;
+  public int JJTSTARTSWITHEXPRESSION = 18;
+  public int JJTENDSWITHEXPRESSION = 19;
+  public int JJTCOMPARE = 20;
+  public int JJTADDITIVEEXPRESSION = 21;
+  public int JJTMULTIPLICATIVEEXPRESSION = 22;
+  public int JJTNUMBERLITERAL = 23;
+  public int JJTDATELITERAL = 24;
+  public int JJTSTRINGLITERAL = 25;
 
 
   public String[] jjtNodeName = {
@@ -42,6 +43,7 @@ public interface QueryParserTreeConstants
     "Filter",
     "Property",
     "Cube",
+    "DetachedFilterExpression",
     "OrCondition",
     "AndCondition",
     "Condition",
@@ -58,4 +60,4 @@ public interface QueryParserTreeConstants
     "StringLiteral",
   };
 }
-/* JavaCC - OriginalChecksum=dddbc6f1b0b58ae4a37b78f852414c59 (do not edit this line) */
+/* JavaCC - OriginalChecksum=2ab3e114533e896e26d3ba2712d4e170 (do not edit this line) */
