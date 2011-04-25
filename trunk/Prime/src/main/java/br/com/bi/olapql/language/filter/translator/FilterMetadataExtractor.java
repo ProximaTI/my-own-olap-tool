@@ -6,7 +6,6 @@ package br.com.bi.olapql.language.filter.translator;
 
 import br.com.bi.olapql.language.filter.Filter;
 import br.com.bi.olapql.language.filter.FilterParser;
-import br.com.bi.olapql.language.filter.Level;
 import br.com.bi.olapql.language.filter.ParseException;
 import br.com.bi.olapql.language.filter.Property;
 import br.com.bi.olapql.language.measure.translator.MeasureMetadataExtractor;
@@ -34,18 +33,6 @@ public class FilterMetadataExtractor extends AbstractFilterParserVisitor {
         }
 
         return extractedMetadata;
-    }
-
-    @Override
-    public void visit(Level node, StringBuilder data) {
-        String nodeValue = node.jjtGetValue().toString();
-
-        br.com.bi.model.entity.metadata.Level level =
-                Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
-        if (level != null) {
-            extractedMetadata.put(nodeValue, level);
-        }
     }
 
     @Override
