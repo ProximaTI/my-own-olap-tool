@@ -343,6 +343,15 @@ void cube() #Cube :
 /* ********************** */
 /* ******* FILTER ******* */
 /* ********************** */
+SimpleNode detachedFilterExpression() #DetachedFilterExpression :
+{ /* Esta produção é utilizada apenas para fazer parsing de um filtro fora de uma consulta */ }
+{
+   filterExpression()
+   {
+      return jjtThis;
+   }
+}
+
 void filterExpression() :
 {}
 {

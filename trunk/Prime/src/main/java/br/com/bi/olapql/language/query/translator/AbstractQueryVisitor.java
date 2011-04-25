@@ -11,6 +11,7 @@ import br.com.bi.olapql.language.query.Compare;
 import br.com.bi.olapql.language.query.Condition;
 import br.com.bi.olapql.language.query.Cube;
 import br.com.bi.olapql.language.query.DateLiteral;
+import br.com.bi.olapql.language.query.DetachedFilterExpression;
 import br.com.bi.olapql.language.query.EndsWithExpression;
 import br.com.bi.olapql.language.query.Filter;
 import br.com.bi.olapql.language.query.FilterExpression;
@@ -39,13 +40,14 @@ import br.com.bi.olapql.language.query.StringLiteral;
 public abstract class AbstractQueryVisitor implements QueryParserVisitor {
 
     public void visit(Node node, StringBuilder data) {
-
-
         if (node instanceof Instruction) {
             visit((Instruction) node, data);
         }
         if (node instanceof Select) {
             visit((Select) node, data);
+        }
+        if (node instanceof DetachedFilterExpression) {
+            visit((DetachedFilterExpression) node, data);
         }
         if (node instanceof FilterExpression) {
             visit((FilterExpression) node, data);
@@ -237,6 +239,11 @@ public abstract class AbstractQueryVisitor implements QueryParserVisitor {
 
     @Override
     public void visit(DateLiteral node, StringBuilder data) {
+        visitChildren(node, data);
+    }
+
+    @Override
+    public void visit(DetachedFilterExpression node, StringBuilder data) {
         visitChildren(node, data);
     }
 
