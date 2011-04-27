@@ -8,7 +8,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
   protected JJTMeasureParserState jjtree = new JJTMeasureParserState();
     public static void main(String args[]) {
         InputStream in = new ByteArrayInputStream(
-              ("soma(-1 / (100.8 + 2)) + [Total]").getBytes());
+              ("soma(\"quantidade\")").getBytes());
 
         MeasureParser parser = new MeasureParser(in);
 
@@ -356,6 +356,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
       jj_consume_token(23);
       break;
     case IDENTIFIER:
+    case STRING_LITERAL:
       column();
       break;
     case MINUS:
@@ -376,7 +377,18 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
     boolean jjtc000 = true;
     jjtree.openNodeScope(jjtn000);Token column;
     try {
-      column = jj_consume_token(IDENTIFIER);
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        column = jj_consume_token(IDENTIFIER);
+        break;
+      case STRING_LITERAL:
+        column = jj_consume_token(STRING_LITERAL);
+        break;
+      default:
+        jj_la1[8] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
         jjtn000.value = column.image;
@@ -399,7 +411,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
         minus = jj_consume_token(MINUS);
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[9] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -410,7 +422,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
         number = jj_consume_token(FLOATING_POINT_LITERAL);
         break;
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -433,13 +445,13 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[10];
+  final private int[] jj_la1 = new int[11];
   static private int[] jj_la1_0;
   static {
       jj_la1_init_0();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x600,0x1800,0x410080,0x600,0x600,0x1800,0x1800,0x4a0500,0x400,0xa0000,};
+      jj_la1_0 = new int[] {0x600,0x1800,0x410080,0x600,0x600,0x1800,0x1800,0x5a0500,0x100100,0x400,0xa0000,};
    }
 
   /** Constructor with InputStream. */
@@ -453,7 +465,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -468,7 +480,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -478,7 +490,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -489,7 +501,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -498,7 +510,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -508,7 +520,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 10; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 11; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -564,7 +576,7 @@ public class MeasureParser/*@bgen(jjtree)*/implements MeasureParserTreeConstants
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 11; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

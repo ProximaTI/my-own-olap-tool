@@ -200,7 +200,7 @@ void column() #Column :
     Token column;
 }
 {
-    column = <IDENTIFIER>
+    ( column = <IDENTIFIER> | column = <STRING_LITERAL> )
 
     {
         jjtThis.value = column.image;

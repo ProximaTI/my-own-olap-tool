@@ -413,7 +413,7 @@ void column()         :
 {/*@bgen(jjtree) Column */
     try {
 /*@egen*/
-    column = <IDENTIFIER>/*@bgen(jjtree)*/
+    ( column = <IDENTIFIER> | column = <STRING_LITERAL> )/*@bgen(jjtree)*/
     {
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;

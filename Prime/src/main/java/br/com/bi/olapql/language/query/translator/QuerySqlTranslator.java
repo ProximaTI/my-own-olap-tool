@@ -91,7 +91,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
                 Metadata metadata = getAxisNodeMetadataMap().get(n);
 
                 if (metadata instanceof br.com.bi.model.entity.metadata.Level
-                        || metadata instanceof br.com.bi.model.entity.metadata.Property) {
+                    || metadata instanceof br.com.bi.model.entity.metadata.Property
+                    || metadata instanceof br.com.bi.model.entity.metadata.Filter) {
                     groupBy.append(getAxisNodeCoordinateMap().get(n)).append(", ");
                 }
             }

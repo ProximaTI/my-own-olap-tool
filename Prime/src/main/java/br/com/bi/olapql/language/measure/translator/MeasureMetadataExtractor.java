@@ -4,13 +4,12 @@
  */
 package br.com.bi.olapql.language.measure.translator;
 
-import br.com.bi.olapql.language.filter.translator.FilterMetadataExtractor;
 import br.com.bi.olapql.language.measure.Measure;
 import br.com.bi.olapql.language.measure.MeasureParser;
-import br.com.bi.olapql.language.measure.ParseException;
-import br.com.bi.olapql.language.utils.MetadataCache;
+import br.com.bi.olapql.language.utils.MetadataBag;
 import br.com.bi.olapql.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
+import br.com.bi.olapql.language.query.translator.FilterMetadataExtractor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
@@ -21,36 +20,66 @@ import org.apache.commons.io.IOUtils;
  */
 public class MeasureMetadataExtractor extends AbstractMeasureParserVisitor {
 
-    private MetadataCache extracted = new MetadataCache();
-
-    public MetadataCache extract(String expression) {
-        MeasureParser parser = new MeasureParser(IOUtils.toInputStream(expression));
-
-        try {
-            visit(parser.measureExpression(), null);
-        } catch (ParseException ex) {
-            Logger.getLogger(MeasureMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return extracted;
-    }
+    private MetadataBag bag;
 
     @Override
     public void visit(Measure node, StringBuilder data) {
         br.com.bi.model.entity.metadata.Measure measure =
                 Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-        MeasureMetadataExtractor measureExtractor = new MeasureMetadataExtractor();
-        FilterMetadataExtractor filterExtractor = new FilterMetadataExtractor();
-
         if (measure != null) {
-            extracted.put(node.jjtGetValue().toString(), measure);
+            bag.put(node.jjtGetValue().toString(), measure);
 
-            extracted.put(measureExtractor.extract(measure.getExpression()));
+            MeasureMetadataExtractor extractor = new MeasureMetadataExtractor();
+            bag.put(extractor.extractFromExpression(measure.getExpression()));
+            bag.put(extractor.extractFromFilterExpression(measure));
+        }
+    }
 
-            if (measure.getFilterExpression() != null) {
-                extracted.put(filterExtractor.extract(measure.getFilterExpression()));
-            }
+    /**
+     * Retorna os metadados referenciados por uma expressão de filtro.
+     * @param measure
+     * @return
+     */
+    MetadataBag extractFromFilterExpression(br.com.bi.model.entity.metadata.Measure measure) {
+        FilterMetadataExtractor extractor = new FilterMetadataExtractor();
+        return extractor.extractFromExpression(measure.getFilterExpression());
+    }
+
+    /**
+     * Retorna os metadados referenciados por uma métrica.
+     * @param name
+     * @return
+     */
+    public MetadataBag extractFromObject(String name) {
+        bag = new MetadataBag();
+        try {
+            br.com.bi.model.entity.metadata.Measure measure = Application.getMeasureDao().findByName(name);
+            MeasureParser parser = new MeasureParser(IOUtils.toInputStream(measure.getExpression()));
+            visit(parser.measureExpression(), null);
+            bag.put(extractFromFilterExpression(measure));
+        } catch (Exception ex) {
+            Logger.getLogger(FilterMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            return bag;
+        }
+    }
+
+    /**
+     * Retorna os metadados referenciados por uma expressão de métrica.
+     * @param expression
+     * @return
+     */
+    public MetadataBag extractFromExpression(String expression) {
+        bag = new MetadataBag();
+        try {
+            MeasureParser parser = new MeasureParser(IOUtils.toInputStream(expression));
+            visit(parser.measureExpression(), null);
+            return bag;
+        } catch (Exception ex) {
+            Logger.getLogger(FilterMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            return bag;
         }
     }
 }

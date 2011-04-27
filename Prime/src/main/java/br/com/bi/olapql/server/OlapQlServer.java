@@ -20,6 +20,6 @@ public class OlapQlServer {
 
         QuerySqlTranslator translator = new QuerySqlTranslator();
         
-        return dataSource.getConnection().createStatement().executeQuery(translator.translate(olapql));
+        return dataSource.getConnection().createStatement().executeQuery(translator.translateOlapQlInstruction(olapql));
     }
 }

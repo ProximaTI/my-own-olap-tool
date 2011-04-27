@@ -314,7 +314,7 @@ void set(java.util.List < SimpleNode > nodes) :
    |
       (
          LOOKAHEAD(3)
-         < RBRACE > node = node()
+         < LBRACE > node = node()
          {
             nodes.add(node);
          }
@@ -573,12 +573,13 @@ SimpleNode detachedFilterExpression()                           :
 {/*@bgen(jjtree) DetachedFilterExpression */
    try {
 /*@egen*/
-   filterExpression()/*@bgen(jjtree)*/
+   filterExpression() <EOF>/*@bgen(jjtree)*/
    {
      jjtree.closeNodeScope(jjtn000, true);
      jjtc000 = false;
    }
 /*@egen*/
+
    {
       return jjtn000;
    }/*@bgen(jjtree)*/

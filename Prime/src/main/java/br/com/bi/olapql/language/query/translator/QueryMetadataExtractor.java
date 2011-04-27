@@ -4,24 +4,15 @@
  */
 package br.com.bi.olapql.language.query.translator;
 
-import br.com.bi.olapql.language.query.ParseException;
-import br.com.bi.olapql.language.utils.MetadataCache;
+import br.com.bi.olapql.language.utils.MetadataBag;
 import br.com.bi.olapql.language.measure.translator.MeasureMetadataExtractor;
 import br.com.bi.olapql.language.query.Filter;
 import br.com.bi.olapql.language.query.Level;
 import br.com.bi.olapql.language.query.LevelOrMeasureOrFilter;
-import br.com.bi.olapql.language.query.Node;
 import br.com.bi.olapql.language.query.Property;
 import br.com.bi.olapql.language.query.PropertyNode;
-import br.com.bi.olapql.language.query.SimpleNode;
 import br.com.bi.olapql.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
-import br.com.bi.model.entity.metadata.Metadata;
-import br.com.bi.olapql.language.query.QueryParser;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Classe que tem como responsabilidade extrair os metadados referenciados
@@ -33,51 +24,32 @@ import org.apache.commons.io.IOUtils;
  */
 public class QueryMetadataExtractor extends AbstractQueryVisitor {
 
-    private MetadataCache addedToAxis = new MetadataCache();
-    private MetadataCache indirectlyAdded = new MetadataCache();
-    private MetadataCache addedToFilter = new MetadataCache();
-
-    public MetadataCache getIndirectedAdded() {
-        return getIndirectlyAdded();
-    }
-
-    public List<Node> getChildren(Node node) {
-        List<Node> children = new ArrayList<Node>();
-
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-            children.add(node.jjtGetChild(i));
-        }
-
-        return children;
-    }
+    /* holds metadata directly added to both rows and columns axis */
+    private MetadataBag addedToAxis = new MetadataBag();
+    /* holds metadata referenced by some filter, or measure filter added as axis node */
+    private MetadataBag indirectlyAdded = new MetadataBag();
+    /* holds metadata referenced by query filter */
+    private MetadataBag addedToFilter = new MetadataBag();
 
     @Override
     public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
         br.com.bi.model.entity.metadata.Measure measure =
                 Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-        MeasureMetadataExtractor measureExtractor = new MeasureMetadataExtractor();
-
         if (measure != null) {
-            recordNodeAddedToAxis(node, measure);
-
-            getIndirectlyAdded().put(measureExtractor.extract(measure.getExpression()));
-
-            if (measure.getFilterExpression() != null) {
-                extractMetadataFromFilter(measure.getFilterExpression());
-            }
+            getAddedToAxis().put(node.jjtGetValue().toString(), measure);
+            MeasureMetadataExtractor measureExtractor = new MeasureMetadataExtractor();
+            getIndirectlyAdded().put(measureExtractor.extractFromObject(measure.getName()));
         } else {
             br.com.bi.model.entity.metadata.Level level =
                     Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
             if (level != null) {
-                recordNodeAddedToAxis(node, level);
+                getAddedToAxis().put(node.jjtGetValue().toString(), level);
             } else {
                 br.com.bi.model.entity.metadata.Filter filter =
                         Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-                recordNodeAddedToAxis(node, filter);
-
-                extractMetadataFromFilter(filter.getExpression());
+                getAddedToAxis().put(node.jjtGetValue().toString(), filter);
+                getIndirectlyAdded().put(extractFromFilter(filter.getName()));
             }
         }
 
@@ -92,7 +64,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
                 Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
 
         br.com.bi.model.entity.metadata.Property property = level.getProperty(TranslationUtils.extractName(str[1]));
-        recordNodeAddedToAxis(node, property);
+        getAddedToAxis().put(node.jjtGetValue().toString(), property);
 
         super.visit(node, data);
     }
@@ -104,7 +76,8 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
         br.com.bi.model.entity.metadata.Level level =
                 Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
 
-        br.com.bi.model.entity.metadata.Property property = level.getProperty(TranslationUtils.extractName(str[1]));
+        br.com.bi.model.entity.metadata.Property property =
+                level.getProperty(TranslationUtils.extractName(str[1]));
         getAddedToFilter().put(node.jjtGetValue().toString(), property);
     }
 
@@ -129,52 +102,51 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
 
         if (filter != null) {
             getAddedToFilter().put(nodeValue, filter);
-            extractMetadataFromFilter(filter.getExpression());
+            getAddedToFilter().put(extractFromFilter(filter.getName()));
         }
     }
 
-    public MetadataCache getAllReferencedMetadata() {
-        MetadataCache cache = new MetadataCache();
-        cache.put(getAddedToAxis());
-        cache.put(getAddedToFilter());
-        cache.put(getIndirectlyAdded());
+    /**
+     * Retorna a união de todos os metadados referenciados.
+     * @return
+     */
+    public MetadataBag getAllReferencedMetadata() {
+        MetadataBag bag = new MetadataBag();
+        bag.put(getAddedToAxis());
+        bag.put(getAddedToFilter());
+        bag.put(getIndirectlyAdded());
 
-        return cache;
+        return bag;
+    }
+
+    /**
+     * Extrai os metadados refereciados por um filtro.
+     * @param name
+     * @return
+     */
+    private MetadataBag extractFromFilter(String name) {
+        FilterMetadataExtractor extractor = new FilterMetadataExtractor();
+        return extractor.extractFromObject(name);
     }
 
     /**
      * @return the addedToAxis
      */
-    public MetadataCache getAddedToAxis() {
+    public MetadataBag getAddedToAxis() {
         return addedToAxis;
     }
 
     /**
      * @return the indirectlyAdded
      */
-    public MetadataCache getIndirectlyAdded() {
+    public MetadataBag getIndirectlyAdded() {
         return indirectlyAdded;
     }
 
     /**
      * @return the addedToFilter
      */
-    public MetadataCache getAddedToFilter() {
+    public MetadataBag getAddedToFilter() {
         return addedToFilter;
-    }
-
-    private void recordNodeAddedToAxis(SimpleNode node, Metadata metadata) {
-        getAddedToAxis().put(node.jjtGetValue().toString(), metadata);
-    }
-
-    private void extractMetadataFromFilter(String filterExpression) {
-        QueryParser parser = new QueryParser(IOUtils.toInputStream(filterExpression));
-
-        try {
-            SimpleNode filterNode = parser.detachedFilterExpression();
-            visit(filterNode, null);
-        } catch (ParseException ex) {
-            Logger.getLogger(QueryMetadataExtractor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
     }
 }
