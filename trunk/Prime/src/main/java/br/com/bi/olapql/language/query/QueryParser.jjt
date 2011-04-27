@@ -195,7 +195,7 @@ void set(java.util.List < SimpleNode > nodes) :
    |
       (
          LOOKAHEAD(3)
-         < RBRACE > node = node()
+         < LBRACE > node = node()
          {
             nodes.add(node);
          }
@@ -346,7 +346,8 @@ void cube() #Cube :
 SimpleNode detachedFilterExpression() #DetachedFilterExpression :
 { /* Esta produção é utilizada apenas para fazer parsing de um filtro fora de uma consulta */ }
 {
-   filterExpression()
+   filterExpression() <EOF>
+
    {
       return jjtThis;
    }

@@ -17,9 +17,9 @@ import java.util.TreeMap;
  *
  * @author luiz
  */
-public class MetadataCache {
+public class MetadataBag {
     
-    private Map<String, Metadata> internalCache = new TreeMap<String, Metadata> ();
+    private Map<String, Metadata> internalBag = new TreeMap<String, Metadata> ();
     private static String CUBE_PREFIX = "C#";
     private static String LEVEL_PREFIX = "L#";
     private static String MEASURE_PREFIX = "M#";
@@ -27,34 +27,34 @@ public class MetadataCache {
     private static String FILTER_PREFIX = "F#";
     
     public Map<String, Metadata> getInternalMap() {
-        return internalCache;
+        return internalBag;
     }
 
     public Level getLevel(String key) {
-        return (Level) internalCache.get(LEVEL_PREFIX + key);
+        return (Level) internalBag.get(LEVEL_PREFIX + key);
     }
     
     public Measure getMeasure(String key) {
-        return (Measure) internalCache.get(MEASURE_PREFIX + key);
+        return (Measure) internalBag.get(MEASURE_PREFIX + key);
     }
     
     public Cube getCube(String key) {
-        return (Cube) internalCache.get(CUBE_PREFIX + key);
+        return (Cube) internalBag.get(CUBE_PREFIX + key);
     }
     
     public Filter getFilter(String key) {
-        return (Filter) internalCache.get(FILTER_PREFIX + key);
+        return (Filter) internalBag.get(FILTER_PREFIX + key);
     }
     
     public Property getProperty(String key) {
-        return (Property) internalCache.get(PROPERTY_PREFIX + key);
+        return (Property) internalBag.get(PROPERTY_PREFIX + key);
     }
     
     public void put(String key, Metadata metadata) {
-        internalCache.put(metadata.getClass().getSimpleName().charAt(0) + "#" + key, metadata);
+        internalBag.put(metadata.getClass().getSimpleName().charAt(0) + "#" + key, metadata);
     }
     
-    public void put(MetadataCache cache) {
-        internalCache.putAll(cache.getInternalMap());
+    public void put(MetadataBag bag) {
+        internalBag.putAll(bag.getInternalMap());
     }
 }

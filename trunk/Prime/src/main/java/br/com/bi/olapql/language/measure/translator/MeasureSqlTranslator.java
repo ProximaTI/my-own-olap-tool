@@ -4,7 +4,6 @@
  */
 package br.com.bi.olapql.language.measure.translator;
 
-import br.com.bi.olapql.language.filter.translator.FilterSqlTranslator;
 import br.com.bi.olapql.language.measure.Aggregation;
 import br.com.bi.olapql.language.measure.Column;
 import br.com.bi.olapql.language.measure.Measure;
@@ -14,10 +13,12 @@ import br.com.bi.olapql.language.measure.SimpleNode;
 import br.com.bi.olapql.language.utils.TranslationUtils;
 import br.com.bi.model.Application;
 import br.com.bi.model.entity.metadata.Cube;
+import br.com.bi.olapql.language.query.translator.QuerySqlTranslator;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Stack;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -48,7 +49,7 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
             br.com.bi.model.entity.metadata.Measure measure =
                     Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-            if (measure.getFilterExpression() != null) {
+            if (StringUtils.isNotBlank(measure.getFilterExpression())) {
                 filterStack.push(measure.getFilterExpression());
             }
 
@@ -56,7 +57,7 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
 
             visit(parser.measureExpression(), data);
 
-            if (measure.getFilterExpression() != null) {
+            if (StringUtils.isNotBlank(measure.getFilterExpression())) {
                 filterStack.pop();
             }
         } catch (ParseException ex) {
@@ -69,11 +70,9 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
         if (node.jjtGetValue().equals("quantidade")) {
             data.append("count(");
         }
-
         if (node.jjtGetValue().equals("média")) {
             data.append("avg(");
         }
-
         if (node.jjtGetValue().equals("máximo")) {
             data.append("max(");
         }
@@ -87,8 +86,8 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
         if (!filterStack.empty()) {
             data.append("case when (");
 
-            FilterSqlTranslator translator = new FilterSqlTranslator(this.cube);
-            data.append(translator.translate(filterStack.peek()));
+            QuerySqlTranslator translator = new QuerySqlTranslator();
+            data.append(translator.translateFilterExpression(filterStack.peek()));
 
             data.append(") then ");
             visitChildren(node, data);

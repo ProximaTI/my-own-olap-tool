@@ -13,6 +13,7 @@ package br.com.bi.olapql.server;
 import br.com.bi.olapql.language.query.Instruction;
 import br.com.bi.olapql.language.query.QueryParser;
 import br.com.bi.olapql.language.query.translator.QuerySqlTranslator;
+import java.awt.Cursor;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -113,6 +114,8 @@ public class NewJFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
             OlapQlServer server = new OlapQlServer();
 
             QueryParser parser = new QueryParser(IOUtils.toInputStream(jTextArea1.getText()));
@@ -124,7 +127,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
             QuerySqlTranslator translator = new QuerySqlTranslator();
 
-            System.out.println(translator.translate(jTextArea1.getText()));
+            System.out.println(translator.translateOlapQlInstruction(jTextArea1.getText()));
 
             model.setResultset(server.execute(jTextArea1.getText()));
             jTable1.setModel(model);
@@ -133,8 +136,10 @@ public class NewJFrame extends javax.swing.JFrame {
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
             System.out.println(sw.toString());
-           // JOptionPane.showMessageDialog(this, sw.toString());
+            // JOptionPane.showMessageDialog(this, sw.toString());
             JOptionPane.showMessageDialog(this, ex.getMessage());
+        } finally {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
