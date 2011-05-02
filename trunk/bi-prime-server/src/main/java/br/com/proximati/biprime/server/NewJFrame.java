@@ -129,7 +129,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
             System.out.println(translator.translateOlapQlInstruction(jTextArea1.getText()));
 
-            model.setResultset(server.execute(jTextArea1.getText()));
+            model.setResultset(server.openResultset(jTextArea1.getText()));
             jTable1.setModel(model);
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();

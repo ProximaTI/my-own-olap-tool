@@ -71,7 +71,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
      */
     private List<Node> axisNodeList = new ArrayList<Node>();
     private Map<Node, Metadata> axisNodeMetadataMap = new HashMap<Node, Metadata>();
-    private BidiMap axisNodeCoordinateMap = new DualHashBidiMap();
+    private BidiMap<Node, String> axisNodeCoordinateMap = new DualHashBidiMap<Node, String>();
 
     @Override
     public void visit(Select node, StringBuilder data) {
@@ -87,7 +87,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             StringBuilder groupBy = new StringBuilder();
 
-            for (Node n : axisNodeList) {
+            for (Node n : getAxisNodeList()) {
                 Metadata metadata = getAxisNodeMetadataMap().get(n);
 
                 if (metadata instanceof br.com.proximati.biprime.metadata.entity.Level
@@ -180,7 +180,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     @Override
     public void visit(PropertyNode node, StringBuilder data) {
-        nodeCoordinates.push(childIndex(node));
+        getNodeCoordinates().push(childIndex(node));
 
         br.com.proximati.biprime.metadata.entity.Property property =
                 extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
@@ -192,7 +192,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         data.append(", ");
 
         super.visit(node, data);
-        nodeCoordinates.pop();
+        getNodeCoordinates().pop();
     }
 
     @Override
@@ -238,19 +238,19 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     @Override
     public void visit(Axis node, StringBuilder data) {
         if (node.jjtGetValue().toString().equals("ROWS")) {
-            nodeCoordinates.push(0);
+            getNodeCoordinates().push(0);
         } else {
-            nodeCoordinates.push(1);
+            getNodeCoordinates().push(1);
         }
 
         super.visit(node, data);
 
-        nodeCoordinates.pop();
+        getNodeCoordinates().pop();
     }
 
     @Override
     public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
-        nodeCoordinates.push(childIndex(node));
+        getNodeCoordinates().push(childIndex(node));
 
         StringBuilder sb = new StringBuilder();
 
@@ -278,7 +278,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         data.append(sb).append(" as ").append(getAxisNodeCoordinateMap().get(node)).append(", ");
 
         super.visit(node, data);
-        nodeCoordinates.pop();
+        getNodeCoordinates().pop();
     }
 
     @Override
@@ -449,22 +449,22 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     private void registrateAxisNode(SimpleNode node, Metadata metadata) {
         getAxisNodeMetadataMap().put(node, metadata);
-        axisNodeList.add(node);
+        getAxisNodeList().add(node);
         getAxisNodeCoordinateMap().put(node, calculateCoordinates(node));
     }
 
     private String calculateCoordinates(SimpleNode node) {
         StringBuilder coordinate = new StringBuilder();
 
-        for (int i = 0; i < nodeCoordinates.size(); i++) {
+        for (int i = 0; i < getNodeCoordinates().size(); i++) {
             if (i == 0) {
-                if (nodeCoordinates.get(i) == 0) {
+                if (getNodeCoordinates().get(i) == 0) {
                     coordinate.append("r_");
                 } else {
                     coordinate.append("c_");
                 }
             } else {
-                coordinate.append(nodeCoordinates.get(i)).append("_");
+                coordinate.append(getNodeCoordinates().get(i)).append("_");
             }
         }
 
@@ -483,7 +483,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     /**
      * @return the axisNodeCoordinateMap
      */
-    public BidiMap getAxisNodeCoordinateMap() {
+    public BidiMap<Node, String> getAxisNodeCoordinateMap() {
         return axisNodeCoordinateMap;
     }
 
@@ -516,5 +516,33 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         }
 
         return null;
+    }
+
+    /**
+     * @return the axisNodeList
+     */
+    public List<Node> getAxisNodeList() {
+        return axisNodeList;
+    }
+
+    /**
+     * @param axisNodeList the axisNodeList to set
+     */
+    public void setAxisNodeList(List<Node> axisNodeList) {
+        this.axisNodeList = axisNodeList;
+    }
+
+    /**
+     * @return the nodeCoordinates
+     */
+    public Stack<Integer> getNodeCoordinates() {
+        return nodeCoordinates;
+    }
+
+    /**
+     * @param nodeCoordinates the nodeCoordinates to set
+     */
+    public void setNodeCoordinates(Stack<Integer> nodeCoordinates) {
+        this.nodeCoordinates = nodeCoordinates;
     }
 }

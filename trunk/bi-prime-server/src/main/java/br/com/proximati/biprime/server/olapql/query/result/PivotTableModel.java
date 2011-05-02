@@ -13,33 +13,33 @@ import java.util.HashMap;
 public class PivotTableModel {
 
     /** root node, related to row fields */
-    private Node rowsRoot = null;
+    private PivotTableNode rowsRoot = null;
     /** root node, related to column fields */
-    private Node columnsRoot = null;
-    /** values and theirs coordinates */
-    private HashMap<Pair<String>, Number> values;
+    private PivotTableNode columnsRoot = null;
+    /** values and nodes */
+    private HashMap<Pair<PivotTableNode, PivotTableNode>, Number> values;
 
-    public HashMap<Pair<String>, Number> getValues() {
+    public HashMap<Pair<PivotTableNode, PivotTableNode>, Number> getValues() {
         return values;
     }
 
-    public void setValues(HashMap<Pair<String>, Number> values) {
+    public void setValues(HashMap<Pair<PivotTableNode, PivotTableNode>, Number> values) {
         this.values = values;
     }
 
-    public Node getColumnsRoot() {
+    public PivotTableNode getColumnsRoot() {
         return columnsRoot;
     }
 
-    public void setColumnsRoot(Node columnsRoot) {
+    public void setColumnsRoot(PivotTableNode columnsRoot) {
         this.columnsRoot = columnsRoot;
     }
 
-    public Node getRowsRoot() {
+    public PivotTableNode getRowsRoot() {
         return rowsRoot;
     }
 
-    public void setRowsRoot(Node rowsRoot) {
+    public void setRowsRoot(PivotTableNode rowsRoot) {
         this.rowsRoot = rowsRoot;
     }
 }

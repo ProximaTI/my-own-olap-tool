@@ -11,10 +11,10 @@ import java.util.ArrayList;
  *
  * @author luiz
  */
-public class Node {
+public class PivotTableNode {
 
     /** list of nodes */
-    private ArrayList<Node> childrenNodes = new ArrayList<Node>();
+    private ArrayList<PivotTableNode> childrenNodes = new ArrayList<PivotTableNode>();
     /** flag used to define if current node is expanded */
     private boolean nodeExpanded = false;
     /** node value */
@@ -25,18 +25,28 @@ public class Node {
     private int level = 0;
     /** metadata to which this node refers */
     private Metadata metadata;
+    /** parent node */
+    private PivotTableNode parentNode;
+
+    public PivotTableNode getParentNode() {
+        return parentNode;
+    }
+
+    public void setParentNode(PivotTableNode parentNode) {
+        this.parentNode = parentNode;
+    }
 
     /**
      * @return the childrenNodes
      */
-    public ArrayList<Node> getChildrenNodes() {
+    public ArrayList<PivotTableNode> getChildrenNodes() {
         return childrenNodes;
     }
 
     /**
      * @param childrenNodes the childrenNodes to set
      */
-    public void setChildrenNodes(ArrayList<Node> childrenNodes) {
+    public void setChildrenNodes(ArrayList<PivotTableNode> childrenNodes) {
         this.childrenNodes = childrenNodes;
     }
 
