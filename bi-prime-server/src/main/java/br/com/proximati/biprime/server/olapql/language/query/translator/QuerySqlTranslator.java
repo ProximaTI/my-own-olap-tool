@@ -58,6 +58,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     private br.com.proximati.biprime.metadata.entity.Cube cube;
     private QueryMetadataExtractor extractor = new QueryMetadataExtractor();
+    private Instruction instruction;
     // =================================================
     // variables used in coordinates calculating process
     // =================================================
@@ -495,12 +496,9 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
      */
     public String translateOlapQlInstruction(String instruction) throws ParseException {
         QueryParser parser = new QueryParser(IOUtils.toInputStream(instruction));
-        Instruction node = (Instruction) parser.instruction();
-
+        this.instruction = (Instruction) parser.instruction();
         StringBuilder sb = new StringBuilder();
-        QuerySqlTranslator translator = new QuerySqlTranslator();
-        translator.visit(node, sb);
-
+        visit(this.instruction, sb);
         return sb.toString();
     }
 
@@ -544,5 +542,13 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
      */
     public void setNodeCoordinates(Stack<Integer> nodeCoordinates) {
         this.nodeCoordinates = nodeCoordinates;
+    }
+
+    public Instruction getInstruction() {
+        return instruction;
+    }
+
+    public void setInstruction(Instruction instruction) {
+        this.instruction = instruction;
     }
 }
