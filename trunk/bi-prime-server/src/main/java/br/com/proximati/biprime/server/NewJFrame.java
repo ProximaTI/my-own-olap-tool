@@ -131,6 +131,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
             model.setResultset(server.openResultset(jTextArea1.getText()));
             jTable1.setModel(model);
+            System.out.println("quantidade de linhas: " + jTable1.getModel().getRowCount());
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);

@@ -13,9 +13,9 @@ import java.util.HashMap;
 public class PivotTableModel {
 
     /** root node, related to row fields */
-    private PivotTableNode rowsRoot = null;
+    private PivotTableNode rowsRoot = new PivotTableNode();
     /** root node, related to column fields */
-    private PivotTableNode columnsRoot = null;
+    private PivotTableNode columnsRoot = new PivotTableNode();
     /** values and nodes */
     private HashMap<Pair<PivotTableNode, PivotTableNode>, Number> values;
 

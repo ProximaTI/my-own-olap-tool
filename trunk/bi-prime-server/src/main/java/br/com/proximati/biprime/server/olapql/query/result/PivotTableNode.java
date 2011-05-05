@@ -4,7 +4,7 @@
  */
 package br.com.proximati.biprime.server.olapql.query.result;
 
-import br.com.proximati.biprime.metadata.entity.Metadata;
+import br.com.proximati.biprime.server.olapql.language.query.Node;
 import java.util.ArrayList;
 
 /**
@@ -19,12 +19,30 @@ public class PivotTableNode {
     private boolean nodeExpanded = false;
     /** node value */
     private Object value = null;
-    /** this is a root node */
-    private boolean rootNode = false;
     /** depth level */
     private int level = 0;
-    /** metadata to which this node refers */
-    private Metadata metadata;
+    /** axis node to which this node refers */
+    private Node axisNode;
+
+    public PivotTableNode(Node axisNode) {
+        this.axisNode = axisNode;
+    }
+
+    public PivotTableNode() {
+    }
+
+    public void addChild(PivotTableNode node) {
+        this.getChildrenNodes().add(node);
+        node.setParentNode(this);
+    }
+
+    public Node getAxisNode() {
+        return axisNode;
+    }
+
+    public void setAxisNode(Node axisNode) {
+        this.axisNode = axisNode;
+    }
     /** parent node */
     private PivotTableNode parentNode;
 
@@ -79,20 +97,6 @@ public class PivotTableNode {
     }
 
     /**
-     * @return the rootNode
-     */
-    public boolean isRootNode() {
-        return rootNode;
-    }
-
-    /**
-     * @param rootNode the rootNode to set
-     */
-    public void setRootNode(boolean rootNode) {
-        this.rootNode = rootNode;
-    }
-
-    /**
      * @return the level
      */
     public int getLevel() {
@@ -104,19 +108,5 @@ public class PivotTableNode {
      */
     public void setLevel(int level) {
         this.level = level;
-    }
-
-    /**
-     * @return the metadata
-     */
-    public Metadata getMetadata() {
-        return metadata;
-    }
-
-    /**
-     * @param metadata the metadata to set
-     */
-    public void setMetadata(Metadata metadata) {
-        this.metadata = metadata;
     }
 }
