@@ -8,6 +8,7 @@ options
    VISITOR_RETURN_TYPE = "void";
    VISITOR_DATA_TYPE = "StringBuilder";
    NODE_USES_PARSER = false;
+   VISITOR_EXCEPTION = "Exception";
 }
 
 PARSER_BEGIN(QueryParser)

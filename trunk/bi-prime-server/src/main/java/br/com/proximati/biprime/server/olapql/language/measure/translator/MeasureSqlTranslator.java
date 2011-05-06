@@ -4,15 +4,18 @@
  */
 package br.com.proximati.biprime.server.olapql.language.measure.translator;
 
-import br.com.proximati.biprime.server.olapql.language.measure.Aggregation;
-import br.com.proximati.biprime.server.olapql.language.measure.Column;
-import br.com.proximati.biprime.server.olapql.language.measure.Measure;
-import br.com.proximati.biprime.server.olapql.language.measure.MeasureParser;
-import br.com.proximati.biprime.server.olapql.language.measure.ParseException;
-import br.com.proximati.biprime.server.olapql.language.measure.SimpleNode;
 import br.com.proximati.biprime.server.olapql.language.utils.TranslationUtils;
 import br.com.proximati.biprime.metadata.Application;
 import br.com.proximati.biprime.metadata.entity.Cube;
+import br.com.proximati.biprime.metadata.entity.Measure;
+import br.com.proximati.biprime.server.olapql.language.measure.ASTAddition;
+import br.com.proximati.biprime.server.olapql.language.measure.ASTAggregation;
+import br.com.proximati.biprime.server.olapql.language.measure.ASTColumn;
+import br.com.proximati.biprime.server.olapql.language.measure.ASTMeasure;
+import br.com.proximati.biprime.server.olapql.language.measure.ASTMultiplication;
+import br.com.proximati.biprime.server.olapql.language.measure.ASTNumber;
+import br.com.proximati.biprime.server.olapql.language.measure.MeasureParser;
+import br.com.proximati.biprime.server.olapql.language.measure.SimpleNode;
 import br.com.proximati.biprime.server.olapql.language.query.translator.QuerySqlTranslator;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -34,39 +37,33 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
     }
 
     @Override
-    public void visit(br.com.proximati.biprime.server.olapql.language.measure.Addition node, StringBuilder data) {
+    public void visit(ASTAddition node, StringBuilder data) throws Exception {
         visitOperation(node, data);
     }
 
     @Override
-    public void visit(br.com.proximati.biprime.server.olapql.language.measure.Multiplication node, StringBuilder data) {
+    public void visit(ASTMultiplication node, StringBuilder data) throws Exception {
         visitOperation(node, data);
     }
 
     @Override
-    public void visit(Measure node, StringBuilder data) {
-        try {
-            br.com.proximati.biprime.metadata.entity.Measure measure =
-                    Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+    public void visit(ASTMeasure node, StringBuilder data) throws Exception {
+        Measure measure = Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-            if (StringUtils.isNotBlank(measure.getFilterExpression())) {
-                filterStack.push(measure.getFilterExpression());
-            }
+        if (StringUtils.isNotBlank(measure.getFilterExpression())) {
+            filterStack.push(measure.getFilterExpression());
+        }
 
-            MeasureParser parser = new MeasureParser(IOUtils.toInputStream(measure.getExpression()));
+        MeasureParser parser = new MeasureParser(IOUtils.toInputStream(measure.getExpression()));
+        visit(parser.measureExpression(), data);
 
-            visit(parser.measureExpression(), data);
-
-            if (StringUtils.isNotBlank(measure.getFilterExpression())) {
-                filterStack.pop();
-            }
-        } catch (ParseException ex) {
-            ex.printStackTrace();
+        if (StringUtils.isNotBlank(measure.getFilterExpression())) {
+            filterStack.pop();
         }
     }
 
     @Override
-    public void visit(Aggregation node, StringBuilder data) {
+    public void visit(ASTAggregation node, StringBuilder data) throws Exception {
         if (node.jjtGetValue().equals("quantidade")) {
             data.append("count(");
         }
@@ -100,20 +97,20 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
     }
 
     @Override
-    public void visit(Column node, StringBuilder data) {
+    public void visit(ASTColumn node, StringBuilder data) throws Exception {
         data.append(cube.getTableName()).append(".").append(TranslationUtils.extractColumn(node.jjtGetValue().toString()));
     }
 
     @Override
-    public void visit(br.com.proximati.biprime.server.olapql.language.measure.Number node, StringBuilder data) {
+    public void visit(ASTNumber node, StringBuilder data) throws Exception {
         data.append(node.jjtGetValue());
     }
 
-    private void visitOperation(SimpleNode node, StringBuilder data) {
+    private void visitOperation(SimpleNode node, StringBuilder data) throws Exception {
         visitOperation(node, node.jjtGetValue().toString(), data);
     }
 
-    private void visitOperation(SimpleNode node, String op, StringBuilder data) {
+    private void visitOperation(SimpleNode node, String op, StringBuilder data) throws Exception {
         data.append("(");
 
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -126,25 +123,15 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
         data.append(")");
     }
 
-    public String translate(String expression) {
-        InputStream in = new ByteArrayInputStream(
-                (expression).getBytes());
+    public String translate(String expression) throws Exception {
+        InputStream in = new ByteArrayInputStream((expression).getBytes());
 
         MeasureParser parser = new MeasureParser(in);
+        SimpleNode node = parser.measureExpression();
+        StringBuilder sb = new StringBuilder();
+        MeasureSqlTranslator translator = new MeasureSqlTranslator(this.cube);
+        translator.visit(node, sb);
 
-        try {
-            SimpleNode node = parser.measureExpression();
-
-            StringBuilder sb = new StringBuilder();
-
-            MeasureSqlTranslator translator = new MeasureSqlTranslator(this.cube);
-            translator.visit(node, sb);
-
-            return sb.toString();
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
+        return sb.toString();
     }
 }
