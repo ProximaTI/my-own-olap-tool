@@ -14,8 +14,8 @@ class ASTMultiplicativeExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=3fea9c49ff3bb1292f578bee0fde19f2 (do not edit this line) */
+/* JavaCC - OriginalChecksum=175b5d6fb772a09b5f272aec12c001fd (do not edit this line) */

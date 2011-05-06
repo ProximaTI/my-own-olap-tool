@@ -14,8 +14,8 @@ class ASTLevelOrMeasureOrFilter extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=0bac2d3d82c459bf0643f890fd237f4b (do not edit this line) */
+/* JavaCC - OriginalChecksum=0da662018be7d8a7e2134a6a7c2ba8f7 (do not edit this line) */

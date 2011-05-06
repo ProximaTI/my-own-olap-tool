@@ -1046,6 +1046,11 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
     finally { jj_save(2, xla); }
   }
 
+  private boolean jj_3R_43() {
+    if (jj_scan_token(DATE)) return true;
+    return false;
+  }
+
   private boolean jj_3R_14() {
     if (jj_3R_22()) return true;
     Token xsp;
@@ -1318,11 +1323,6 @@ public class QueryParser/*@bgen(jjtree)*/implements QueryParserTreeConstants, Qu
 
   private boolean jj_3R_23() {
     if (jj_3R_32()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_43() {
-    if (jj_scan_token(DATE)) return true;
     return false;
   }
 

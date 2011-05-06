@@ -14,8 +14,8 @@ class ASTCompare extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=0520b76950fc498af97be1c6b0aecfac (do not edit this line) */
+/* JavaCC - OriginalChecksum=4f87c895f860de0e82e6dc2609481e6b (do not edit this line) */

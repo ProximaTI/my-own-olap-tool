@@ -14,8 +14,8 @@ class ASTInExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=d1a786a784f38afb042f24f0e740ef12 (do not edit this line) */
+/* JavaCC - OriginalChecksum=72847695e13eb8679356b193da19e711 (do not edit this line) */

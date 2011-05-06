@@ -14,8 +14,8 @@ class ASTProperty extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=03e4c284ce615096d16dde22090b90ff (do not edit this line) */
+/* JavaCC - OriginalChecksum=e3b1c7d3b669f5a6178b22c546f8ede1 (do not edit this line) */

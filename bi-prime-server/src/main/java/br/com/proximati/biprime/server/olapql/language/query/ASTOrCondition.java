@@ -14,8 +14,8 @@ class ASTOrCondition extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=52296a61a42408354d0eb54784fbdaa5 (do not edit this line) */
+/* JavaCC - OriginalChecksum=c77f555d3b6f00cbdbac1cb7be149b71 (do not edit this line) */

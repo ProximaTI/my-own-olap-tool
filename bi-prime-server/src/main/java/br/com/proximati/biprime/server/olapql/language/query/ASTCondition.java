@@ -14,8 +14,8 @@ class ASTCondition extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=6dccc1a9a91676c397c5b01d6f9d88d0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=2748bc506b64f06ff8e28e5cd2ee13ca (do not edit this line) */

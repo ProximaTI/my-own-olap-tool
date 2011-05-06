@@ -52,14 +52,14 @@ class SimpleNode implements Node {
   public Object jjtGetValue() { return value; }
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data)
+  public void jjtAccept(QueryParserVisitor visitor, Object data)
      throws Exception
 {
     visitor.visit(this, data);
   }
 
   /** Accept the visitor. **/
-  public Object childrenAccept(QueryParserVisitor visitor, StringBuilder data)
+  public Object childrenAccept(QueryParserVisitor visitor, Object data)
      throws Exception
 {
     if (children != null) {
@@ -95,4 +95,4 @@ class SimpleNode implements Node {
   }
 }
 
-/* JavaCC - OriginalChecksum=2f2ddfa30299bdf398a0b1dca180dd15 (do not edit this line) */
+/* JavaCC - OriginalChecksum=031e2a4b0173f5428895a36a8c8d0973 (do not edit this line) */

@@ -14,8 +14,8 @@ class ASTSelect extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=e17bc0e37f781d29ce0a919f4b1353ac (do not edit this line) */
+/* JavaCC - OriginalChecksum=11c45f46deb15485b8b20ba0dfb741df (do not edit this line) */

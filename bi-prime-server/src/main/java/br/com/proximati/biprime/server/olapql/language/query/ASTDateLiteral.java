@@ -14,8 +14,8 @@ class ASTDateLiteral extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=b20e47e39c3cfea11122ce2dd8ecf24e (do not edit this line) */
+/* JavaCC - OriginalChecksum=d9c4a18103f334df0cd41017a501af28 (do not edit this line) */

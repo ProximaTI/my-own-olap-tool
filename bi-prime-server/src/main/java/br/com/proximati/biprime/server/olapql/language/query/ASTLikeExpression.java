@@ -14,8 +14,8 @@ class ASTLikeExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=b55cfb2a961937642f0d14bace0c09eb (do not edit this line) */
+/* JavaCC - OriginalChecksum=1b1e8e670e6e8a3ae950ce97f88836c1 (do not edit this line) */

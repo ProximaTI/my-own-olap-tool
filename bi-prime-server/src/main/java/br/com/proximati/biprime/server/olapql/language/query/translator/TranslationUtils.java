@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.proximati.biprime.server.olapql.language.utils;
+package br.com.proximati.biprime.server.olapql.language.query.translator;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

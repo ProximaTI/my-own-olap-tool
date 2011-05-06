@@ -14,8 +14,8 @@ class ASTFilterExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=2215c42d4dedb7bec808edc1d03b6093 (do not edit this line) */
+/* JavaCC - OriginalChecksum=c79c6198d6e5e29acdd4aa705fd5795b (do not edit this line) */

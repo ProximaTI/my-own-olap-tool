@@ -14,8 +14,8 @@ class ASTDetachedFilterExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=21f92c9f5bfdbef51590445942468b78 (do not edit this line) */
+/* JavaCC - OriginalChecksum=35cc290dc8fcc431148b6689291faf9a (do not edit this line) */

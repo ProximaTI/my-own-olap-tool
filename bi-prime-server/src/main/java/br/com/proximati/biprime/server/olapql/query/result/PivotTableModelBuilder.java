@@ -13,7 +13,7 @@ import br.com.proximati.biprime.server.olapql.language.query.ASTPropertyNode;
 import br.com.proximati.biprime.server.olapql.language.query.ASTSelect;
 import br.com.proximati.biprime.server.olapql.language.query.Node;
 import br.com.proximati.biprime.server.olapql.language.query.SimpleNode;
-import br.com.proximati.biprime.server.olapql.language.query.translator.AbstractQueryVisitor;
+import br.com.proximati.biprime.server.olapql.language.query.translator.AbstractQueryTranslator;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ import org.apache.commons.collections15.BidiMap;
  *
  * @author luiz
  */
-public class PivotTableModelBuilder extends AbstractQueryVisitor {
+public class PivotTableModelBuilder extends AbstractQueryTranslator {
 
     /** model to be built */
     private PivotTableModel model = new PivotTableModel();
@@ -53,7 +53,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(ASTAxis node, StringBuilder data) throws Exception {
+    public void visit(ASTAxis node, Object data) throws Exception {
         if (node.jjtGetValue().equals("ROWS")) {
             nodeStack.push(model.getRowsRoot());
         } else {
@@ -66,7 +66,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(ASTPropertyNode node, StringBuilder data) throws Exception {
+    public void visit(ASTPropertyNode node, Object data) throws Exception {
         String column = axisNodeCoordinateMap.get(node);
         Object value = resultSet.getObject(column);
         nodeStack.push(retrieveNode(node, column, value));
@@ -75,7 +75,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) throws Exception {
+    public void visit(ASTLevelOrMeasureOrFilter node, Object data) throws Exception {
         Metadata metadata = axisNodeMetadataMap.get(node);
         String column = axisNodeCoordinateMap.get(node);
 

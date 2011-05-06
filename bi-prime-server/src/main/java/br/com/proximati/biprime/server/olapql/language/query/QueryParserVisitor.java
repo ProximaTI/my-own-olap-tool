@@ -3,30 +3,30 @@ package br.com.proximati.biprime.server.olapql.language.query;
 
 public interface QueryParserVisitor
 {
-  public void visit(SimpleNode node, StringBuilder data) throws Exception;
-  public void visit(ASTSelect node, StringBuilder data) throws Exception;
-  public void visit(ASTFilterExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTAxis node, StringBuilder data) throws Exception;
-  public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) throws Exception;
-  public void visit(ASTPropertyNode node, StringBuilder data) throws Exception;
-  public void visit(ASTLevel node, StringBuilder data) throws Exception;
-  public void visit(ASTFilter node, StringBuilder data) throws Exception;
-  public void visit(ASTProperty node, StringBuilder data) throws Exception;
-  public void visit(ASTCube node, StringBuilder data) throws Exception;
-  public void visit(ASTDetachedFilterExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTOrCondition node, StringBuilder data) throws Exception;
-  public void visit(ASTAndCondition node, StringBuilder data) throws Exception;
-  public void visit(ASTCondition node, StringBuilder data) throws Exception;
-  public void visit(ASTNegation node, StringBuilder data) throws Exception;
-  public void visit(ASTInExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTLikeExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTStartsWithExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTEndsWithExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTCompare node, StringBuilder data) throws Exception;
-  public void visit(ASTAdditiveExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTMultiplicativeExpression node, StringBuilder data) throws Exception;
-  public void visit(ASTNumberLiteral node, StringBuilder data) throws Exception;
-  public void visit(ASTDateLiteral node, StringBuilder data) throws Exception;
-  public void visit(ASTStringLiteral node, StringBuilder data) throws Exception;
+  public void visit(SimpleNode node, Object data) throws Exception;
+  public void visit(ASTSelect node, Object data) throws Exception;
+  public void visit(ASTFilterExpression node, Object data) throws Exception;
+  public void visit(ASTAxis node, Object data) throws Exception;
+  public void visit(ASTLevelOrMeasureOrFilter node, Object data) throws Exception;
+  public void visit(ASTPropertyNode node, Object data) throws Exception;
+  public void visit(ASTLevel node, Object data) throws Exception;
+  public void visit(ASTFilter node, Object data) throws Exception;
+  public void visit(ASTProperty node, Object data) throws Exception;
+  public void visit(ASTCube node, Object data) throws Exception;
+  public void visit(ASTDetachedFilterExpression node, Object data) throws Exception;
+  public void visit(ASTOrCondition node, Object data) throws Exception;
+  public void visit(ASTAndCondition node, Object data) throws Exception;
+  public void visit(ASTCondition node, Object data) throws Exception;
+  public void visit(ASTNegation node, Object data) throws Exception;
+  public void visit(ASTInExpression node, Object data) throws Exception;
+  public void visit(ASTLikeExpression node, Object data) throws Exception;
+  public void visit(ASTStartsWithExpression node, Object data) throws Exception;
+  public void visit(ASTEndsWithExpression node, Object data) throws Exception;
+  public void visit(ASTCompare node, Object data) throws Exception;
+  public void visit(ASTAdditiveExpression node, Object data) throws Exception;
+  public void visit(ASTMultiplicativeExpression node, Object data) throws Exception;
+  public void visit(ASTNumberLiteral node, Object data) throws Exception;
+  public void visit(ASTDateLiteral node, Object data) throws Exception;
+  public void visit(ASTStringLiteral node, Object data) throws Exception;
 }
-/* JavaCC - OriginalChecksum=a436c74f05264de2fd17c90b1534ac87 (do not edit this line) */
+/* JavaCC - OriginalChecksum=c8aa71f126c4ece83bc2d08741e14f15 (do not edit this line) */

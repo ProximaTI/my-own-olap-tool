@@ -124,11 +124,6 @@ public class NewJFrame extends javax.swing.JFrame {
             select.dump(" ");
 
             QueryTableModel model = new QueryTableModel();
-
-            QuerySqlTranslator translator = new QuerySqlTranslator();
-
-            System.out.println(translator.translateOlapQlInstruction(jTextArea1.getText()));
-
             model.setResultset(server.openResultset(jTextArea1.getText()));
             jTable1.setModel(model);
             System.out.println("quantidade de linhas: " + jTable1.getModel().getRowCount());

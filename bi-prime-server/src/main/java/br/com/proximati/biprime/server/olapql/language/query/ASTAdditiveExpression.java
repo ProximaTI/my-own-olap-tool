@@ -14,8 +14,8 @@ class ASTAdditiveExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=dbf8f40ad6a6d03e82d3de6b9d1584ca (do not edit this line) */
+/* JavaCC - OriginalChecksum=8a394e6779a7e211105d098235798a71 (do not edit this line) */
