@@ -5,9 +5,9 @@
 package br.com.proximati.biprime.server.olapql.language.query.translator;
 
 import br.com.proximati.biprime.metadata.Application;
-import br.com.proximati.biprime.server.olapql.language.query.Filter;
+import br.com.proximati.biprime.server.olapql.language.query.ASTFilter;
+import br.com.proximati.biprime.server.olapql.language.query.ASTProperty;
 import br.com.proximati.biprime.server.olapql.language.query.ParseException;
-import br.com.proximati.biprime.server.olapql.language.query.Property;
 import br.com.proximati.biprime.server.olapql.language.query.QueryParser;
 import br.com.proximati.biprime.server.olapql.language.utils.MetadataBag;
 import br.com.proximati.biprime.server.olapql.language.utils.TranslationUtils;
@@ -25,7 +25,7 @@ public class FilterMetadataExtractor extends AbstractQueryVisitor {
     private MetadataBag bag;
 
     @Override
-    public void visit(Filter node, StringBuilder data) {
+    public void visit(ASTFilter node, StringBuilder data) {
         String nodeValue = node.jjtGetValue().toString();
 
         br.com.proximati.biprime.metadata.entity.Filter filter =
@@ -40,7 +40,7 @@ public class FilterMetadataExtractor extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(Property node, StringBuilder data) {
+    public void visit(ASTProperty node, StringBuilder data) {
         String[] str = node.jjtGetValue().toString().split("\\.");
 
         br.com.proximati.biprime.metadata.entity.Level level =

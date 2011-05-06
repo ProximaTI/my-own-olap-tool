@@ -5,7 +5,6 @@
 package br.com.proximati.biprime.server;
 
 import br.com.proximati.biprime.metadata.Application;
-import br.com.proximati.biprime.server.olapql.language.query.Select;
 import br.com.proximati.biprime.server.olapql.language.query.translator.QuerySqlTranslator;
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableModelBuilder;
 import java.sql.ResultSet;
@@ -27,7 +26,7 @@ public class OlapQlServer {
         long a = System.currentTimeMillis();
 
         PivotTableModelBuilder builder = new PivotTableModelBuilder();
-        builder.build((Select) translator.getInstruction().jjtGetChild(0), resultset, translator.getAxisNodeCoordinateMap(), translator.getAxisNodeMetadataMap());
+        builder.build(translator.getSelect(), resultset, translator.getAxisNodeCoordinateMap(), translator.getAxisNodeMetadataMap());
         long b = System.currentTimeMillis();
 
         System.out.println("tempo gasto na construção do pivot table model: " + (b - a));

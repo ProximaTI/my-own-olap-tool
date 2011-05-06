@@ -10,7 +10,7 @@
  */
 package br.com.proximati.biprime.server;
 
-import br.com.proximati.biprime.server.olapql.language.query.Instruction;
+import br.com.proximati.biprime.server.olapql.language.query.ASTSelect;
 import br.com.proximati.biprime.server.olapql.language.query.QueryParser;
 import br.com.proximati.biprime.server.olapql.language.query.translator.QuerySqlTranslator;
 import java.awt.Cursor;
@@ -119,9 +119,9 @@ public class NewJFrame extends javax.swing.JFrame {
             OlapQlServer server = new OlapQlServer();
 
             QueryParser parser = new QueryParser(IOUtils.toInputStream(jTextArea1.getText()));
-            Instruction instruction = (Instruction) parser.instruction();
+            ASTSelect select = (ASTSelect) parser.select();
 
-            instruction.dump(" ");
+            select.dump(" ");
 
             QueryTableModel model = new QueryTableModel();
 

@@ -2,7 +2,7 @@ options
 {
    STATIC = false;
    NODE_DEFAULT_VOID = true;
-   NODE_PREFIX = "";
+   NODE_PREFIX = "AST";
    MULTI = true;
    VISITOR = true;
    VISITOR_RETURN_TYPE = "void";
@@ -11,7 +11,7 @@ options
 }
 
 PARSER_BEGIN(QueryParser)
-package br.com.bi.olapql.language.query;
+package br.com.proximati.biprime.server.olapql.language.query;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -28,7 +28,7 @@ public class QueryParser
       QueryParser parser = new QueryParser(in);
       try
       {
-         SimpleNode node = parser.instruction();
+         SimpleNode node = parser.select();
          node.dump(" ");
       }
       catch (ParseException ex)
@@ -113,21 +113,13 @@ TOKEN [ IGNORE_CASE ] :
       ) >
 }
 
-SimpleNode instruction() #Instruction :
-{}
-{
-   (
-      select()
-   )
-   {
-      return jjtThis;
-   }
-}
-
-void select() #Select :
+SimpleNode select() #Select :
 {}
 {
    < SELECT > axis() < COMMA > axis() < FROM > < CUBE > cube() [ < WHERE > filterExpression() #FilterExpression ] < EOF >
+   {
+      return jjtThis;
+   }
 }
 
 void axis() #Axis :
