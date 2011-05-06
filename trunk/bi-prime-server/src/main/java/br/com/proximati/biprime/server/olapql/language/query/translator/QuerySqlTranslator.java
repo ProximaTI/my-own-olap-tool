@@ -5,37 +5,40 @@
 package br.com.proximati.biprime.server.olapql.language.query.translator;
 
 import br.com.proximati.biprime.server.olapql.language.measure.translator.MeasureSqlTranslator;
-import br.com.proximati.biprime.server.olapql.language.query.Axis;
-import br.com.proximati.biprime.server.olapql.language.query.AndCondition;
-import br.com.proximati.biprime.server.olapql.language.query.Cube;
-import br.com.proximati.biprime.server.olapql.language.query.OrCondition;
-import br.com.proximati.biprime.server.olapql.language.query.Filter;
-import br.com.proximati.biprime.server.olapql.language.query.FilterExpression;
-import br.com.proximati.biprime.server.olapql.language.query.LevelOrMeasureOrFilter;
-import br.com.proximati.biprime.server.olapql.language.query.Negation;
 import br.com.proximati.biprime.server.olapql.language.query.Node;
 import br.com.proximati.biprime.server.olapql.language.query.ParseException;
-import br.com.proximati.biprime.server.olapql.language.query.Property;
-import br.com.proximati.biprime.server.olapql.language.query.PropertyNode;
-import br.com.proximati.biprime.server.olapql.language.query.Select;
 import br.com.proximati.biprime.server.olapql.language.query.SimpleNode;
-import br.com.proximati.biprime.server.olapql.language.query.StringLiteral;
 import br.com.proximati.biprime.server.olapql.language.utils.TranslationUtils;
 import br.com.proximati.biprime.metadata.Application;
+import br.com.proximati.biprime.metadata.entity.Cube;
 import br.com.proximati.biprime.metadata.entity.CubeLevel;
+import br.com.proximati.biprime.metadata.entity.Filter;
 import br.com.proximati.biprime.metadata.entity.Level;
 import br.com.proximati.biprime.metadata.entity.Metadata;
-import br.com.proximati.biprime.server.olapql.language.query.AdditiveExpression;
-import br.com.proximati.biprime.server.olapql.language.query.Compare;
-import br.com.proximati.biprime.server.olapql.language.query.DateLiteral;
-import br.com.proximati.biprime.server.olapql.language.query.EndsWithExpression;
-import br.com.proximati.biprime.server.olapql.language.query.InExpression;
-import br.com.proximati.biprime.server.olapql.language.query.Instruction;
-import br.com.proximati.biprime.server.olapql.language.query.LikeExpression;
-import br.com.proximati.biprime.server.olapql.language.query.MultiplicativeExpression;
-import br.com.proximati.biprime.server.olapql.language.query.NumberLiteral;
+import br.com.proximati.biprime.metadata.entity.Property;
+import br.com.proximati.biprime.server.olapql.language.query.ASTAdditiveExpression;
+import br.com.proximati.biprime.server.olapql.language.query.ASTAndCondition;
+import br.com.proximati.biprime.server.olapql.language.query.ASTAxis;
+import br.com.proximati.biprime.server.olapql.language.query.ASTCompare;
+import br.com.proximati.biprime.server.olapql.language.query.ASTCube;
+import br.com.proximati.biprime.server.olapql.language.query.ASTDateLiteral;
+import br.com.proximati.biprime.server.olapql.language.query.ASTEndsWithExpression;
+import br.com.proximati.biprime.server.olapql.language.query.ASTFilter;
+import br.com.proximati.biprime.server.olapql.language.query.ASTFilterExpression;
+import br.com.proximati.biprime.server.olapql.language.query.ASTInExpression;
+import br.com.proximati.biprime.server.olapql.language.query.ASTLevel;
+import br.com.proximati.biprime.server.olapql.language.query.ASTLevelOrMeasureOrFilter;
+import br.com.proximati.biprime.server.olapql.language.query.ASTLikeExpression;
+import br.com.proximati.biprime.server.olapql.language.query.ASTMultiplicativeExpression;
+import br.com.proximati.biprime.server.olapql.language.query.ASTNegation;
+import br.com.proximati.biprime.server.olapql.language.query.ASTNumberLiteral;
+import br.com.proximati.biprime.server.olapql.language.query.ASTOrCondition;
+import br.com.proximati.biprime.server.olapql.language.query.ASTProperty;
+import br.com.proximati.biprime.server.olapql.language.query.ASTPropertyNode;
+import br.com.proximati.biprime.server.olapql.language.query.ASTSelect;
+import br.com.proximati.biprime.server.olapql.language.query.ASTStartsWithExpression;
+import br.com.proximati.biprime.server.olapql.language.query.ASTStringLiteral;
 import br.com.proximati.biprime.server.olapql.language.query.QueryParser;
-import br.com.proximati.biprime.server.olapql.language.query.StartsWithExpression;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,9 +59,13 @@ import org.apache.commons.io.IOUtils;
  */
 public class QuerySqlTranslator extends AbstractQueryVisitor {
 
-    private br.com.proximati.biprime.metadata.entity.Cube cube;
+    private Cube cube;
     private QueryMetadataExtractor extractor = new QueryMetadataExtractor();
-    private Instruction instruction;
+    private ASTSelect select;
+
+    public ASTSelect getSelect() {
+        return select;
+    }
     // =================================================
     // variables used in coordinates calculating process
     // =================================================
@@ -75,7 +82,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     private BidiMap<Node, String> axisNodeCoordinateMap = new DualHashBidiMap<Node, String>();
 
     @Override
-    public void visit(Select node, StringBuilder data) {
+    public void visit(ASTSelect node, StringBuilder data) {
         cube = Application.getCubeDao().findByName(TranslationUtils.extractName(((SimpleNode) node.jjtGetChild(2)).jjtGetValue().toString()));
 
         extractor.visit(node, data);
@@ -91,9 +98,9 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             for (Node n : getAxisNodeList()) {
                 Metadata metadata = getAxisNodeMetadataMap().get(n);
 
-                if (metadata instanceof br.com.proximati.biprime.metadata.entity.Level
-                        || metadata instanceof br.com.proximati.biprime.metadata.entity.Property
-                        || metadata instanceof br.com.proximati.biprime.metadata.entity.Filter) {
+                if (metadata instanceof Level
+                        || metadata instanceof Property
+                        || metadata instanceof Filter) {
                     groupBy.append(getAxisNodeCoordinateMap().get(n)).append(", ");
                 }
             }
@@ -107,7 +114,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(Cube node, StringBuilder data) {
+    public void visit(ASTCube node, StringBuilder data) {
         // delete last comma generated by axis translation
         data.delete(data.length() - 2, data.length());
 
@@ -137,23 +144,23 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(FilterExpression node, StringBuilder data) {
+    public void visit(ASTFilterExpression node, StringBuilder data) {
         data.append(" and ");
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(OrCondition node, StringBuilder data) {
+    public void visit(ASTOrCondition node, StringBuilder data) {
         visitOperation(node, "or", data);
     }
 
     @Override
-    public void visit(AndCondition node, StringBuilder data) {
+    public void visit(ASTAndCondition node, StringBuilder data) {
         visitOperation(node, "and", data);
     }
 
     @Override
-    public void visit(Negation node, StringBuilder data) {
+    public void visit(ASTNegation node, StringBuilder data) {
         if (data.charAt(data.length() - 1) != ' ') {
             data.append(" not");
         } else {
@@ -164,27 +171,22 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(br.com.proximati.biprime.server.olapql.language.query.Level node, StringBuilder data) {
-        br.com.proximati.biprime.metadata.entity.Level level =
-                extractor.getAllReferencedMetadata().getLevel(node.jjtGetValue().toString());
-
+    public void visit(ASTLevel node, StringBuilder data) {
+        Level level = extractor.getAllReferencedMetadata().getLevel(node.jjtGetValue().toString());
         data.append(translateLevel(level));
     }
 
     @Override
-    public void visit(Filter node, StringBuilder data) {
-        br.com.proximati.biprime.metadata.entity.Filter filter =
-                Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
+    public void visit(ASTFilter node, StringBuilder data) {
+        Filter filter = Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
         data.append(translateFilterExpression(filter.getExpression()));
     }
 
     @Override
-    public void visit(PropertyNode node, StringBuilder data) {
+    public void visit(ASTPropertyNode node, StringBuilder data) {
         getNodeCoordinates().push(childIndex(node));
 
-        br.com.proximati.biprime.metadata.entity.Property property =
-                extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
+        Property property = extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
 
         registrateAxisNode(node, property);
 
@@ -197,47 +199,44 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(Property node, StringBuilder data) {
-        br.com.proximati.biprime.metadata.entity.Property property =
-                extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
-
+    public void visit(ASTProperty node, StringBuilder data) {
+        Property property = extractor.getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
         data.append(translateProperty(property));
     }
 
     @Override
-    public void visit(Compare node, StringBuilder data) {
+    public void visit(ASTCompare node, StringBuilder data) {
         data.append(" ").append(node.jjtGetValue()).append(" ");
     }
 
     @Override
-    public void visit(DateLiteral node, StringBuilder data) {
+    public void visit(ASTDateLiteral node, StringBuilder data) {
         data.append(node.jjtGetValue());
     }
 
     @Override
-    public void visit(StringLiteral node, StringBuilder data) {
+    public void visit(ASTStringLiteral node, StringBuilder data) {
         String string = node.jjtGetValue().toString();
-
         data.append(TranslationUtils.encloseString(TranslationUtils.discloseString(string)));
     }
 
     @Override
-    public void visit(AdditiveExpression node, StringBuilder data) {
+    public void visit(ASTAdditiveExpression node, StringBuilder data) {
         visitOperation(node, data);
     }
 
     @Override
-    public void visit(MultiplicativeExpression node, StringBuilder data) {
+    public void visit(ASTMultiplicativeExpression node, StringBuilder data) {
         visitOperation(node, data);
     }
 
     @Override
-    public void visit(NumberLiteral node, StringBuilder data) {
+    public void visit(ASTNumberLiteral node, StringBuilder data) {
         data.append(node.jjtGetValue());
     }
 
     @Override
-    public void visit(Axis node, StringBuilder data) {
+    public void visit(ASTAxis node, StringBuilder data) {
         if (node.jjtGetValue().toString().equals("ROWS")) {
             getNodeCoordinates().push(0);
         } else {
@@ -250,12 +249,12 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
+    public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) {
         getNodeCoordinates().push(childIndex(node));
 
         StringBuilder sb = new StringBuilder();
 
-        br.com.proximati.biprime.metadata.entity.Metadata metadata =
+        Metadata metadata =
                 extractor.getAllReferencedMetadata().getMeasure(node.jjtGetValue().toString());
 
         if (metadata != null) {
@@ -266,11 +265,11 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             metadata = extractor.getAllReferencedMetadata().getLevel(node.jjtGetValue().toString());
 
             if (metadata != null) {
-                data.append(TranslationUtils.columnExpression(((br.com.proximati.biprime.metadata.entity.Level) metadata).getTableName(), ((Level) metadata).getCodeProperty().getColumnName()));
+                data.append(TranslationUtils.columnExpression(((Level) metadata).getTableName(), ((Level) metadata).getCodeProperty().getColumnName()));
             } else {
                 metadata = extractor.getAllReferencedMetadata().getFilter(node.jjtGetValue().toString());
 
-                sb.append("case when ").append(translateFilterExpression(((br.com.proximati.biprime.metadata.entity.Filter) metadata).getExpression())).append(" then 1 else 0 end");
+                sb.append("case when ").append(translateFilterExpression(((Filter) metadata).getExpression())).append(" then 1 else 0 end");
             }
         }
 
@@ -283,7 +282,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(InExpression node, StringBuilder data) {
+    public void visit(ASTInExpression node, StringBuilder data) {
         data.append(" in (");
 
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -297,7 +296,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(LikeExpression node, StringBuilder data) {
+    public void visit(ASTLikeExpression node, StringBuilder data) {
         String operand = ((SimpleNode) node.jjtGetChild(0)).jjtGetValue().toString();
 
         StringBuilder sb = new StringBuilder();
@@ -310,7 +309,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(StartsWithExpression node, StringBuilder data) {
+    public void visit(ASTStartsWithExpression node, StringBuilder data) {
         String operand = ((SimpleNode) node.jjtGetChild(0)).jjtGetValue().toString();
 
         StringBuilder sb = new StringBuilder();
@@ -322,7 +321,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(EndsWithExpression node, StringBuilder data) {
+    public void visit(ASTEndsWithExpression node, StringBuilder data) {
         String operand = ((SimpleNode) node.jjtGetChild(0)).jjtGetValue().toString();
 
         StringBuilder sb = new StringBuilder();
@@ -366,8 +365,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
                 extractor.getAllReferencedMetadata().getInternalMap().entrySet()) {
             if (entry.getValue() instanceof Level) {
                 levels.add((Level) entry.getValue());
-            } else if (entry.getValue() instanceof br.com.proximati.biprime.metadata.entity.Property) {
-                levels.add(((br.com.proximati.biprime.metadata.entity.Property) entry.getValue()).getLevel());
+            } else if (entry.getValue() instanceof Property) {
+                levels.add(((Property) entry.getValue()).getLevel());
             }
         }
 
@@ -432,7 +431,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         return data.toString();
     }
 
-    private String translateLevel(br.com.proximati.biprime.metadata.entity.Level level) {
+    private String translateLevel(Level level) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(TranslationUtils.columnExpression(level.getTableName(), level.getCodeProperty().getColumnName()));
@@ -440,7 +439,7 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         return sb.toString();
     }
 
-    private String translateProperty(br.com.proximati.biprime.metadata.entity.Property property) {
+    private String translateProperty(Property property) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
@@ -475,20 +474,6 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     /**
-     * @return the axisNodeMetadataMap
-     */
-    public Map<Node, Metadata> getAxisNodeMetadataMap() {
-        return axisNodeMetadataMap;
-    }
-
-    /**
-     * @return the axisNodeCoordinateMap
-     */
-    public BidiMap<Node, String> getAxisNodeCoordinateMap() {
-        return axisNodeCoordinateMap;
-    }
-
-    /**
      * Translates an olapql instruction into a sql instruction.
      * @param instruction
      * @return
@@ -496,9 +481,9 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
      */
     public String translateOlapQlInstruction(String instruction) throws ParseException {
         QueryParser parser = new QueryParser(IOUtils.toInputStream(instruction));
-        this.instruction = (Instruction) parser.instruction();
+        this.select = (ASTSelect) parser.select();
         StringBuilder sb = new StringBuilder();
-        visit(this.instruction, sb);
+        visit(this.select, sb);
         return sb.toString();
     }
 
@@ -524,13 +509,6 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     /**
-     * @param axisNodeList the axisNodeList to set
-     */
-    public void setAxisNodeList(List<Node> axisNodeList) {
-        this.axisNodeList = axisNodeList;
-    }
-
-    /**
      * @return the nodeCoordinates
      */
     public Stack<Integer> getNodeCoordinates() {
@@ -538,17 +516,16 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
     }
 
     /**
-     * @param nodeCoordinates the nodeCoordinates to set
+     * @return the axisNodeMetadataMap
      */
-    public void setNodeCoordinates(Stack<Integer> nodeCoordinates) {
-        this.nodeCoordinates = nodeCoordinates;
+    public Map<Node, Metadata> getAxisNodeMetadataMap() {
+        return axisNodeMetadataMap;
     }
 
-    public Instruction getInstruction() {
-        return instruction;
-    }
-
-    public void setInstruction(Instruction instruction) {
-        this.instruction = instruction;
+    /**
+     * @return the axisNodeCoordinateMap
+     */
+    public BidiMap<Node, String> getAxisNodeCoordinateMap() {
+        return axisNodeCoordinateMap;
     }
 }

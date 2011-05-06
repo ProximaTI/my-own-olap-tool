@@ -6,13 +6,17 @@ package br.com.proximati.biprime.server.olapql.language.query.translator;
 
 import br.com.proximati.biprime.server.olapql.language.utils.MetadataBag;
 import br.com.proximati.biprime.server.olapql.language.measure.translator.MeasureMetadataExtractor;
-import br.com.proximati.biprime.server.olapql.language.query.Filter;
-import br.com.proximati.biprime.server.olapql.language.query.Level;
-import br.com.proximati.biprime.server.olapql.language.query.LevelOrMeasureOrFilter;
-import br.com.proximati.biprime.server.olapql.language.query.Property;
-import br.com.proximati.biprime.server.olapql.language.query.PropertyNode;
 import br.com.proximati.biprime.server.olapql.language.utils.TranslationUtils;
 import br.com.proximati.biprime.metadata.Application;
+import br.com.proximati.biprime.metadata.entity.Filter;
+import br.com.proximati.biprime.metadata.entity.Level;
+import br.com.proximati.biprime.metadata.entity.Measure;
+import br.com.proximati.biprime.metadata.entity.Property;
+import br.com.proximati.biprime.server.olapql.language.query.ASTFilter;
+import br.com.proximati.biprime.server.olapql.language.query.ASTLevel;
+import br.com.proximati.biprime.server.olapql.language.query.ASTLevelOrMeasureOrFilter;
+import br.com.proximati.biprime.server.olapql.language.query.ASTProperty;
+import br.com.proximati.biprime.server.olapql.language.query.ASTPropertyNode;
 
 /**
  * Classe que tem como responsabilidade extrair os metadados referenciados
@@ -32,22 +36,19 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
     private MetadataBag addedToFilter = new MetadataBag();
 
     @Override
-    public void visit(LevelOrMeasureOrFilter node, StringBuilder data) {
-        br.com.proximati.biprime.metadata.entity.Measure measure =
-                Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+    public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) {
+        Measure measure = Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
         if (measure != null) {
             getAddedToAxis().put(node.jjtGetValue().toString(), measure);
             MeasureMetadataExtractor measureExtractor = new MeasureMetadataExtractor();
             getIndirectlyAdded().put(measureExtractor.extractFromObject(measure.getName()));
         } else {
-            br.com.proximati.biprime.metadata.entity.Level level =
-                    Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+            Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
             if (level != null) {
                 getAddedToAxis().put(node.jjtGetValue().toString(), level);
             } else {
-                br.com.proximati.biprime.metadata.entity.Filter filter =
-                        Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+                Filter filter = Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
                 getAddedToAxis().put(node.jjtGetValue().toString(), filter);
                 getIndirectlyAdded().put(extractFromFilter(filter.getName()));
             }
@@ -57,49 +58,35 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(PropertyNode node, StringBuilder data) {
+    public void visit(ASTPropertyNode node, StringBuilder data) {
         String[] str = node.jjtGetValue().toString().split("\\.");
-
-        br.com.proximati.biprime.metadata.entity.Level level =
-                Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
-
-        br.com.proximati.biprime.metadata.entity.Property property = level.getProperty(TranslationUtils.extractName(str[1]));
+        Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
+        Property property = level.getProperty(TranslationUtils.extractName(str[1]));
         getAddedToAxis().put(node.jjtGetValue().toString(), property);
-
         super.visit(node, data);
     }
 
     @Override
-    public void visit(Property node, StringBuilder data) {
+    public void visit(ASTProperty node, StringBuilder data) {
         String[] str = node.jjtGetValue().toString().split("\\.");
-
-        br.com.proximati.biprime.metadata.entity.Level level =
-                Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
-
-        br.com.proximati.biprime.metadata.entity.Property property =
-                level.getProperty(TranslationUtils.extractName(str[1]));
+        Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
+        Property property = level.getProperty(TranslationUtils.extractName(str[1]));
         getAddedToFilter().put(node.jjtGetValue().toString(), property);
     }
 
     @Override
-    public void visit(Level node, StringBuilder data) {
+    public void visit(ASTLevel node, StringBuilder data) {
         String nodeValue = node.jjtGetValue().toString();
-
-        br.com.proximati.biprime.metadata.entity.Level level =
-                Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
+        Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
         if (level != null) {
             getAddedToFilter().put(nodeValue, level);
         }
     }
 
     @Override
-    public void visit(Filter node, StringBuilder data) {
+    public void visit(ASTFilter node, StringBuilder data) {
         String nodeValue = node.jjtGetValue().toString();
-
-        br.com.proximati.biprime.metadata.entity.Filter filter =
-                Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-
+        Filter filter = Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
         if (filter != null) {
             getAddedToFilter().put(nodeValue, filter);
             getAddedToFilter().put(extractFromFilter(filter.getName()));
