@@ -36,7 +36,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
     private MetadataBag addedToFilter = new MetadataBag();
 
     @Override
-    public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) {
+    public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) throws Exception {
         Measure measure = Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
         if (measure != null) {
@@ -58,7 +58,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(ASTPropertyNode node, StringBuilder data) {
+    public void visit(ASTPropertyNode node, StringBuilder data) throws Exception {
         String[] str = node.jjtGetValue().toString().split("\\.");
         Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
         Property property = level.getProperty(TranslationUtils.extractName(str[1]));
@@ -67,7 +67,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(ASTProperty node, StringBuilder data) {
+    public void visit(ASTProperty node, StringBuilder data) throws Exception {
         String[] str = node.jjtGetValue().toString().split("\\.");
         Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(str[0]));
         Property property = level.getProperty(TranslationUtils.extractName(str[1]));
@@ -75,7 +75,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(ASTLevel node, StringBuilder data) {
+    public void visit(ASTLevel node, StringBuilder data) throws Exception {
         String nodeValue = node.jjtGetValue().toString();
         Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
         if (level != null) {
@@ -84,7 +84,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
     }
 
     @Override
-    public void visit(ASTFilter node, StringBuilder data) {
+    public void visit(ASTFilter node, StringBuilder data) throws Exception {
         String nodeValue = node.jjtGetValue().toString();
         Filter filter = Application.getFilterDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
         if (filter != null) {
@@ -111,7 +111,7 @@ public class QueryMetadataExtractor extends AbstractQueryVisitor {
      * @param name
      * @return
      */
-    private MetadataBag extractFromFilter(String name) {
+    private MetadataBag extractFromFilter(String name) throws Exception {
         FilterMetadataExtractor extractor = new FilterMetadataExtractor();
         return extractor.extractFromObject(name);
     }

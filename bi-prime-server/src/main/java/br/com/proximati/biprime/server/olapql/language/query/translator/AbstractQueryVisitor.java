@@ -38,7 +38,7 @@ import br.com.proximati.biprime.server.olapql.language.query.ASTStringLiteral;
  */
 public abstract class AbstractQueryVisitor implements QueryParserVisitor {
 
-    public void visit(Node node, StringBuilder data) {
+    public void visit(Node node, StringBuilder data) throws Exception {
         if (node instanceof ASTSelect) {
             visit((ASTSelect) node, data);
         }
@@ -114,127 +114,127 @@ public abstract class AbstractQueryVisitor implements QueryParserVisitor {
     }
 
     @Override
-    public void visit(SimpleNode node, StringBuilder data) {
+    public void visit(SimpleNode node, StringBuilder data) throws Exception {
         visit((Node) node, data);
     }
 
     @Override
-    public void visit(ASTSelect node, StringBuilder data) {
+    public void visit(ASTSelect node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTAxis node, StringBuilder data) {
+    public void visit(ASTAxis node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) {
+    public void visit(ASTLevelOrMeasureOrFilter node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTProperty node, StringBuilder data) {
+    public void visit(ASTProperty node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTPropertyNode node, StringBuilder data) {
+    public void visit(ASTPropertyNode node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTCube node, StringBuilder data) {
+    public void visit(ASTCube node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTFilterExpression node, StringBuilder data) {
+    public void visit(ASTFilterExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTNegation node, StringBuilder data) {
+    public void visit(ASTNegation node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTLevel node, StringBuilder data) {
+    public void visit(ASTLevel node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTFilter node, StringBuilder data) {
+    public void visit(ASTFilter node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTStringLiteral node, StringBuilder data) {
+    public void visit(ASTStringLiteral node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTOrCondition node, StringBuilder data) {
+    public void visit(ASTOrCondition node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTAndCondition node, StringBuilder data) {
+    public void visit(ASTAndCondition node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTCondition node, StringBuilder data) {
+    public void visit(ASTCondition node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTInExpression node, StringBuilder data) {
+    public void visit(ASTInExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTLikeExpression node, StringBuilder data) {
+    public void visit(ASTLikeExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTStartsWithExpression node, StringBuilder data) {
+    public void visit(ASTStartsWithExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTEndsWithExpression node, StringBuilder data) {
+    public void visit(ASTEndsWithExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTCompare node, StringBuilder data) {
+    public void visit(ASTCompare node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTAdditiveExpression node, StringBuilder data) {
+    public void visit(ASTAdditiveExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTMultiplicativeExpression node, StringBuilder data) {
+    public void visit(ASTMultiplicativeExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTNumberLiteral node, StringBuilder data) {
+    public void visit(ASTNumberLiteral node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTDateLiteral node, StringBuilder data) {
+    public void visit(ASTDateLiteral node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
     @Override
-    public void visit(ASTDetachedFilterExpression node, StringBuilder data) {
+    public void visit(ASTDetachedFilterExpression node, StringBuilder data) throws Exception {
         visitChildren(node, data);
     }
 
@@ -247,7 +247,7 @@ public abstract class AbstractQueryVisitor implements QueryParserVisitor {
         return -1;
     }
 
-    protected void visitChildren(SimpleNode node, StringBuilder data) {
+    protected void visitChildren(SimpleNode node, StringBuilder data) throws Exception {
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             visit(node.jjtGetChild(i), data);
         }

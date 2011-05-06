@@ -4,14 +4,13 @@
  */
 package br.com.proximati.biprime.server.olapql.language.measure.translator;
 
-import br.com.proximati.biprime.server.olapql.language.measure.Measure;
-import br.com.proximati.biprime.server.olapql.language.measure.MeasureParser;
 import br.com.proximati.biprime.server.olapql.language.utils.MetadataBag;
 import br.com.proximati.biprime.server.olapql.language.utils.TranslationUtils;
 import br.com.proximati.biprime.metadata.Application;
+import br.com.proximati.biprime.metadata.entity.Measure;
+import br.com.proximati.biprime.server.olapql.language.measure.ASTMeasure;
+import br.com.proximati.biprime.server.olapql.language.measure.MeasureParser;
 import br.com.proximati.biprime.server.olapql.language.query.translator.FilterMetadataExtractor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -23,9 +22,8 @@ public class MeasureMetadataExtractor extends AbstractMeasureParserVisitor {
     private MetadataBag bag;
 
     @Override
-    public void visit(Measure node, StringBuilder data) {
-        br.com.proximati.biprime.metadata.entity.Measure measure =
-                Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
+    public void visit(ASTMeasure node, StringBuilder data) throws Exception {
+        Measure measure = Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
         if (measure != null) {
             bag.put(node.jjtGetValue().toString(), measure);
@@ -41,7 +39,7 @@ public class MeasureMetadataExtractor extends AbstractMeasureParserVisitor {
      * @param measure
      * @return
      */
-    MetadataBag extractFromFilterExpression(br.com.proximati.biprime.metadata.entity.Measure measure) {
+    private MetadataBag extractFromFilterExpression(Measure measure) throws Exception {
         FilterMetadataExtractor extractor = new FilterMetadataExtractor();
         return extractor.extractFromExpression(measure.getFilterExpression());
     }
@@ -51,18 +49,13 @@ public class MeasureMetadataExtractor extends AbstractMeasureParserVisitor {
      * @param name
      * @return
      */
-    public MetadataBag extractFromObject(String name) {
+    public MetadataBag extractFromObject(String name) throws Exception {
         bag = new MetadataBag();
-        try {
-            br.com.proximati.biprime.metadata.entity.Measure measure = Application.getMeasureDao().findByName(name);
-            MeasureParser parser = new MeasureParser(IOUtils.toInputStream(measure.getExpression()));
-            visit(parser.measureExpression(), null);
-            bag.put(extractFromFilterExpression(measure));
-        } catch (Exception ex) {
-            Logger.getLogger(FilterMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            return bag;
-        }
+        br.com.proximati.biprime.metadata.entity.Measure measure = Application.getMeasureDao().findByName(name);
+        MeasureParser parser = new MeasureParser(IOUtils.toInputStream(measure.getExpression()));
+        visit(parser.measureExpression(), null);
+        bag.put(extractFromFilterExpression(measure));
+        return bag;
     }
 
     /**
@@ -70,16 +63,10 @@ public class MeasureMetadataExtractor extends AbstractMeasureParserVisitor {
      * @param expression
      * @return
      */
-    public MetadataBag extractFromExpression(String expression) {
+    public MetadataBag extractFromExpression(String expression) throws Exception {
         bag = new MetadataBag();
-        try {
-            MeasureParser parser = new MeasureParser(IOUtils.toInputStream(expression));
-            visit(parser.measureExpression(), null);
-            return bag;
-        } catch (Exception ex) {
-            Logger.getLogger(FilterMetadataExtractor.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            return bag;
-        }
+        MeasureParser parser = new MeasureParser(IOUtils.toInputStream(expression));
+        visit(parser.measureExpression(), null);
+        return bag;
     }
 }

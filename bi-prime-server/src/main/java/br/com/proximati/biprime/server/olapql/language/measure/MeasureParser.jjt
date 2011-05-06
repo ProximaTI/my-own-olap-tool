@@ -2,15 +2,16 @@ options
 { 
     STATIC = false;
     NODE_DEFAULT_VOID = true;
-    NODE_PREFIX = ""; 
+    NODE_PREFIX = "AST";
     MULTI = true;
     VISITOR = true;
     VISITOR_RETURN_TYPE = "void";
     VISITOR_DATA_TYPE = "StringBuilder";
+    VISITOR_EXCEPTION = "Exception";
 }
 
 PARSER_BEGIN (MeasureParser)
-package br.com.bi.olapql.language.measure;
+package br.com.proximati.biprime.server.olapql.language.measure;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
