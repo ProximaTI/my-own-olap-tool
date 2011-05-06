@@ -14,8 +14,8 @@ class ASTNumberLiteral extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=5eb08a5a7d4d41c0eacb801a7958b538 (do not edit this line) */
+/* JavaCC - OriginalChecksum=56250284aae3a68f467b78398b5f37da (do not edit this line) */

@@ -14,8 +14,8 @@ class ASTLevel extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=4d799f055a20210e9cc2924e6b06e0eb (do not edit this line) */
+/* JavaCC - OriginalChecksum=14f55722d9268125f1669ced7b27e167 (do not edit this line) */

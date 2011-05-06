@@ -14,8 +14,8 @@ class ASTStartsWithExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=0a4eb8a3a7ba1c34d37d8b59b80c7c56 (do not edit this line) */
+/* JavaCC - OriginalChecksum=269babf1a330903aae990603c6e10597 (do not edit this line) */

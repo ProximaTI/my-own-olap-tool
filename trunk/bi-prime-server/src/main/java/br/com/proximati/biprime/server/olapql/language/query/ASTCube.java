@@ -14,8 +14,8 @@ class ASTCube extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=68331c93f01f486fae34ce5f24315b25 (do not edit this line) */
+/* JavaCC - OriginalChecksum=2c0230ff658cd82a64d20859a16d9b92 (do not edit this line) */

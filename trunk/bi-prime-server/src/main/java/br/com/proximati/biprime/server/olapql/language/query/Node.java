@@ -34,6 +34,6 @@ interface Node {
   public int jjtGetNumChildren();
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception;
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception;
 }
-/* JavaCC - OriginalChecksum=817cc5a901389b748695ff9ccc72dc8a (do not edit this line) */
+/* JavaCC - OriginalChecksum=9bd1bf49c7f8f5c3967258e7a7a710ff (do not edit this line) */

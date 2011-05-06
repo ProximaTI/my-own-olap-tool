@@ -14,8 +14,8 @@ class ASTNegation extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=5c1196cb43ed909f64ca4bf4ef6096f7 (do not edit this line) */
+/* JavaCC - OriginalChecksum=2e1bd0f73cfc65bac7d92fd7bff35531 (do not edit this line) */

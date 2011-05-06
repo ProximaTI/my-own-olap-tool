@@ -14,8 +14,8 @@ class ASTAxis extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=0b5999874d58edc608566fb04fe84967 (do not edit this line) */
+/* JavaCC - OriginalChecksum=01443c9b24c84028f9977601c4e674c5 (do not edit this line) */

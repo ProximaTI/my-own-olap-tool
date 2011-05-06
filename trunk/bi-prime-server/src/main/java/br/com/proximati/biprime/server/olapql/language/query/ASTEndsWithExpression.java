@@ -14,8 +14,8 @@ class ASTEndsWithExpression extends SimpleNode {
 
 
   /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, StringBuilder data) throws Exception {
+  public void jjtAccept(QueryParserVisitor visitor, Object data) throws Exception {
     visitor.visit(this, data);
   }
 }
-/* JavaCC - OriginalChecksum=f2837a12c662b182567a48e68d5bf1f5 (do not edit this line) */
+/* JavaCC - OriginalChecksum=e6c466c855173f1aefb1e1fb029c8d12 (do not edit this line) */

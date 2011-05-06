@@ -4,7 +4,7 @@
  */
 package br.com.proximati.biprime.server.olapql.language.measure.translator;
 
-import br.com.proximati.biprime.server.olapql.language.utils.TranslationUtils;
+import br.com.proximati.biprime.server.olapql.language.query.translator.TranslationUtils;
 import br.com.proximati.biprime.metadata.Application;
 import br.com.proximati.biprime.metadata.entity.Cube;
 import br.com.proximati.biprime.metadata.entity.Measure;
@@ -16,9 +16,10 @@ import br.com.proximati.biprime.server.olapql.language.measure.ASTMultiplication
 import br.com.proximati.biprime.server.olapql.language.measure.ASTNumber;
 import br.com.proximati.biprime.server.olapql.language.measure.MeasureParser;
 import br.com.proximati.biprime.server.olapql.language.measure.SimpleNode;
+import br.com.proximati.biprime.server.olapql.language.query.ASTFilterExpression;
+import br.com.proximati.biprime.server.olapql.language.query.QueryParser;
 import br.com.proximati.biprime.server.olapql.language.query.translator.QuerySqlTranslator;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import br.com.proximati.biprime.server.olapql.language.query.translator.TranslationContext;
 import java.util.Stack;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -83,8 +84,10 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
         if (!filterStack.empty()) {
             data.append("case when (");
 
+            QueryParser parser = new QueryParser(IOUtils.toInputStream(filterStack.peek()));
             QuerySqlTranslator translator = new QuerySqlTranslator();
-            data.append(translator.translateFilterExpression(filterStack.peek()));
+            TranslationContext context = translator.translate((ASTFilterExpression) parser.detachedFilterExpression());
+            data.append(context.getOutput());
 
             data.append(") then ");
             visitChildren(node, data);
@@ -124,9 +127,7 @@ public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
     }
 
     public String translate(String expression) throws Exception {
-        InputStream in = new ByteArrayInputStream((expression).getBytes());
-
-        MeasureParser parser = new MeasureParser(in);
+        MeasureParser parser = new MeasureParser(IOUtils.toInputStream(expression));
         SimpleNode node = parser.measureExpression();
         StringBuilder sb = new StringBuilder();
         MeasureSqlTranslator translator = new MeasureSqlTranslator(this.cube);
