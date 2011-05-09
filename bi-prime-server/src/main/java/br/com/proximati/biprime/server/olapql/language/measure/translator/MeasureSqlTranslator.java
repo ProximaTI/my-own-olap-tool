@@ -4,6 +4,7 @@
  */
 package br.com.proximati.biprime.server.olapql.language.measure.translator;
 
+import br.com.proximati.biprime.server.olapql.language.measure.AbstractMeasureVisitor;
 import br.com.proximati.biprime.server.olapql.language.query.translator.TranslationUtils;
 import br.com.proximati.biprime.metadata.Application;
 import br.com.proximati.biprime.metadata.entity.Cube;
@@ -28,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author luiz
  */
-public class MeasureSqlTranslator extends AbstractMeasureParserVisitor {
+public class MeasureSqlTranslator extends AbstractMeasureVisitor {
 
     private Stack<String> filterStack = new Stack<String>();
     private Cube cube;

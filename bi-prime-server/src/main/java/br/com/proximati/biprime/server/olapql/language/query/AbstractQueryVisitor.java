@@ -2,41 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.proximati.biprime.server.olapql.language.query.translator;
-
-import br.com.proximati.biprime.server.olapql.language.query.ASTAdditiveExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTAndCondition;
-import br.com.proximati.biprime.server.olapql.language.query.ASTAxis;
-import br.com.proximati.biprime.server.olapql.language.query.ASTCompare;
-import br.com.proximati.biprime.server.olapql.language.query.ASTCondition;
-import br.com.proximati.biprime.server.olapql.language.query.ASTCube;
-import br.com.proximati.biprime.server.olapql.language.query.ASTDateLiteral;
-import br.com.proximati.biprime.server.olapql.language.query.ASTDetachedFilterExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTEndsWithExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTFilter;
-import br.com.proximati.biprime.server.olapql.language.query.ASTFilterExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTInExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTLevel;
-import br.com.proximati.biprime.server.olapql.language.query.ASTLevelOrMeasureOrFilter;
-import br.com.proximati.biprime.server.olapql.language.query.ASTLikeExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTMultiplicativeExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTNegation;
-import br.com.proximati.biprime.server.olapql.language.query.Node;
-import br.com.proximati.biprime.server.olapql.language.query.ASTNumberLiteral;
-import br.com.proximati.biprime.server.olapql.language.query.ASTOrCondition;
-import br.com.proximati.biprime.server.olapql.language.query.ASTProperty;
-import br.com.proximati.biprime.server.olapql.language.query.ASTPropertyNode;
-import br.com.proximati.biprime.server.olapql.language.query.QueryParserVisitor;
-import br.com.proximati.biprime.server.olapql.language.query.ASTSelect;
-import br.com.proximati.biprime.server.olapql.language.query.SimpleNode;
-import br.com.proximati.biprime.server.olapql.language.query.ASTStartsWithExpression;
-import br.com.proximati.biprime.server.olapql.language.query.ASTStringLiteral;
+package br.com.proximati.biprime.server.olapql.language.query;
 
 /**
  *
  * @author luiz
  */
-public abstract class AbstractQueryTranslator implements QueryParserVisitor {
+public abstract class AbstractQueryVisitor implements QueryParserVisitor {
 
     public void visit(Node node, Object data) throws Exception {
         if (node instanceof ASTSelect) {

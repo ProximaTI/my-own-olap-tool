@@ -4,6 +4,7 @@
  */
 package br.com.proximati.biprime.server.olapql.language.query.translator;
 
+import br.com.proximati.biprime.server.olapql.language.query.AbstractQueryVisitor;
 import br.com.proximati.biprime.server.olapql.language.measure.translator.MeasureSqlTranslator;
 import br.com.proximati.biprime.server.olapql.language.query.SimpleNode;
 import br.com.proximati.biprime.metadata.entity.CubeLevel;
@@ -48,9 +49,7 @@ import org.apache.commons.io.IOUtils;
  *
  * @author luiz
  */
-public class QuerySqlTranslator extends AbstractQueryTranslator {
-
-    private Stack<Integer> nodeStack = new Stack<Integer>();
+public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     @Override
     public void visit(ASTSelect node, Object data) throws Exception {
@@ -73,6 +72,8 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
                 getOutput(data).append(" group by ").append(groupBy);
             }
         }
+
+        getContext(data).setTranslatedSelect(node);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
     @Override
     public void visit(ASTLevel node, Object data) throws Exception {
         Level level = getQueryMetadata(data).getAllReferencedMetadata().getLevel(node.jjtGetValue().toString());
-        getOutput(data).append(translateLevel(level));
+        getOutput(data).append(TranslationUtils.columnExpression(level.getTableName(), level.getCodeProperty().getColumnName()));
     }
 
     @Override
@@ -128,22 +129,23 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
         Filter filter = getQueryMetadata(data).getAllReferencedMetadata().getFilter(node.jjtGetValue().toString());
         translate(filter.getExpression(), (TranslationContext) data);
     }
+    private Stack<Integer> axisNodeVisitationStack = new Stack<Integer>();
 
     @Override
     public void visit(ASTPropertyNode node, Object data) throws Exception {
-        nodeStack.push(childIndex(node));
+        axisNodeVisitationStack.push(childIndex(node));
 
         Property property = getQueryMetadata(data).getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
 
         String position = calculatePosition();
         ((TranslationContext) data).getAxisNodePositionsMap().put(node, position);
 
-        getOutput(data).append(translateProperty(property));
+        getOutput(data).append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
         getOutput(data).append(" as ").append(position);
         getOutput(data).append(", ");
 
         super.visit(node, data);
-        nodeStack.pop();
+        axisNodeVisitationStack.pop();
     }
 
     /**
@@ -153,15 +155,15 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
      */
     private String calculatePosition() {
         StringBuilder position = new StringBuilder();
-        for (int i = 0; i < nodeStack.size(); i++) {
+        for (int i = 0; i < axisNodeVisitationStack.size(); i++) {
             if (i == 0) {
-                if (nodeStack.get(i) == 0) {
+                if (axisNodeVisitationStack.get(i) == 0) {
                     position.append("r_");
                 } else {
                     position.append("c_");
                 }
             } else {
-                position.append(nodeStack.get(i)).append("_");
+                position.append(axisNodeVisitationStack.get(i)).append("_");
             }
         }
         position.deleteCharAt(position.length() - 1);
@@ -172,19 +174,19 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
     @Override
     public void visit(ASTAxis node, Object data) throws Exception {
         if (node.jjtGetValue().toString().equals("ROWS")) {
-            nodeStack.push(0);
+            axisNodeVisitationStack.push(0);
         } else {
-            nodeStack.push(1);
+            axisNodeVisitationStack.push(1);
         }
 
         super.visit(node, data);
 
-        nodeStack.pop();
+        axisNodeVisitationStack.pop();
     }
 
     @Override
     public void visit(ASTLevelOrMeasureOrFilter node, Object data) throws Exception {
-        nodeStack.push(childIndex(node));
+        axisNodeVisitationStack.push(childIndex(node));
 
         Metadata metadata = getQueryMetadata(data).getAllReferencedMetadata().getMeasure(node.jjtGetValue().toString());
         if (metadata != null) {
@@ -208,7 +210,7 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
 
         super.visit(node, data);
 
-        nodeStack.pop();
+        axisNodeVisitationStack.pop();
     }
 
     @Override
@@ -265,7 +267,7 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
     @Override
     public void visit(ASTProperty node, Object data) throws Exception {
         Property property = getQueryMetadata(data).getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
-        getOutput(data).append(translateProperty(property));
+        getOutput(data).append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
     }
 
     @Override
@@ -319,6 +321,13 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
         visitOperation(node, "and", data);
     }
 
+    /**
+     *
+     * @param node
+     * @param op
+     * @param data
+     * @throws Exception
+     */
     private void visitOperation(SimpleNode node, String op, Object data) throws Exception {
         getOutput(data).append("(");
 
@@ -332,17 +341,6 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
         getOutput(data).append(")");
     }
 
-    private StringBuilder getOutput(Object data) {
-        return ((TranslationContext) data).getOutput();
-    }
-
-    private QueryMetadata getQueryMetadata(Object data) {
-        return ((TranslationContext) data).getQueryMetadata();
-    }
-
-    // ==========================
-    // ====== Utilitários =======
-    // ==========================
     /**
      * Retorna os níveis presentes na consulta, seja explicitamente em um nó, ou indiretamente
      * através de um nó filtro, ou filtro de métrica, ou ainda filtro na consulta.
@@ -423,18 +421,50 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
         return context.getOutput().toString();
     }
 
-    private String translateLevel(Level level) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(TranslationUtils.columnExpression(level.getTableName(), level.getCodeProperty().getColumnName()));
-        return sb.toString();
+    /**
+     * 
+     * @param data
+     * @return
+     */
+    private StringBuilder getOutput(Object data) {
+        return ((TranslationContext) data).getOutput();
     }
 
-    private String translateProperty(Property property) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
-        return sb.toString();
+    /**
+     *
+     * @param data
+     * @return
+     */
+    private QueryMetadata getQueryMetadata(Object data) {
+        return ((TranslationContext) data).getQueryMetadata();
     }
 
+    /**
+     * 
+     * @param data
+     * @return
+     */
+    private TranslationContext getContext(Object data) {
+        return (TranslationContext) data;
+    }
+
+    /**
+     * 
+     * @param filterExpression
+     * @param context
+     * @throws Exception
+     */
+    private void translate(String filterExpression, TranslationContext context) throws Exception {
+        QueryParser parser = new QueryParser(IOUtils.toInputStream(filterExpression));
+        visit(parser.detachedFilterExpression(), context);
+    }
+
+    /**
+     *
+     * @param select
+     * @return
+     * @throws Exception
+     */
     public TranslationContext translate(ASTSelect select) throws Exception {
         QueryMetadata queryMetadata = new QueryMetadata(select);
         TranslationContext context = new TranslationContext(queryMetadata);
@@ -442,15 +472,16 @@ public class QuerySqlTranslator extends AbstractQueryTranslator {
         return context;
     }
 
+    /**
+     *
+     * @param filterExpression
+     * @return
+     * @throws Exception
+     */
     public TranslationContext translate(ASTFilterExpression filterExpression) throws Exception {
         QueryMetadata queryMetadata = new QueryMetadata(filterExpression);
         TranslationContext context = new TranslationContext(queryMetadata);
         visit(filterExpression, context);
         return context;
-    }
-
-    private void translate(String filterExpression, TranslationContext context) throws Exception {
-        QueryParser parser = new QueryParser(IOUtils.toInputStream(filterExpression));
-        visit(parser.detachedFilterExpression(), context);
     }
 }
