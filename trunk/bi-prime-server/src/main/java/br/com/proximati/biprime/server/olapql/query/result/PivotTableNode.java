@@ -15,12 +15,8 @@ public class PivotTableNode {
 
     /** list of nodes */
     private ArrayList<PivotTableNode> childrenNodes = new ArrayList<PivotTableNode>();
-    /** flag used to define if current node is expanded */
-    private boolean nodeExpanded = false;
     /** node value */
     private Object value = null;
-    /** depth level */
-    private int level = 0;
     /** axis node to which this node refers */
     private Node axisNode;
 
@@ -69,20 +65,6 @@ public class PivotTableNode {
     }
 
     /**
-     * @return the nodeExpanded
-     */
-    public boolean isNodeExpanded() {
-        return nodeExpanded;
-    }
-
-    /**
-     * @param nodeExpanded the nodeExpanded to set
-     */
-    public void setNodeExpanded(boolean nodeExpanded) {
-        this.nodeExpanded = nodeExpanded;
-    }
-
-    /**
      * @return the value
      */
     public Object getValue() {
@@ -94,19 +76,5 @@ public class PivotTableNode {
      */
     public void setValue(Object value) {
         this.value = value;
-    }
-
-    /**
-     * @return the level
-     */
-    public int getLevel() {
-        return level;
-    }
-
-    /**
-     * @param level the level to set
-     */
-    public void setLevel(int level) {
-        this.level = level;
     }
 }

@@ -4,6 +4,7 @@
  */
 package br.com.proximati.biprime.server.olapql.language.query.translator;
 
+import br.com.proximati.biprime.server.olapql.language.query.AbstractQueryVisitor;
 import br.com.proximati.biprime.metadata.Application;
 import br.com.proximati.biprime.metadata.entity.Cube;
 import br.com.proximati.biprime.metadata.entity.Filter;
@@ -32,7 +33,7 @@ import org.apache.commons.io.IOUtils;
  * 
  * @author luiz
  */
-public class QueryMetadata extends AbstractQueryTranslator {
+public class QueryMetadata extends AbstractQueryVisitor {
 
     /** referência para o cubo consultado */
     private Cube cube;

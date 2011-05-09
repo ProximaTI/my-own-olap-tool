@@ -5,6 +5,7 @@
 package br.com.proximati.biprime.server.olapql.query.result;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -17,13 +18,13 @@ public class PivotTableModel {
     /** root node, related to column fields */
     private PivotTableNode columnsRoot = new PivotTableNode();
     /** values and nodes */
-    private HashMap<Pair<PivotTableNode, PivotTableNode>, Number> values;
+    private Map<Pair<PivotTableNode, PivotTableNode>, Number> values = new HashMap<Pair<PivotTableNode, PivotTableNode>, Number>();
 
-    public HashMap<Pair<PivotTableNode, PivotTableNode>, Number> getValues() {
+    public Map<Pair<PivotTableNode, PivotTableNode>, Number> getValues() {
         return values;
     }
 
-    public void setValues(HashMap<Pair<PivotTableNode, PivotTableNode>, Number> values) {
+    public void setValues(Map<Pair<PivotTableNode, PivotTableNode>, Number> values) {
         this.values = values;
     }
 

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.proximati.biprime.server.olapql.language.measure.translator;
+package br.com.proximati.biprime.server.olapql.language.measure;
 
 import br.com.proximati.biprime.server.olapql.language.measure.ASTAddition;
 import br.com.proximati.biprime.server.olapql.language.measure.ASTAggregation;
@@ -19,7 +19,7 @@ import br.com.proximati.biprime.server.olapql.language.measure.SimpleNode;
  *
  * @author luiz
  */
-public class AbstractMeasureParserVisitor implements MeasureParserVisitor {
+public class AbstractMeasureVisitor implements MeasureParserVisitor {
 
     public void visit(Node node, StringBuilder data) throws Exception {
         if (node instanceof ASTMeasureExpression) {
