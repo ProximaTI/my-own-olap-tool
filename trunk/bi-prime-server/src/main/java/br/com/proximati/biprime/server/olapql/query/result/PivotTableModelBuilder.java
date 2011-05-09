@@ -32,6 +32,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
     private Map<String, PivotTableNode> pNodeCache = new HashMap<String, PivotTableNode>();
     /** Auxiliary stack which is used to determine kinship between nodes. */
     private Stack<PivotTableNode> nodeStack = new Stack<PivotTableNode>();
+    /** */
     private ResultSet resultSet;
 
     @Override
