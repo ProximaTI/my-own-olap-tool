@@ -102,9 +102,8 @@ public class QueryMetadata extends AbstractQueryVisitor {
     @Override
     public void visit(ASTLevel node, Object data) throws Exception {
         Level level = Application.getLevelDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
-        if (level != null) {
+        if (level != null)
             referencedByFilter.put(node.jjtGetValue().toString(), level);
-        }
     }
 
     @Override

@@ -9,7 +9,10 @@ import br.com.proximati.biprime.server.olapql.language.query.ASTSelect;
 import br.com.proximati.biprime.server.olapql.language.query.QueryParser;
 import br.com.proximati.biprime.server.olapql.language.query.translator.QuerySqlTranslator;
 import br.com.proximati.biprime.server.olapql.language.query.translator.TranslationContext;
+import br.com.proximati.biprime.server.olapql.query.result.PivotTableModel;
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableModelBuilder;
+import br.com.proximati.biprime.view.itext.PivotTableModelRenderer;
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import javax.sql.DataSource;
 import org.apache.commons.io.IOUtils;
@@ -20,7 +23,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class OlapQlServer {
 
-    public ResultSet openResultset(String query) throws Exception {
+    public PivotTableModel execute(String query) throws Exception {
         DataSource dataSource = (DataSource) Application.getBean("dataSource");
 
         QueryParser parser = new QueryParser(IOUtils.toInputStream(query));
@@ -33,13 +36,11 @@ public class OlapQlServer {
         long a = System.currentTimeMillis();
 
         PivotTableModelBuilder builder = new PivotTableModelBuilder();
-        builder.build(resultset, context);
+        PivotTableModel model = builder.build(resultset, context);
         long b = System.currentTimeMillis();
 
         System.out.println("tempo gasto na construção do pivot table model: " + (b - a));
 
-        resultset = dataSource.getConnection().createStatement().executeQuery(context.getOutput().toString());
-
-        return resultset;
+        return model;
     }
 }

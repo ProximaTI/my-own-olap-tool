@@ -4,6 +4,7 @@
  */
 package br.com.proximati.biprime.server.olapql.query.result;
 
+import br.com.proximati.biprime.util.Pair;
 import java.util.HashMap;
 import java.util.Map;
 

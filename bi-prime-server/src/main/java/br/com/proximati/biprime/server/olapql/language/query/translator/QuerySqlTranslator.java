@@ -62,9 +62,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             for (SimpleNode axisNode : getQueryMetadata(data).getAxisNodeList()) {
                 Metadata metadata = getQueryMetadata(data).getMetadataReferencedBy(axisNode);
-                if (metadata instanceof Level || metadata instanceof Property || metadata instanceof Filter) {
+                if (metadata instanceof Level || metadata instanceof Property || metadata instanceof Filter)
                     groupBy.append(((TranslationContext) data).getAxisNodePositionsMap().get(axisNode)).append(", ");
-                }
             }
 
             if (groupBy.length() > 0) {
@@ -88,19 +87,15 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         tables.add(TranslationUtils.tableExpression(getQueryMetadata(data).getCube().getSchemaName(),
                 getQueryMetadata(data).getCube().getTableName()));
 
-        for (Level level : levelsPresent((TranslationContext) data)) {
-            for (Level lowerLevel : level.getLowerLevels()) {
+        for (Level level : levelsPresent((TranslationContext) data))
+            for (Level lowerLevel : level.getLowerLevels())
                 tables.add(TranslationUtils.tableExpression(lowerLevel.getSchemaName(), lowerLevel.getTableName()));
-            }
-        }
 
-        for (String table : tables) {
+        for (String table : tables)
             getOutput(data).append(table).append(", ");
-        }
 
-        if (!tables.isEmpty()) {
+        if (!tables.isEmpty())
             getOutput(data).delete(getOutput(data).length() - 2, getOutput(data).length());
-        }
 
         getOutput(data).append(" where ");
 
@@ -109,11 +104,10 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     @Override
     public void visit(ASTNegation node, Object data) throws Exception {
-        if (getOutput(data).charAt(getOutput(data).length() - 1) != ' ') {
+        if (getOutput(data).charAt(getOutput(data).length() - 1) != ' ')
             getOutput(data).append(" not");
-        } else {
+        else
             getOutput(data).append("not ");
-        }
 
         visit(node.jjtGetChild(0), data);
     }
@@ -155,17 +149,14 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
      */
     private String calculatePosition() {
         StringBuilder position = new StringBuilder();
-        for (int i = 0; i < axisNodeVisitationStack.size(); i++) {
-            if (i == 0) {
-                if (axisNodeVisitationStack.get(i) == 0) {
+        for (int i = 0; i < axisNodeVisitationStack.size(); i++)
+            if (i == 0)
+                if (axisNodeVisitationStack.get(i) == 0)
                     position.append("r_");
-                } else {
+                else
                     position.append("c_");
-                }
-            } else {
+            else
                 position.append(axisNodeVisitationStack.get(i)).append("_");
-            }
-        }
         position.deleteCharAt(position.length() - 1);
 
         return position.toString();
@@ -173,11 +164,10 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
     @Override
     public void visit(ASTAxis node, Object data) throws Exception {
-        if (node.jjtGetValue().toString().equals("ROWS")) {
+        if (node.jjtGetValue().toString().equals("ROWS"))
             axisNodeVisitationStack.push(0);
-        } else {
+        else
             axisNodeVisitationStack.push(1);
-        }
 
         super.visit(node, data);
 
@@ -194,9 +184,9 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
             getOutput(data).append(translator.translate(node.jjtGetValue().toString()));
         } else {
             metadata = getQueryMetadata(data).getAllReferencedMetadata().getLevel(node.jjtGetValue().toString());
-            if (metadata != null) {
+            if (metadata != null)
                 getOutput(data).append(TranslationUtils.columnExpression(((Level) metadata).getTableName(), ((Level) metadata).getCodeProperty().getColumnName()));
-            } else {
+            else {
                 metadata = getQueryMetadata(data).getAllReferencedMetadata().getFilter(node.jjtGetValue().toString());
                 getOutput(data).append("case when ");
                 translate(((Filter) metadata).getExpression(), (TranslationContext) data);
@@ -333,9 +323,8 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             visit(node.jjtGetChild(i), data);
-            if (i < node.jjtGetNumChildren() - 1) {
+            if (i < node.jjtGetNumChildren() - 1)
                 getOutput(data).append(" ").append(op).append(" ");
-            }
         }
 
         getOutput(data).append(")");
@@ -351,13 +340,11 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         List<Level> levels = new ArrayList<Level>();
 
         for (Entry<String, Metadata> entry :
-                context.getQueryMetadata().getAllReferencedMetadata().getInternalBag().entrySet()) {
-            if (entry.getValue() instanceof Level) {
+                context.getQueryMetadata().getAllReferencedMetadata().getInternalBag().entrySet())
+            if (entry.getValue() instanceof Level)
                 levels.add((Level) entry.getValue());
-            } else if (entry.getValue() instanceof Property) {
+            else if (entry.getValue() instanceof Property)
                 levels.add(((Property) entry.getValue()).getLevel());
-            }
-        }
 
         return levels;
     }
@@ -376,14 +363,13 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         // mais baixo e assim juntá-lo ao cubo
         for (Level level : levels) {
             List<Level> lowerLevels = level.getLowerLevels();
-            for (int i = 0; i < lowerLevels.size(); i++) {
+            for (int i = 0; i < lowerLevels.size(); i++)
                 // de duas em duas colunas, coloca o join na lista
                 if (i > 0 & (i + 1) % 2 == 0) {
                     String upperColumn = TranslationUtils.columnExpression(lowerLevels.get(i - 1).getTableName(), lowerLevels.get(i - 1).getCodeProperty().getColumnName());
                     String thisColumn = TranslationUtils.columnExpression(lowerLevels.get(i).getTableName(), lowerLevels.get(i).getUpperLevelJoinColumn());
                     joins.add(thisColumn + " = " + upperColumn);
                 }
-            }
 
             // o nível mais baixo (cujo índice é o maior) é o nível que faz junção com o cubo,
             // e indiretamente liga todos os níveis superiores também.
@@ -397,26 +383,22 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
             Level lowestLevel = lowerLevels.get(lowerLevels.size() - 1);
 
-            for (CubeLevel cubeLevel : context.getQueryMetadata().getCube().getCubeLevelList()) {
-                if (cubeLevel.getLevel().getId() == lowestLevel.getId()) {
+            for (CubeLevel cubeLevel : context.getQueryMetadata().getCube().getCubeLevelList())
+                if (cubeLevel.getLevel().getId() == lowestLevel.getId())
                     joins.add(TranslationUtils.columnExpression(
                             context.getQueryMetadata().getCube().getTableName(),
                             cubeLevel.getJoinColumn()) + " = "
                             + TranslationUtils.columnExpression(
                             lowestLevel.getTableName(),
                             lowestLevel.getCodeProperty().getColumnName()));
-                }
-            }
         }
 
-        if (!joins.isEmpty()) {
+        if (!joins.isEmpty())
             for (int i = 0; i < joins.size(); i++) {
                 context.getOutput().append(joins.get(i));
-                if (i < joins.size() - 1) {
+                if (i < joins.size() - 1)
                     context.getOutput().append(" and ");
-                }
             }
-        }
 
         return context.getOutput().toString();
     }

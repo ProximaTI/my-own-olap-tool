@@ -12,17 +12,14 @@ package br.com.proximati.biprime.server;
 
 import br.com.proximati.biprime.server.olapql.language.query.ASTSelect;
 import br.com.proximati.biprime.server.olapql.language.query.QueryParser;
-import br.com.proximati.biprime.server.olapql.language.query.translator.QuerySqlTranslator;
+import br.com.proximati.biprime.server.olapql.query.result.PivotTableModel;
+import br.com.proximati.biprime.view.itext.PivotTableModelRenderer;
 import java.awt.Cursor;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Statement;
-import java.util.Vector;
 import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -48,9 +45,9 @@ public class NewJFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jEditorPane1 = new javax.swing.JEditorPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,19 +57,6 @@ public class NewJFrame extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane2.setViewportView(jTable1);
-
         jButton1.setText("Executar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -80,19 +64,21 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane2.setViewportView(jEditorPane1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE))
-                    .addComponent(jButton1))
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -123,10 +109,19 @@ public class NewJFrame extends javax.swing.JFrame {
 
             select.dump(" ");
 
-            QueryTableModel model = new QueryTableModel();
-            model.setResultset(server.openResultset(jTextArea1.getText()));
-            jTable1.setModel(model);
-            System.out.println("quantidade de linhas: " + jTable1.getModel().getRowCount());
+            PivotTableModel model = server.execute(jTextArea1.getText());
+
+            File file = new File("/home/luiz/tmp/bi-output.html");
+            File blank = new File("/home/luiz/tmp/blank.html");
+            FileOutputStream fos = new FileOutputStream(file);
+            PivotTableModelRenderer renderer = new PivotTableModelRenderer();
+            renderer.renderAsHtml(model, fos);
+            fos.close();
+
+            jEditorPane1.setEditable(false);
+            jEditorPane1.setPage(blank.toURL());
+            jEditorPane1.updateUI();
+            jEditorPane1.setPage(file.toURL());
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -152,73 +147,10 @@ public class NewJFrame extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
-
-    class QueryTableModel extends AbstractTableModel {
-
-        Vector cache; // will hold String[] objects . . .
-        int colCount;
-        String[] headers;
-        Connection db;
-        Statement statement;
-        String currentURL;
-
-        public QueryTableModel() {
-            cache = new Vector();
-        }
-
-        public String getColumnName(int i) {
-            return headers[i];
-        }
-
-        public int getColumnCount() {
-            return colCount;
-        }
-
-        public int getRowCount() {
-            return cache.size();
-        }
-
-        public Object getValueAt(int row, int col) {
-            return ((String[]) cache.elementAt(row))[col];
-        }
-
-        // All the real work happens here; in a real application,
-        // we'd probably perform the query in a separate thread.
-        public void setResultset(ResultSet rs) {
-            cache = new Vector();
-            try {
-                ResultSetMetaData meta = rs.getMetaData();
-                colCount = meta.getColumnCount();
-
-                // Now we must rebuild the headers array with the new column names
-                headers = new String[colCount];
-                for (int h = 1; h <= colCount; h++) {
-                    headers[h - 1] = meta.getColumnLabel(h);
-                }
-
-                // and file the cache with the records from our query. This would
-                // not be
-                // practical if we were expecting a few million records in response
-                // to our
-                // query, but we aren't, so we can do this.
-                while (rs.next()) {
-                    String[] record = new String[colCount];
-                    for (int i = 0; i < colCount; i++) {
-                        record[i] = rs.getString(i + 1);
-                    }
-                    cache.addElement(record);
-                }
-                fireTableChanged(null); // notify everyone that we have a new table.
-            } catch (Exception e) {
-                cache = new Vector(); // blank it out and keep going.
-                e.printStackTrace();
-            }
-        }
-    }
 }

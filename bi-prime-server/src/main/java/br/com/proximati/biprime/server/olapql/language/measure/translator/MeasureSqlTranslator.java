@@ -52,35 +52,28 @@ public class MeasureSqlTranslator extends AbstractMeasureVisitor {
     public void visit(ASTMeasure node, StringBuilder data) throws Exception {
         Measure measure = Application.getMeasureDao().findByName(TranslationUtils.extractName(node.jjtGetValue().toString()));
 
-        if (StringUtils.isNotBlank(measure.getFilterExpression())) {
+        if (StringUtils.isNotBlank(measure.getFilterExpression()))
             filterStack.push(measure.getFilterExpression());
-        }
 
         MeasureParser parser = new MeasureParser(IOUtils.toInputStream(measure.getExpression()));
         visit(parser.measureExpression(), data);
 
-        if (StringUtils.isNotBlank(measure.getFilterExpression())) {
+        if (StringUtils.isNotBlank(measure.getFilterExpression()))
             filterStack.pop();
-        }
     }
 
     @Override
     public void visit(ASTAggregation node, StringBuilder data) throws Exception {
-        if (node.jjtGetValue().equals("quantidade")) {
+        if (node.jjtGetValue().equals("quantidade"))
             data.append("count(");
-        }
-        if (node.jjtGetValue().equals("média")) {
+        if (node.jjtGetValue().equals("média"))
             data.append("avg(");
-        }
-        if (node.jjtGetValue().equals("máximo")) {
+        if (node.jjtGetValue().equals("máximo"))
             data.append("max(");
-        }
-        if (node.jjtGetValue().equals("mínimo")) {
+        if (node.jjtGetValue().equals("mínimo"))
             data.append("min(");
-        }
-        if (node.jjtGetValue().equals("soma")) {
+        if (node.jjtGetValue().equals("soma"))
             data.append("sum(");
-        }
 
         if (!filterStack.empty()) {
             data.append("case when (");
@@ -93,9 +86,8 @@ public class MeasureSqlTranslator extends AbstractMeasureVisitor {
             data.append(") then ");
             visitChildren(node, data);
             data.append(" else null end");
-        } else {
+        } else
             visitChildren(node, data);
-        }
 
         data.append(")");
     }
@@ -119,9 +111,8 @@ public class MeasureSqlTranslator extends AbstractMeasureVisitor {
 
         for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             visit(node.jjtGetChild(i), data);
-            if (i < node.jjtGetNumChildren() - 1) {
+            if (i < node.jjtGetNumChildren() - 1)
                 data.append(" ").append(op).append(" ");
-            }
         }
 
         data.append(")");
