@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.com.proximati.biprime.server.olapql.query.result;
+package br.com.proximati.biprime.util;
 
 /**
  *

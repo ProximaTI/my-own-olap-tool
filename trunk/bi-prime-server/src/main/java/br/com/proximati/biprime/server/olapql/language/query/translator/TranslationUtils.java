@@ -38,9 +38,8 @@ public class TranslationUtils {
 
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(expression);
-        if (matcher.find()) {
+        if (matcher.find())
             return matcher.group(1);
-        }
         return null;
     }
 
@@ -49,9 +48,8 @@ public class TranslationUtils {
 
         Pattern pattern = Pattern.compile(patternStr);
         Matcher matcher = pattern.matcher(expression);
-        if (matcher.find()) {
+        if (matcher.find())
             return matcher.group(1);
-        }
         return null;
     }
 
@@ -64,9 +62,7 @@ public class TranslationUtils {
     public static String columnExpression(String table, String column) {
         // TODO rdbms driver (refactory)
         StringBuilder sb = new StringBuilder();
-
         sb.append(table).append(".").append(column);
-
         return sb.toString();
     }
 
@@ -81,9 +77,7 @@ public class TranslationUtils {
     public static String tableExpression(String schema, String table) {
         // TODO rdbms driver (refactory)
         StringBuilder sb = new StringBuilder();
-
         sb.append(schema).append(".").append(table);
-
         return sb.toString();
     }
 }
