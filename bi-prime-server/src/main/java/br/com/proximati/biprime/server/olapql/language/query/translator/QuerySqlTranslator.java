@@ -51,6 +51,8 @@ import org.apache.commons.io.IOUtils;
  */
 public class QuerySqlTranslator extends AbstractQueryVisitor {
 
+    private Stack<Integer> axisNodeVisitationStack = new Stack<Integer>();
+
     @Override
     public void visit(ASTSelect node, Object data) throws Exception {
         getOutput(data).append("select ");
@@ -123,7 +125,6 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         Filter filter = getQueryMetadata(data).getAllReferencedMetadata().getFilter(node.jjtGetValue().toString());
         translate(filter.getExpression(), (TranslationContext) data);
     }
-    private Stack<Integer> axisNodeVisitationStack = new Stack<Integer>();
 
     @Override
     public void visit(ASTPropertyNode node, Object data) throws Exception {
@@ -252,63 +253,6 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
 
         getOutput(data).append(" like ");
         getOutput(data).append(TranslationUtils.encloseString(sb.toString()));
-    }
-
-    @Override
-    public void visit(ASTProperty node, Object data) throws Exception {
-        Property property = getQueryMetadata(data).getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
-        getOutput(data).append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
-    }
-
-    @Override
-    public void visit(ASTCompare node, Object data) throws Exception {
-        getOutput(data).append(" ").append(node.jjtGetValue()).append(" ");
-    }
-
-    @Override
-    public void visit(ASTDateLiteral node, Object data) throws Exception {
-        getOutput(data).append(node.jjtGetValue());
-    }
-
-    @Override
-    public void visit(ASTStringLiteral node, Object data) throws Exception {
-        String string = node.jjtGetValue().toString();
-        getOutput(data).append(TranslationUtils.encloseString(TranslationUtils.discloseString(string)));
-    }
-
-    @Override
-    public void visit(ASTAdditiveExpression node, Object data) throws Exception {
-        visitOperation(node, data);
-    }
-
-    @Override
-    public void visit(ASTMultiplicativeExpression node, Object data) throws Exception {
-        visitOperation(node, data);
-    }
-
-    @Override
-    public void visit(ASTNumberLiteral node, Object data) throws Exception {
-        getOutput(data).append(node.jjtGetValue());
-    }
-
-    private void visitOperation(SimpleNode node, Object data) throws Exception {
-        visitOperation(node, node.jjtGetValue().toString(), data);
-    }
-
-    @Override
-    public void visit(ASTFilterExpression node, Object data) throws Exception {
-        getOutput(data).append(" and ");
-        visitChildren(node, data);
-    }
-
-    @Override
-    public void visit(ASTOrCondition node, Object data) throws Exception {
-        visitOperation(node, "or", data);
-    }
-
-    @Override
-    public void visit(ASTAndCondition node, Object data) throws Exception {
-        visitOperation(node, "and", data);
     }
 
     /**
@@ -465,5 +409,62 @@ public class QuerySqlTranslator extends AbstractQueryVisitor {
         TranslationContext context = new TranslationContext(queryMetadata);
         visit(filterExpression, context);
         return context;
+    }
+
+    @Override
+    public void visit(ASTProperty node, Object data) throws Exception {
+        Property property = getQueryMetadata(data).getAllReferencedMetadata().getProperty(node.jjtGetValue().toString());
+        getOutput(data).append(TranslationUtils.columnExpression(property.getLevel().getTableName(), property.getColumnName()));
+    }
+
+    @Override
+    public void visit(ASTCompare node, Object data) throws Exception {
+        getOutput(data).append(" ").append(node.jjtGetValue()).append(" ");
+    }
+
+    @Override
+    public void visit(ASTDateLiteral node, Object data) throws Exception {
+        getOutput(data).append(node.jjtGetValue());
+    }
+
+    @Override
+    public void visit(ASTStringLiteral node, Object data) throws Exception {
+        String string = node.jjtGetValue().toString();
+        getOutput(data).append(TranslationUtils.encloseString(TranslationUtils.discloseString(string)));
+    }
+
+    @Override
+    public void visit(ASTAdditiveExpression node, Object data) throws Exception {
+        visitOperation(node, data);
+    }
+
+    @Override
+    public void visit(ASTMultiplicativeExpression node, Object data) throws Exception {
+        visitOperation(node, data);
+    }
+
+    @Override
+    public void visit(ASTNumberLiteral node, Object data) throws Exception {
+        getOutput(data).append(node.jjtGetValue());
+    }
+
+    private void visitOperation(SimpleNode node, Object data) throws Exception {
+        visitOperation(node, node.jjtGetValue().toString(), data);
+    }
+
+    @Override
+    public void visit(ASTFilterExpression node, Object data) throws Exception {
+        getOutput(data).append(" and ");
+        visitChildren(node, data);
+    }
+
+    @Override
+    public void visit(ASTOrCondition node, Object data) throws Exception {
+        visitOperation(node, "or", data);
+    }
+
+    @Override
+    public void visit(ASTAndCondition node, Object data) throws Exception {
+        visitOperation(node, "and", data);
     }
 }

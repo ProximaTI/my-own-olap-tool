@@ -111,8 +111,8 @@ public class NewJFrame extends javax.swing.JFrame {
 
             PivotTableModel model = server.execute(jTextArea1.getText());
 
-            File file = new File("/home/luiz/tmp/bi-output.html");
-            File blank = new File("/home/luiz/tmp/blank.html");
+            File file = new File("/Users/rnpcapes/tmp/bi-output.html");
+            File blank = new File("/Users/rnpcapes/tmp/blank.html");
             FileOutputStream fos = new FileOutputStream(file);
             PivotTableModelRenderer renderer = new PivotTableModelRenderer();
             renderer.renderAsHtml(model, fos);
