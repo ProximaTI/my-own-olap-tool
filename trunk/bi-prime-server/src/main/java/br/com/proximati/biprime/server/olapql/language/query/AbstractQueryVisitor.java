@@ -11,78 +11,54 @@ package br.com.proximati.biprime.server.olapql.language.query;
 public abstract class AbstractQueryVisitor implements QueryParserVisitor {
 
     public void visit(Node node, Object data) throws Exception {
-        if (node instanceof ASTSelect) {
+        if (node instanceof ASTSelect)
             visit((ASTSelect) node, data);
-        }
-        if (node instanceof ASTDetachedFilterExpression) {
+        if (node instanceof ASTDetachedFilterExpression)
             visit((ASTDetachedFilterExpression) node, data);
-        }
-        if (node instanceof ASTFilterExpression) {
+        if (node instanceof ASTFilterExpression)
             visit((ASTFilterExpression) node, data);
-        }
-        if (node instanceof ASTAxis) {
+        if (node instanceof ASTAxis)
             visit((ASTAxis) node, data);
-        }
-        if (node instanceof ASTLevelOrMeasureOrFilter) {
+        if (node instanceof ASTLevelOrMeasureOrFilter)
             visit((ASTLevelOrMeasureOrFilter) node, data);
-        }
-        if (node instanceof ASTPropertyNode) {
+        if (node instanceof ASTPropertyNode)
             visit((ASTPropertyNode) node, data);
-        }
-        if (node instanceof ASTLevel) {
+        if (node instanceof ASTLevel)
             visit((ASTLevel) node, data);
-        }
-        if (node instanceof ASTFilter) {
+        if (node instanceof ASTFilter)
             visit((ASTFilter) node, data);
-        }
-        if (node instanceof ASTProperty) {
+        if (node instanceof ASTProperty)
             visit((ASTProperty) node, data);
-        }
-        if (node instanceof ASTCube) {
+        if (node instanceof ASTCube)
             visit((ASTCube) node, data);
-        }
-        if (node instanceof ASTOrCondition) {
+        if (node instanceof ASTOrCondition)
             visit((ASTOrCondition) node, data);
-        }
-        if (node instanceof ASTAndCondition) {
+        if (node instanceof ASTAndCondition)
             visit((ASTAndCondition) node, data);
-        }
-        if (node instanceof ASTCondition) {
+        if (node instanceof ASTCondition)
             visit((ASTCondition) node, data);
-        }
-        if (node instanceof ASTNegation) {
+        if (node instanceof ASTNegation)
             visit((ASTNegation) node, data);
-        }
-        if (node instanceof ASTInExpression) {
+        if (node instanceof ASTInExpression)
             visit((ASTInExpression) node, data);
-        }
-        if (node instanceof ASTLikeExpression) {
+        if (node instanceof ASTLikeExpression)
             visit((ASTLikeExpression) node, data);
-        }
-        if (node instanceof ASTStartsWithExpression) {
+        if (node instanceof ASTStartsWithExpression)
             visit((ASTStartsWithExpression) node, data);
-        }
-        if (node instanceof ASTEndsWithExpression) {
+        if (node instanceof ASTEndsWithExpression)
             visit((ASTEndsWithExpression) node, data);
-        }
-        if (node instanceof ASTCompare) {
+        if (node instanceof ASTCompare)
             visit((ASTCompare) node, data);
-        }
-        if (node instanceof ASTAdditiveExpression) {
+        if (node instanceof ASTAdditiveExpression)
             visit((ASTAdditiveExpression) node, data);
-        }
-        if (node instanceof ASTMultiplicativeExpression) {
+        if (node instanceof ASTMultiplicativeExpression)
             visit((ASTMultiplicativeExpression) node, data);
-        }
-        if (node instanceof ASTNumberLiteral) {
+        if (node instanceof ASTNumberLiteral)
             visit((ASTNumberLiteral) node, data);
-        }
-        if (node instanceof ASTDateLiteral) {
+        if (node instanceof ASTDateLiteral)
             visit((ASTDateLiteral) node, data);
-        }
-        if (node instanceof ASTStringLiteral) {
+        if (node instanceof ASTStringLiteral)
             visit((ASTStringLiteral) node, data);
-        }
     }
 
     @Override
@@ -211,17 +187,14 @@ public abstract class AbstractQueryVisitor implements QueryParserVisitor {
     }
 
     protected Integer childIndex(Node node) {
-        for (int i = 0; i < node.jjtGetParent().jjtGetNumChildren(); i++) {
-            if (node.jjtGetParent().jjtGetChild(i).equals(node)) {
+        for (int i = 0; i < node.jjtGetParent().jjtGetNumChildren(); i++)
+            if (node.jjtGetParent().jjtGetChild(i).equals(node))
                 return i;
-            }
-        }
         return -1;
     }
 
     protected void visitChildren(SimpleNode node, Object data) throws Exception {
-        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+        for (int i = 0; i < node.jjtGetNumChildren(); i++)
             visit(node.jjtGetChild(i), data);
-        }
     }
 }
