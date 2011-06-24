@@ -4,10 +4,12 @@
  */
 package br.com.proximati.biprime.server.olapql.query.result;
 
-import br.com.proximati.biprime.util.Pair;
+import br.com.proximati.biprime.util.TraversingListener;
+import br.com.proximati.biprime.util.BreadthFirstSearch;
 import br.com.proximati.biprime.metadata.entity.Filter;
 import br.com.proximati.biprime.metadata.entity.Measure;
 import br.com.proximati.biprime.metadata.entity.Metadata;
+import br.com.proximati.biprime.util.Pair;
 import br.com.proximati.biprime.server.olapql.language.query.ASTAxis;
 import br.com.proximati.biprime.server.olapql.language.query.ASTLevelOrMeasureOrFilter;
 import br.com.proximati.biprime.server.olapql.language.query.ASTPropertyNode;
@@ -115,7 +117,45 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
                     }
         }
 
+        calcNodeAttributes(model.getColumnsRoot());
+        calcNodeAttributes(model.getRowsRoot());
+
         return model;
+    }
+
+    /**
+     * Calcula a altura da árvore de nós e a distância de cada nó
+     * até a raiz. A altura é dada pela distância até a raiz do nó mais
+     * profundo. O cálculo é feito através de caminhamento
+     * BFS (Breadth-First Search).
+     * @param root
+     */
+    private void calcNodeAttributes(PivotTableNodeRoot root) {
+        BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
+
+            public void visitingRoot(PivotTableNodeRoot s) {
+                s.setDistanceUntilRoot(0);
+            }
+
+            public void visitingLeaf(PivotTableNodeRoot s, PivotTableNode u) {
+                u.setDistanceUntilRoot(u.getParentNode().getDistanceUntilRoot() + 1);
+
+                PivotTableNode r = u.getParentNode();
+                while (r != null) {
+                    r.setBreadth(r.getBreadth() + 1);
+                    r = r.getParentNode();
+                }
+
+                s.setDistanceToDeeperLeaf(Math.max(s.getDistanceToDeeperLeaf(), u.getDistanceUntilRoot()));
+            }
+
+            public void visitingNonLeaf(PivotTableNodeRoot s, PivotTableNode v) {
+                if (v.getParentNode() != null)
+                    v.setDistanceUntilRoot(v.getParentNode().getDistanceUntilRoot() + 1);
+            }
+        });
+
+        bfs.perform(root);
     }
 
     /**
