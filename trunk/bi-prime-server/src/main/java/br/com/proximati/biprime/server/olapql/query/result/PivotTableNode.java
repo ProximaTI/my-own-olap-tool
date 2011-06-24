@@ -13,6 +13,10 @@ import java.util.ArrayList;
  */
 public class PivotTableNode {
 
+    protected static final int WHITE = 0;
+    protected static final int GRAY = 1;
+    protected static final int BLACK = 2;
+    
     /** list of nodes */
     private ArrayList<PivotTableNode> childrenNodes = new ArrayList<PivotTableNode>();
     /** node value */
@@ -23,6 +27,11 @@ public class PivotTableNode {
     private PivotTableNode parentNode;
     /** parent index */
     private int parentIndex;
+    /** distance going up til root node */
+    private int distanceUntilRoot = Integer.MAX_VALUE;
+    /** */
+    private int breadth;
+
 
     public int getParentIndex() {
         return parentIndex;
@@ -88,4 +97,32 @@ public class PivotTableNode {
     public void setValue(Object value) {
         this.value = value;
     }
+
+    /**
+     * @return the distanceUntilRoot
+     */
+    public int getDistanceUntilRoot() {
+        return distanceUntilRoot;
+    }
+
+    /**
+     * @param distanceUntilRoot the distanceUntilRoot to set
+     */
+    public void setDistanceUntilRoot(int distanceUntilRoot) {
+        this.distanceUntilRoot = distanceUntilRoot;
+    }
+    /**
+     * @return the breadth
+     */
+    public int getBreadth() {
+        return breadth;
+    }
+
+    /**
+     * @param breadth the breadth to set
+     */
+    public void setBreadth(int breadth) {
+        this.breadth = breadth;
+    }
+
 }
