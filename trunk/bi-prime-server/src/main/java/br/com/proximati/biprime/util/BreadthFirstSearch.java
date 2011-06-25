@@ -37,7 +37,8 @@ public class BreadthFirstSearch {
             if (u.getChildrenNodes().isEmpty())
                 listener.visitingLeaf(s, u);
             else {
-                listener.visitingNonLeaf(s, u);
+                if (u != s)
+                    listener.visitingNonLeaf(s, u);
                 for (PivotTableNode v : u.getChildrenNodes())
                     Q.offer(v);
             }
