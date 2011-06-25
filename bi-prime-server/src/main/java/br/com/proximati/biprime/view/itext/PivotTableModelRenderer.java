@@ -9,6 +9,8 @@ import br.com.proximati.biprime.util.TraversingListener;
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableModel;
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableNode;
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableNodeRoot;
+import br.com.proximati.biprime.util.DepthFirstSearch;
+import br.com.proximati.biprime.util.Pair;
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Cell;
 import com.lowagie.text.Document;
@@ -19,6 +21,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.rtf.RtfWriter;
 import com.lowagie.text.xml.XmlWriter;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -36,30 +40,27 @@ public class PivotTableModelRenderer {
     private void render(PivotTableModel model, Document document) throws BadElementException, DocumentException {
         document.open();
 
-        // a largura da tabela é determinada pela altura da árvore
-        // de nós do eixo das linhas somada à largura da árvore de nós
-        // do eixo das colunas
-        Table table = new Table(model.getRowsRoot().getDistanceToDeeperLeaf() + 1 + model.getColumnsRoot().getBreadth());
+        Table table = new Table(model.getRowsRoot().getDistanceToDeeperLeaf() + model.getColumnsRoot().getBreadth());
 
         Cell leftCorner = new Cell();
-        leftCorner.setColspan(model.getRowsRoot().getDistanceToDeeperLeaf() + 1);
-        leftCorner.setRowspan(model.getColumnsRoot().getDistanceToDeeperLeaf() + 1);
+        leftCorner.setColspan(model.getRowsRoot().getDistanceToDeeperLeaf());
+        leftCorner.setRowspan(model.getColumnsRoot().getDistanceToDeeperLeaf());
         table.addCell(leftCorner);
 
-        renderColumns(table, model.getColumnsRoot());
-        renderRows(table, model.getRowsRoot());
-        
+        render(table, model);
+
         document.add(table);
         document.close();
     }
 
     /**
-     * Renderiza o eixo das colunas em uma tabela itext.
      * @param table
      * @param context
      * @throws BadElementException
      */
-    private void renderColumns(final Table table, PivotTableNodeRoot root) throws BadElementException {
+    private void render(final Table table, final PivotTableModel model) throws BadElementException {
+        final List<PivotTableNode> columnLeafs = new ArrayList<PivotTableNode>();
+
         BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
 
             public void visitingRoot(PivotTableNodeRoot s) {
@@ -68,6 +69,8 @@ public class PivotTableModelRenderer {
             public void visitingLeaf(PivotTableNodeRoot s, PivotTableNode u) {
                 Cell cell = new Cell(u.getValue().toString());
                 table.addCell(cell);
+
+                columnLeafs.add(u);
             }
 
             public void visitingNonLeaf(PivotTableNodeRoot s, PivotTableNode v) {
@@ -76,20 +79,11 @@ public class PivotTableModelRenderer {
                 table.addCell(cell);
             }
         });
-        bfs.perform(root);
-    }
 
-    /**
-     * Renderiza o eixo das linhas em uma tabela itext.
-     * @param table
-     * @param root
-     * @throws BadElementException
-     */
-    private void renderRows(final Table table, PivotTableNodeRoot root) throws BadElementException {
+        bfs.perform(model.getColumnsRoot());
 
-        // IMPLEMENTAR O CAMINHAMENTO DFS AQUI
 
-        BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
+        DepthFirstSearch dfs = new DepthFirstSearch(new TraversingListener() {
 
             public void visitingRoot(PivotTableNodeRoot s) {
             }
@@ -97,6 +91,19 @@ public class PivotTableModelRenderer {
             public void visitingLeaf(PivotTableNodeRoot s, PivotTableNode u) {
                 Cell cell = new Cell(u.getValue().toString());
                 table.addCell(cell);
+
+                for (PivotTableNode l : columnLeafs) {
+                    Pair<PivotTableNode, PivotTableNode> pair =
+                            new Pair<PivotTableNode, PivotTableNode>(u, l);
+
+                    Cell value;
+                    if (model.getValues().get(pair) != null)
+                        value = new Cell(model.getValues().get(pair).toString());
+                    else
+                        value = new Cell("-");
+
+                    table.addCell(value);
+                }
             }
 
             public void visitingNonLeaf(PivotTableNodeRoot s, PivotTableNode v) {
@@ -105,7 +112,8 @@ public class PivotTableModelRenderer {
                 table.addCell(cell);
             }
         });
-        bfs.perform(root);
+
+        dfs.perform(model.getRowsRoot());
     }
 
     /**
