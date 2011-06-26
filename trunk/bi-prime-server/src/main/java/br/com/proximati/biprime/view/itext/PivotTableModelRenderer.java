@@ -8,7 +8,6 @@ import br.com.proximati.biprime.util.BreadthFirstSearch;
 import br.com.proximati.biprime.util.TraversingListener;
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableModel;
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableNode;
-import br.com.proximati.biprime.server.olapql.query.result.PivotTableNodeRoot;
 import br.com.proximati.biprime.util.DepthFirstSearch;
 import br.com.proximati.biprime.util.Pair;
 import com.lowagie.text.BadElementException;
@@ -63,17 +62,17 @@ public class PivotTableModelRenderer {
 
         BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
 
-            public void visitingRoot(PivotTableNodeRoot s) {
+            public void visitingRoot(PivotTableNode s) {
             }
 
-            public void visitingLeaf(PivotTableNodeRoot s, PivotTableNode u) {
+            public void visitingLeaf(PivotTableNode s, PivotTableNode u) {
                 Cell cell = new Cell(u.getValue().toString());
                 table.addCell(cell);
 
                 columnLeafs.add(u);
             }
 
-            public void visitingNonLeaf(PivotTableNodeRoot s, PivotTableNode v) {
+            public void visitingNonLeaf(PivotTableNode s, PivotTableNode v) {
                 Cell cell = new Cell(v.getValue().toString());
                 cell.setColspan(v.getBreadth());
                 table.addCell(cell);
@@ -85,10 +84,10 @@ public class PivotTableModelRenderer {
 
         DepthFirstSearch dfs = new DepthFirstSearch(new TraversingListener() {
 
-            public void visitingRoot(PivotTableNodeRoot s) {
+            public void visitingRoot(PivotTableNode s) {
             }
 
-            public void visitingLeaf(PivotTableNodeRoot s, PivotTableNode u) {
+            public void visitingLeaf(PivotTableNode s, PivotTableNode u) {
                 Cell cell = new Cell(u.getValue().toString());
                 table.addCell(cell);
 
@@ -106,7 +105,7 @@ public class PivotTableModelRenderer {
                 }
             }
 
-            public void visitingNonLeaf(PivotTableNodeRoot s, PivotTableNode v) {
+            public void visitingNonLeaf(PivotTableNode s, PivotTableNode v) {
                 Cell cell = new Cell(v.getValue().toString());
                 cell.setRowspan(v.getBreadth());
                 table.addCell(cell);
