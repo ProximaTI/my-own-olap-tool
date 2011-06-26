@@ -15,9 +15,9 @@ import java.util.Map;
 public class PivotTableModel {
 
     /** root node, related to row fields */
-    private PivotTableNodeRoot rowsRoot = new PivotTableNodeRoot();
+    private PivotTableNode rowsRoot = new PivotTableNode();
     /** root node, related to column fields */
-    private PivotTableNodeRoot columnsRoot = new PivotTableNodeRoot();
+    private PivotTableNode columnsRoot = new PivotTableNode();
     /** values and nodes */
     private Map<Pair<PivotTableNode, PivotTableNode>, Number> values = new HashMap<Pair<PivotTableNode, PivotTableNode>, Number>();
 
@@ -29,19 +29,19 @@ public class PivotTableModel {
         this.values = values;
     }
 
-    public PivotTableNodeRoot getColumnsRoot() {
+    public PivotTableNode getColumnsRoot() {
         return columnsRoot;
     }
 
-    public void setColumnsRoot(PivotTableNodeRoot columnsRoot) {
+    public void setColumnsRoot(PivotTableNode columnsRoot) {
         this.columnsRoot = columnsRoot;
     }
 
-    public PivotTableNodeRoot getRowsRoot() {
+    public PivotTableNode getRowsRoot() {
         return rowsRoot;
     }
 
-    public void setRowsRoot(PivotTableNodeRoot rowsRoot) {
+    public void setRowsRoot(PivotTableNode rowsRoot) {
         this.rowsRoot = rowsRoot;
     }
 }

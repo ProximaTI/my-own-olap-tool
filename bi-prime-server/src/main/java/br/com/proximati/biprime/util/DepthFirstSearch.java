@@ -5,7 +5,6 @@
 package br.com.proximati.biprime.util;
 
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableNode;
-import br.com.proximati.biprime.server.olapql.query.result.PivotTableNodeRoot;
 
 /**
  *
@@ -19,13 +18,13 @@ public class DepthFirstSearch {
         this.listener = listener;
     }
 
-    public void perform(PivotTableNodeRoot s) {
+    public void perform(PivotTableNode s) {
         listener.visitingRoot(s);
 
         dfsVisit(s, s);
     }
 
-    public void dfsVisit(PivotTableNodeRoot s, PivotTableNode u) {
+    public void dfsVisit(PivotTableNode s, PivotTableNode u) {
         for (PivotTableNode v : u.getChildrenNodes()) {
             if (v.getChildrenNodes().isEmpty())
                 listener.visitingLeaf(s, v);

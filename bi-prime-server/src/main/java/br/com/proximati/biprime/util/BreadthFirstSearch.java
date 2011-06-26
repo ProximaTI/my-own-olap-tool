@@ -5,7 +5,6 @@
 package br.com.proximati.biprime.util;
 
 import br.com.proximati.biprime.server.olapql.query.result.PivotTableNode;
-import br.com.proximati.biprime.server.olapql.query.result.PivotTableNodeRoot;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -25,7 +24,7 @@ public class BreadthFirstSearch {
         this.listener = listener;
     }
 
-    public void perform(PivotTableNodeRoot s) {
+    public void perform(PivotTableNode s) {
         listener.visitingRoot(s);
 
         Queue<PivotTableNode> Q = new LinkedList<PivotTableNode>();

@@ -130,26 +130,27 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
      * BFS (Breadth-First Search).
      * @param root
      */
-    private void calcNodeAttributes(PivotTableNodeRoot root) {
+    private void calcNodeAttributes(PivotTableNode root) {
         BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
 
-            public void visitingRoot(PivotTableNodeRoot s) {
+            public void visitingRoot(PivotTableNode s) {
                 s.setDistanceUntilRoot(0);
             }
 
-            public void visitingLeaf(PivotTableNodeRoot s, PivotTableNode u) {
+            public void visitingLeaf(PivotTableNode s, PivotTableNode u) {
                 u.setDistanceUntilRoot(u.getParentNode().getDistanceUntilRoot() + 1);
+
+                int distanceToDeeperLeaf = 0;
 
                 PivotTableNode r = u.getParentNode();
                 while (r != null) {
                     r.setBreadth(r.getBreadth() + 1);
+                    r.setDistanceToDeeperLeaf(Math.max(r.getDistanceToDeeperLeaf(), ++distanceToDeeperLeaf));
                     r = r.getParentNode();
                 }
-
-                s.setDistanceToDeeperLeaf(Math.max(s.getDistanceToDeeperLeaf(), u.getDistanceUntilRoot()));
             }
 
-            public void visitingNonLeaf(PivotTableNodeRoot s, PivotTableNode v) {
+            public void visitingNonLeaf(PivotTableNode s, PivotTableNode v) {
                 if (v.getParentNode() != null)
                     v.setDistanceUntilRoot(v.getParentNode().getDistanceUntilRoot() + 1);
             }

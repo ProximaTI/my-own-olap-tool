@@ -13,10 +13,6 @@ import java.util.ArrayList;
  */
 public class PivotTableNode {
 
-    protected static final int WHITE = 0;
-    protected static final int GRAY = 1;
-    protected static final int BLACK = 2;
-    
     /** list of nodes */
     private ArrayList<PivotTableNode> childrenNodes = new ArrayList<PivotTableNode>();
     /** node value */
@@ -32,6 +28,23 @@ public class PivotTableNode {
     /** */
     private int breadth;
 
+
+    /** distance from root to deeper leaf */
+    private int distanceToDeeperLeaf;
+
+    /**
+     * @return the distanceToDeeperLeaf
+     */
+    public int getDistanceToDeeperLeaf() {
+        return distanceToDeeperLeaf;
+    }
+
+    /**
+     * @param distanceToDeeperLeaf the distanceToDeeperLeaf to set
+     */
+    public void setDistanceToDeeperLeaf(int distanceToDeeperLeaf) {
+        this.distanceToDeeperLeaf = distanceToDeeperLeaf;
+    }
 
     public int getParentIndex() {
         return parentIndex;
