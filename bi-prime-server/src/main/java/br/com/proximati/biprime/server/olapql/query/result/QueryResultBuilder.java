@@ -28,19 +28,19 @@ import java.util.Stack;
  *
  * @author luiz
  */
-public class PivotTableModelBuilder extends AbstractQueryVisitor {
+public class QueryResultBuilder extends AbstractQueryVisitor {
 
     /** model to be built */
-    private PivotTableModel model = new PivotTableModel();
+    private QueryResultModel model = new QueryResultModel();
     /** node cache which contains nodes already referenced */
-    private Map<String, PivotTableNode> pNodeCache = new HashMap<String, PivotTableNode>();
+    private Map<String, Node> pNodeCache = new HashMap<String, Node>();
     /** Auxiliary stack which is used to determine kinship between nodes. */
-    private Stack<PivotTableNode> nodeStack = new Stack<PivotTableNode>();
+    private Stack<Node> nodeStack = new Stack<Node>();
     /** */
     private ResultSet resultSet;
     /** lista com os nós que são as folhas */
-    private List<PivotTableNode> rowLeafs = new ArrayList<PivotTableNode>();
-    private List<PivotTableNode> columnLeafs = new ArrayList<PivotTableNode>();
+    private List<Node> rowLeafs = new ArrayList<Node>();
+    private List<Node> columnLeafs = new ArrayList<Node>();
     /** Mapeia cada nó folha à métrica que ele detalha */
     private Map<SimpleNode, SimpleNode> rowMeasuresMap = new HashMap<SimpleNode, SimpleNode>();
     private Map<SimpleNode, SimpleNode> columnMeasuresMap = new HashMap<SimpleNode, SimpleNode>();
@@ -80,7 +80,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
      * @return
      * @throws Exception
      */
-    public PivotTableModel build(ResultSet resultSet, TranslationContext context) throws Exception {
+    public QueryResultModel build(ResultSet resultSet, TranslationContext context) throws Exception {
         this.resultSet = resultSet;
 
         while (resultSet.next()) {
@@ -89,8 +89,8 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
 
             visit(context.getTranslatedSelect(), context);
 
-            for (PivotTableNode rowLeaf : rowLeafs)
-                for (PivotTableNode columnLeaf : columnLeafs)
+            for (Node rowLeaf : rowLeafs)
+                for (Node columnLeaf : columnLeafs)
                     if (isValidLeaf(rowLeaf.getAxisNode(), context)
                             && isValidLeaf(columnLeaf.getAxisNode(), context)) {
                         SimpleNode measure = rowMeasuresMap.get(rowLeaf.getAxisNode());
@@ -107,11 +107,11 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
                         String column = context.getAxisNodePositionsMap().get(measure);
                         Object value = resultSet.getObject(column);
 
-                        Pair<PivotTableNode, PivotTableNode> key =
-                                new Pair<PivotTableNode, PivotTableNode>(rowLeaf, columnLeaf);
+                        Pair<Node, Node> key =
+                                new Pair<Node, Node>(rowLeaf, columnLeaf);
                         if (model.getValues().containsKey(key))
                             model.getValues().put(key,
-                                    model.getValues().get(key).doubleValue() + ((Number) value).doubleValue());
+                                                  model.getValues().get(key).doubleValue() + ((Number) value).doubleValue());
                         else
                             model.getValues().put(key, (Number) value);
                     }
@@ -130,19 +130,20 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
      * BFS (Breadth-First Search).
      * @param root
      */
-    private void calcNodeAttributes(PivotTableNode root) {
+    private void calcNodeAttributes(Node root) {
         BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
 
-            public void visitingRoot(PivotTableNode s) {
+            public void visitingRoot(Node s) {
                 s.setDistanceUntilRoot(0);
             }
 
-            public void visitingLeaf(PivotTableNode s, PivotTableNode u) {
+            public void visitingLeaf(Node s, Node u) {
+                u.setBreadth(1);
                 u.setDistanceUntilRoot(u.getParentNode().getDistanceUntilRoot() + 1);
 
                 int distanceToDeeperLeaf = 0;
 
-                PivotTableNode r = u.getParentNode();
+                Node r = u.getParentNode();
                 while (r != null) {
                     r.setBreadth(r.getBreadth() + 1);
                     r.setDistanceToDeeperLeaf(Math.max(r.getDistanceToDeeperLeaf(), ++distanceToDeeperLeaf));
@@ -150,7 +151,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
                 }
             }
 
-            public void visitingNonLeaf(PivotTableNode s, PivotTableNode v) {
+            public void visitingNonLeaf(Node s, Node v) {
                 if (v.getParentNode() != null)
                     v.setDistanceUntilRoot(v.getParentNode().getDistanceUntilRoot() + 1);
             }
@@ -166,7 +167,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
      * @param value
      * @return
      */
-    private PivotTableNode retrievePivotNode(SimpleNode node, TranslationContext context) throws SQLException {
+    private Node retrievePivotNode(SimpleNode node, TranslationContext context) throws SQLException {
         String column = context.getAxisNodePositionsMap().get(node);
         Metadata metadata = context.getQueryMetadata().getMetadataReferencedBy(node);
 
@@ -185,14 +186,14 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
 
         StringBuilder fullKey = new StringBuilder();
         if (!nodeStack.isEmpty())
-            for (PivotTableNode n : nodeStack)
+            for (Node n : nodeStack)
                 fullKey.append(n.toString());
 
         fullKey.append(nodeKey);
 
-        PivotTableNode pNode = pNodeCache.get(fullKey.toString());
+        Node pNode = pNodeCache.get(fullKey.toString());
         if (pNode == null) {
-            pNode = new PivotTableNode(node);
+            pNode = new Node(node);
             pNode.setValue(value);
             pNodeCache.put(fullKey.toString(), pNode);
             nodeStack.peek().addChild(pNode);
@@ -222,7 +223,7 @@ public class PivotTableModelBuilder extends AbstractQueryVisitor {
     /**
      * Dizer se uma folha é válida, consiste em dizer se algum filtro na hierarquia
      * acima da folha, para o resultset atual, está valorado como 1 (true). Se for
-     * 0 (falso), esta folha não deve ser valorada no pivot model.
+     * 0 (falso), esta folha não deve ser valorada no model.
      *
      * @param node
      * @param context
