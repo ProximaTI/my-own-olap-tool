@@ -35,7 +35,7 @@ public class QueryResultBuilder extends AbstractQueryVisitor {
     /** node cache which contains nodes already referenced */
     private Map<String, Node> pNodeCache = new HashMap<String, Node>();
     /** Auxiliary stack which is used to determine kinship between nodes. */
-    private Stack<Node> nodeStack = new Stack<Node>();
+    private Stack<Node> queryNodeStack = new Stack<Node>();
     /** */
     private ResultSet resultSet;
     /** lista com os nós que são as folhas */
@@ -50,27 +50,46 @@ public class QueryResultBuilder extends AbstractQueryVisitor {
     public void visit(ASTAxis node, Object data) throws Exception {
         if (node.jjtGetValue().equals("ROWS")) {
             model.getRowsRoot().setValue("ROWS");
-            nodeStack.push(model.getRowsRoot());
+            queryNodeStack.push(model.getRowsRoot());
         } else {
             model.getColumnsRoot().setValue("COLUMNS");
-            nodeStack.push(model.getColumnsRoot());
+            queryNodeStack.push(model.getColumnsRoot());
         }
         super.visit(node, data);
-        nodeStack.pop();
+        queryNodeStack.pop();
     }
 
     @Override
     public void visit(ASTPropertyNode node, Object data) throws Exception {
-        nodeStack.push(retrievePivotNode(node, (TranslationContext) data));
+        Node queryNode = retrievePivotNode(node, (TranslationContext) data);
+        queryNode.setPosition(calculatePosition());
+        queryNodeStack.push(queryNode);
         visitChildren(node, data);
-        nodeStack.pop();
+        queryNodeStack.pop();
     }
 
     @Override
     public void visit(ASTLevelOrMeasureOrFilter node, Object data) throws Exception {
-        nodeStack.push(retrievePivotNode(node, (TranslationContext) data));
+        Node queryNode = retrievePivotNode(node, (TranslationContext) data);
+        queryNode.setPosition(calculatePosition());
+        queryNodeStack.push(queryNode);
         visitChildren(node, data);
-        nodeStack.pop();
+        queryNodeStack.pop();
+    }
+
+    /**
+     * Calcula a posição do nó na árvore abstrata baseada
+     * na ordem de visitação do nó.
+     * @return
+     */
+    private String calculatePosition() {
+        StringBuilder position = new StringBuilder();
+        for (int i = 0; i < nodePositionStack.size(); i++)
+            position.append(nodePositionStack.get(i)).append(".");
+        
+        position.deleteCharAt(position.length() - 1);
+
+        return position.toString();
     }
 
     /**
@@ -185,8 +204,8 @@ public class QueryResultBuilder extends AbstractQueryVisitor {
                 append(",c=").append(column).append("}");
 
         StringBuilder fullKey = new StringBuilder();
-        if (!nodeStack.isEmpty())
-            for (Node n : nodeStack)
+        if (!queryNodeStack.isEmpty())
+            for (Node n : queryNodeStack)
                 fullKey.append(n.toString());
 
         fullKey.append(nodeKey);
@@ -196,11 +215,11 @@ public class QueryResultBuilder extends AbstractQueryVisitor {
             pNode = new Node(node);
             pNode.setValue(value);
             pNodeCache.put(fullKey.toString(), pNode);
-            nodeStack.peek().addChild(pNode);
+            queryNodeStack.peek().addChild(pNode);
         }
 
         if (isLeaf(node))
-            if (nodeStack.get(0).getValue().equals("ROWS")) {
+            if (queryNodeStack.get(0).getValue().equals("ROWS")) {
                 rowLeafs.add(pNode);
                 rowMeasuresMap.put(node, lastMeasureSeen);
             } else {

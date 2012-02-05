@@ -2,97 +2,118 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package br.com.proximati.biprime.server.olapql.language.query;
 
-public
-class SimpleNode implements Node {
+public class SimpleNode implements Node {
 
-  protected Node parent;
-  protected Node[] children;
-  protected int id;
-  protected Object value;
-  protected QueryParser parser;
+    protected Node parent;
+    protected Node[] children;
+    protected int id;
+    protected Object value;
+    protected QueryParser parser;
+    private String position;
 
-  public SimpleNode(int i) {
-    id = i;
-  }
-
-  public SimpleNode(QueryParser p, int i) {
-    this(i);
-    parser = p;
-  }
-
-  public void jjtOpen() {
-  }
-
-  public void jjtClose() {
-  }
-
-  public void jjtSetParent(Node n) { parent = n; }
-  public Node jjtGetParent() { return parent; }
-
-  public void jjtAddChild(Node n, int i) {
-    if (children == null) {
-      children = new Node[i + 1];
-    } else if (i >= children.length) {
-      Node c[] = new Node[i + 1];
-      System.arraycopy(children, 0, c, 0, children.length);
-      children = c;
+    public SimpleNode(int i) {
+        id = i;
     }
-    children[i] = n;
-  }
 
-  public Node jjtGetChild(int i) {
-    return children[i];
-  }
-
-  public int jjtGetNumChildren() {
-    return (children == null) ? 0 : children.length;
-  }
-
-  public void jjtSetValue(Object value) { this.value = value; }
-  public Object jjtGetValue() { return value; }
-
-  /** Accept the visitor. **/
-  public void jjtAccept(QueryParserVisitor visitor, Object data)
-     throws Exception
-{
-    visitor.visit(this, data);
-  }
-
-  /** Accept the visitor. **/
-  public Object childrenAccept(QueryParserVisitor visitor, Object data)
-     throws Exception
-{
-    if (children != null) {
-      for (int i = 0; i < children.length; ++i) {
-        children[i].jjtAccept(visitor, data);
-      }
+    public SimpleNode(QueryParser p, int i) {
+        this(i);
+        parser = p;
     }
-    return data;
-  }
 
-  /* You can override these two methods in subclasses of SimpleNode to
-     customize the way the node appears when the tree is dumped.  If
-     your output uses more than one line you should override
-     toString(String), otherwise overriding toString() is probably all
-     you need to do. */
+    public void jjtOpen() {
+    }
 
-  public String toString() { return QueryParserTreeConstants.jjtNodeName[id]; }
-  public String toString(String prefix) { return prefix + toString(); }
+    public void jjtClose() {
+    }
 
-  /* Override this method if you want to customize how the node dumps
-     out its children. */
+    public void jjtSetParent(Node n) {
+        parent = n;
+    }
 
-  public void dump(String prefix) {
-    System.out.println(toString(prefix));
-    if (children != null) {
-      for (int i = 0; i < children.length; ++i) {
-        SimpleNode n = (SimpleNode)children[i];
-        if (n != null) {
-          n.dump(prefix + " ");
+    public Node jjtGetParent() {
+        return parent;
+    }
+
+    public void jjtAddChild(Node n, int i) {
+        if (children == null)
+            children = new Node[i + 1];
+        else if (i >= children.length) {
+            Node c[] = new Node[i + 1];
+            System.arraycopy(children, 0, c, 0, children.length);
+            children = c;
         }
-      }
+        children[i] = n;
     }
-  }
+
+    public Node jjtGetChild(int i) {
+        return children[i];
+    }
+
+    public int jjtGetNumChildren() {
+        return (children == null) ? 0 : children.length;
+    }
+
+    public void jjtSetValue(Object value) {
+        this.value = value;
+    }
+
+    public Object jjtGetValue() {
+        return value;
+    }
+
+    /** Accept the visitor. **/
+    public void jjtAccept(QueryParserVisitor visitor, Object data)
+            throws Exception {
+        visitor.visit(this, data);
+    }
+
+    /** Accept the visitor. **/
+    public Object childrenAccept(QueryParserVisitor visitor, Object data)
+            throws Exception {
+        if (children != null)
+            for (int i = 0; i < children.length; ++i)
+                children[i].jjtAccept(visitor, data);
+        return data;
+    }
+
+    /* You can override these two methods in subclasses of SimpleNode to
+    customize the way the node appears when the tree is dumped.  If
+    your output uses more than one line you should override
+    toString(String), otherwise overriding toString() is probably all
+    you need to do. */
+    public String toString() {
+        return QueryParserTreeConstants.jjtNodeName[id];
+    }
+
+    public String toString(String prefix) {
+        return prefix + toString();
+    }
+
+    /* Override this method if you want to customize how the node dumps
+    out its children. */
+    public void dump(String prefix) {
+        System.out.println(toString(prefix));
+        if (children != null)
+            for (int i = 0; i < children.length; ++i) {
+                SimpleNode n = (SimpleNode) children[i];
+                if (n != null)
+                    n.dump(prefix + " ");
+            }
+    }
+
+    /**
+     * @return the position
+     */
+    public String getPosition() {
+        return position;
+    }
+
+    /**
+     * @param position the position to set
+     */
+    public void setPosition(String position) {
+        this.position = position;
+    }
 }
 
 /* JavaCC - OriginalChecksum=031e2a4b0173f5428895a36a8c8d0973 (do not edit this line) */
