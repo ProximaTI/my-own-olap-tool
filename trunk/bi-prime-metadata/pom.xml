@@ -54,7 +54,6 @@
             <url>http://maven.springframework.org/milestone</url>
         </repository>
 
-		<!-- repositorio do eclipse link -->
         <repository>
             <id>eclipselink</id>
             <name>eclipselink</name>

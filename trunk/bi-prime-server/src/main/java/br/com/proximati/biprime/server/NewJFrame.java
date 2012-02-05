@@ -12,8 +12,8 @@ package br.com.proximati.biprime.server;
 
 import br.com.proximati.biprime.server.olapql.language.query.ASTSelect;
 import br.com.proximati.biprime.server.olapql.language.query.QueryParser;
-import br.com.proximati.biprime.server.olapql.query.result.PivotTableModel;
-import br.com.proximati.biprime.view.itext.PivotTableModelRenderer;
+import br.com.proximati.biprime.server.olapql.query.result.QueryResultModel;
+import br.com.proximati.biprime.view.itext.QueryResultRenderer;
 import java.awt.Cursor;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -109,12 +109,12 @@ public class NewJFrame extends javax.swing.JFrame {
 
             select.dump(" ");
 
-            PivotTableModel model = server.execute(jTextArea1.getText());
+            QueryResultModel model = server.execute(jTextArea1.getText());
 
-            File file = new File("/Users/rnpcapes/tmp/bi-output.html");
-            File blank = new File("/Users/rnpcapes/tmp/blank.html");
+            File file = new File("/Users/luizaugusto/tmp/bi-output.html");
+            File blank = new File("/Users/luizaugusto/tmp/blank.html");
             FileOutputStream fos = new FileOutputStream(file);
-            PivotTableModelRenderer renderer = new PivotTableModelRenderer();
+            QueryResultRenderer renderer = new QueryResultRenderer();
             renderer.renderAsHtml(model, fos);
             fos.close();
 

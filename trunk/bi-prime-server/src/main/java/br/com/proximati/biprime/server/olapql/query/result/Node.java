@@ -11,16 +11,16 @@ import java.util.ArrayList;
  *
  * @author luiz
  */
-public class PivotTableNode {
+public class Node {
 
     /** list of nodes */
-    private ArrayList<PivotTableNode> childrenNodes = new ArrayList<PivotTableNode>();
+    private ArrayList<Node> childrenNodes = new ArrayList<Node>();
     /** node value */
     private Object value = null;
     /** axis node to which this node refers */
     private SimpleNode axisNode;
     /** parent node */
-    private PivotTableNode parentNode;
+    private Node parentNode;
     /** parent index */
     private int parentIndex;
     /** distance going up til root node */
@@ -54,14 +54,14 @@ public class PivotTableNode {
         this.parentIndex = parentIndex;
     }
 
-    public PivotTableNode(SimpleNode axisNode) {
+    public Node(SimpleNode axisNode) {
         this.axisNode = axisNode;
     }
 
-    public PivotTableNode() {
+    public Node() {
     }
 
-    public void addChild(PivotTableNode node) {
+    public void addChild(Node node) {
         node.setParentIndex(childrenNodes.size());
         node.setParentNode(this);
         childrenNodes.add(node);
@@ -75,25 +75,25 @@ public class PivotTableNode {
         this.axisNode = axisNode;
     }
 
-    public PivotTableNode getParentNode() {
+    public Node getParentNode() {
         return parentNode;
     }
 
-    public void setParentNode(PivotTableNode parentNode) {
+    public void setParentNode(Node parentNode) {
         this.parentNode = parentNode;
     }
 
     /**
      * @return the childrenNodes
      */
-    public ArrayList<PivotTableNode> getChildrenNodes() {
+    public ArrayList<Node> getChildrenNodes() {
         return childrenNodes;
     }
 
     /**
      * @param childrenNodes the childrenNodes to set
      */
-    public void setChildrenNodes(ArrayList<PivotTableNode> childrenNodes) {
+    public void setChildrenNodes(ArrayList<Node> childrenNodes) {
         this.childrenNodes = childrenNodes;
     }
 
