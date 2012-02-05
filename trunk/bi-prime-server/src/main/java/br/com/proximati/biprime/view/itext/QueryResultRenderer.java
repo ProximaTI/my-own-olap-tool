@@ -21,6 +21,8 @@ import com.lowagie.text.rtf.RtfWriter;
 import com.lowagie.text.xml.XmlWriter;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -41,18 +43,57 @@ public class QueryResultRenderer {
      */
     private void render(QueryResultModel model, Document document) throws BadElementException, DocumentException {
         document.open();
-
+        
         Table table = new Table(model.getRowsRoot().getDistanceToDeeperLeaf() + model.getColumnsRoot().getBreadth());
-
+        
         Cell leftCorner = new Cell();
-        leftCorner.setColspan(model.getRowsRoot().getDistanceToDeeperLeaf());
-        leftCorner.setRowspan(model.getColumnsRoot().getDistanceToDeeperLeaf());
+
+        int columnsHeight = calcAxisHeight(model.getColumnsRoot());
+        int rowsHeight = calcAxisHeight(model.getRowsRoot());
+        
+        System.out.println("columnsHeight > " + columnsHeight);
+        System.out.println("rowsHeight > " + rowsHeight);
+        
+        leftCorner.setColspan(rowsHeight);
+        leftCorner.setRowspan(columnsHeight);
         table.addCell(leftCorner);
-
-        render(table, model);
-
+        
+        render(table, model, columnsHeight, rowsHeight);
+        
         document.add(table);
         document.close();
+    }
+
+    /**
+     * Calcula a altura da árvore representando um eixo da consulta. O valor calculado é
+     * relativo ao MMC das profundidades de todas as folhas. Isto, porque a altura de todos
+     * os nós devem ser expressas por um número inteiro.
+     * @param root
+     * @return 
+     */
+    private int calcAxisHeight(Node root) {
+        // calcula a altura da árvore de nós representando o eixo
+        final Queue<Integer> heightsLeaves = new LinkedList<Integer>();
+        
+        BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
+            
+            public void visitingRoot(Node s) {
+            }
+            
+            public void visitingLeaf(Node s, Node u) {
+                heightsLeaves.add(u.getDistanceUntilRoot());
+            }
+            
+            public void visitingNonLeaf(Node s, Node v) {
+            }
+        });
+        bfs.perform(root);
+        
+        int heightLCM = 1;
+        while (heightsLeaves.size() > 0)
+            heightLCM = MathUtils.lcm(heightLCM, heightsLeaves.poll());
+        
+        return heightLCM;
     }
 
     /**
@@ -60,117 +101,86 @@ public class QueryResultRenderer {
      * @param context
      * @throws BadElementException
      */
-    private void render(final Table table, final QueryResultModel model) throws BadElementException {
+    private void render(final Table table, final QueryResultModel model, final int columnsHeight, final int rowsHeight) throws BadElementException {
         final List<Node> columnLeafs = new ArrayList<Node>();
-
-        // calcula a altura da árvore de nós representando o eixo das colunas
-        final Queue<Integer> heightsLeavesColumns = new LinkedList<Integer>();
-
+                
         BreadthFirstSearch bfs = new BreadthFirstSearch(new TraversingListener() {
-
+            
             public void visitingRoot(Node s) {
             }
-
-            public void visitingLeaf(Node s, Node u) {
-                heightsLeavesColumns.add(u.getDistanceUntilRoot());
-            }
-
-            public void visitingNonLeaf(Node s, Node v) {
-            }
-        });
-        bfs.perform(model.getColumnsRoot());
-
-        int columnsHeightLCM = 1;
-        while (heightsLeavesColumns.size() > 0)
-            columnsHeightLCM = MathUtils.lcm(columnsHeightLCM, heightsLeavesColumns.poll());
-
-        final int columnsHeight = columnsHeightLCM;
-
-        bfs = new BreadthFirstSearch(new TraversingListener() {
-
-            public void visitingRoot(Node s) {
-            }
-
+            
             public void visitingLeaf(Node s, Node u) {
                 int height = columnsHeight / (u.getDistanceToDeeperLeaf() + u.getDistanceUntilRoot());
                 Cell cell = new Cell(u.getValue().toString());
                 cell.setRowspan(height);
                 table.addCell(cell);
-
+                
                 columnLeafs.add(u);
+                
+                System.out.println(u.getValue().toString() + ">" + height);
             }
-
+            
             public void visitingNonLeaf(Node s, Node v) {
                 int height = columnsHeight / (v.getDistanceToDeeperLeaf() + v.getDistanceUntilRoot());
                 Cell cell = new Cell(v.getValue().toString());
                 cell.setColspan(v.getBreadth());
                 cell.setRowspan(height);
                 table.addCell(cell);
+                
+                System.out.println(v.getValue().toString() + ">" + height);
             }
         });
-
+        
         bfs.perform(model.getColumnsRoot());
-
-        /* =================== */
-        final Queue<Integer> heightsLeavesRows = new LinkedList<Integer>();
-
-        DepthFirstSearch dfs = new DepthFirstSearch(new TraversingListener() {
-
-            public void visitingRoot(Node s) {
-            }
-
-            public void visitingLeaf(Node s, Node u) {
-                heightsLeavesRows.add(u.getDistanceUntilRoot());
-            }
-
-            public void visitingNonLeaf(Node s, Node v) {
+        
+        Collections.sort(columnLeafs, new Comparator<Node>() {
+            
+            public int compare(Node t, Node t1) {
+                return t.getPosition().compareTo(t1.getPosition());
             }
         });
-
-        dfs.perform(model.getRowsRoot());
-
-        int rowsHeightLCM = 1;
-        while (heightsLeavesRows.size() > 0)
-            rowsHeightLCM = MathUtils.lcm(rowsHeightLCM, heightsLeavesRows.poll());
-
-        final int rowsHeight = rowsHeightLCM;
-
-        dfs = new DepthFirstSearch(new TraversingListener() {
-
+        
+        for (Node columnLeaf : columnLeafs)
+            System.out.print(columnLeaf.getValue().toString() + " ");
+        
+        System.out.println("");
+        
+        DepthFirstSearch dfs = new DepthFirstSearch(new TraversingListener() {
+            
             public void visitingRoot(Node s) {
             }
-
+            
             public void visitingLeaf(Node s, Node u) {
                 int height = rowsHeight / (u.getDistanceToDeeperLeaf() + u.getDistanceUntilRoot());
-
+                
                 Cell cell = new Cell(u.getValue().toString());
                 cell.setColspan(height);
                 table.addCell(cell);
-
+                
                 for (Node l : columnLeafs) {
                     Pair<Node, Node> pair =
                             new Pair<Node, Node>(u, l);
-
+                    
                     Cell value;
                     if (model.getValues().get(pair) != null)
                         value = new Cell(model.getValues().get(pair).toString());
                     else
                         value = new Cell("-");
-
+                    
                     table.addCell(value);
                 }
             }
-
+            
             public void visitingNonLeaf(Node s, Node v) {
                 int height = rowsHeight / (v.getDistanceToDeeperLeaf() + v.getDistanceUntilRoot());
-
+                
                 Cell cell = new Cell(v.getValue().toString());
                 cell.setRowspan(v.getBreadth());
                 cell.setColspan(height);
                 table.addCell(cell);
             }
         });
-
+        
         dfs.perform(model.getRowsRoot());
     }
 

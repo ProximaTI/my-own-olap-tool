@@ -13,6 +13,7 @@ import java.util.ArrayList;
  */
 public class Node {
 
+    private String position;
     /** list of nodes */
     private ArrayList<Node> childrenNodes = new ArrayList<Node>();
     /** node value */
@@ -27,8 +28,6 @@ public class Node {
     private int distanceUntilRoot = Integer.MAX_VALUE;
     /** */
     private int breadth;
-
-
     /** distance from root to deeper leaf */
     private int distanceToDeeperLeaf;
 
@@ -124,6 +123,7 @@ public class Node {
     public void setDistanceUntilRoot(int distanceUntilRoot) {
         this.distanceUntilRoot = distanceUntilRoot;
     }
+
     /**
      * @return the breadth
      */
@@ -138,4 +138,17 @@ public class Node {
         this.breadth = breadth;
     }
 
+    /**
+     * @return the position
+     */
+    public String getPosition() {
+        return position;
+    }
+
+    /**
+     * @param position the position to set
+     */
+    public void setPosition(String position) {
+        this.position = position;
+    }
 }

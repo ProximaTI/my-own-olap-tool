@@ -4,13 +4,21 @@
  */
 package br.com.proximati.biprime.server.olapql.language.query;
 
+import java.util.Stack;
+
 /**
  *
  * @author luiz
  */
 public abstract class AbstractQueryVisitor implements QueryParserVisitor {
 
+    protected Stack<Node> nodeStack = new Stack<Node>();
+    protected Stack<Integer> nodePositionStack = new Stack<Integer>();
+
     public void visit(Node node, Object data) throws Exception {
+        nodeStack.push(node);
+        nodePositionStack.push(childIndex(node));
+
         if (node instanceof ASTSelect)
             visit((ASTSelect) node, data);
         if (node instanceof ASTDetachedFilterExpression)
@@ -59,6 +67,9 @@ public abstract class AbstractQueryVisitor implements QueryParserVisitor {
             visit((ASTDateLiteral) node, data);
         if (node instanceof ASTStringLiteral)
             visit((ASTStringLiteral) node, data);
+
+        nodeStack.pop();
+        nodePositionStack.pop();
     }
 
     @Override
