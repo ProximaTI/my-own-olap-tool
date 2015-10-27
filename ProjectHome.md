@@ -1,0 +1,1 @@
+Ferramenta OLAP cujo objetivo é prover um mecanismo simples para execução de consultas multimensionais diretamente sobre bancos de dados relacionais.
